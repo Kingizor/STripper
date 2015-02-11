@@ -29,16 +29,6 @@ struct Area {
     char *name; // Level Name
 };
 
-static inline void push_8(uint8_t stack[10], int *sc, uint8_t *value) {
-    stack[*sc] = *value;
-    *sc = *sc + 1;
-} // push_8
-
-static inline void pull_8(uint8_t stack[10], int *sc, uint8_t *value) {
-    *sc = *sc - 1;
-    *value = stack[*sc];
-} // pull_8
-
 static inline void push_16(uint8_t stack[10], int *sc, uint16_t *value) {
     stack[*sc] = *value % 256;
     *sc = *sc + 1;
@@ -69,7 +59,6 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
     int run = 1;
     
     // 8-bit A
-    push_8(stack, &sc, &a);
     tF7 = x;
     tFA = y;
     
