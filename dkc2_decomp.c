@@ -37,7 +37,7 @@ void dkc2_decomp(uint8_t *rom, uint8_t *output, uint32_t *outlen, uint32_t src) 
     uint8_t *ram = calloc(0x4000, 1);
     uint8_t bytes[] = {0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15};
     int jmp = 0x8AC;
-    int rtn;
+    int rtn = 0;
     int run = 1;
     uint32_t stack[25];
     int sc = 0;
