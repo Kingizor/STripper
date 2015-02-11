@@ -1,6 +1,7 @@
 CC = gcc
-CFLAGS = -O3 -Wall -Werror -Wl,-s,-flto
+CFLAGS = -O3 -Wall -Werror
 DFLAGS = -O0 -g -Wall -Werror
+LDFLAGS = -flto -s
 TARGET  = stripper
 DTARGET = stripper_d
 
@@ -32,12 +33,13 @@ ODIR=obj
 OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))
 
 stripper: $(OBJECTS)
-	$(CC) $^ -o $(TARGET) $(CFLAGS)
+	$(CC) $^ -o $(TARGET) $(LDFLAGS)
     
 $(ODIR)/%.o: %.c
 	$(CC) $< -o $@ -c $(CFLAGS)
 
 debug: CFLAGS = $(DFLAGS)
+debug: LDFLAGS =
 debug: TARGET = $(DTARGET)
 debug: stripper
 
