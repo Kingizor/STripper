@@ -1,41 +1,48 @@
 CC = gcc
 CFLAGS = -O3 -Wall -Werror -Wl,-s,-flto
-TARGET = stripper
-DEBUG = stripper_d
+DFLAGS = -O0 -g -Wall -Werror
+TARGET  = stripper
+DTARGET = stripper_d
 
 FILES = \
-	main.c \
-	decomp.c \
-	decode.c \
-	misc.c \
-	bitplane.c \
-	spec1.c \
-	spec2.c \
-	spec3.c \
-	level1.c \
-	level2.c \
-	level3.c \
-	raw_bit2.c \
-	raw_bit3.c \
-	anim2.c \
-	anim3.c \
-    dkc_gbc.c \
-    dkc_gba.c \
-    gba_misc.c \
-    dkc2_decomp.c \
-    dkc2_gba.c \
-    dkl.c \
-	lodepng.c
+	main.o \
+	decomp.o \
+	decode.o \
+	misc.o \
+	bitplane.o \
+	spec1.o \
+	spec2.o \
+	spec3.o \
+	level1.o \
+	level2.o \
+	level3.o \
+	raw_bit2.o \
+	raw_bit3.o \
+	anim2.o \
+	anim3.o \
+    dkc_gbc.o \
+    dkc_gba.o \
+    gba_misc.o \
+    dkc2_decomp.o \
+    dkc2_gba.o \
+    dkl.o \
+	lodepng.o
 
-OBJECTS = $(FILES:.c=.o)
+ODIR=obj
+#_OBJ = $(FILES:.c=.o)
+OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))
 
-all: $(TARGET)
+stripper: $(OBJECTS)
+	$(CC) $^ -o $(TARGET) $(CFLAGS)
+    
+$(ODIR)/%.o: %.c
+	$(CC) $< -o $@ -c $(CFLAGS)
 
-debug: CFLAGS = -Wall -Wextra -g
-debug: $(DEBUG)
+debug: CFLAGS = $(DFLAGS)
+debug: TARGET = $(DTARGET)
+debug: stripper
 
-$(TARGET) $(DEBUG): $(OBJECTS)
-	$(CC) $(CFLAGS) $(OBJECTS) -o $@
+.PHONY: clean
 
 clean:
-	@rm -rf $(OBJECTS) $(TARGET) $(DEBUG)
+	@rm -rf $(OBJECTS) $(TARGET) $(DTARGET)
