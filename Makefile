@@ -29,7 +29,6 @@ FILES = \
 	lodepng.o
 
 ODIR=obj
-#_OBJ = $(FILES:.c=.o)
 OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))
 
 stripper: $(OBJECTS)
