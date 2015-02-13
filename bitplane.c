@@ -10,12 +10,12 @@ void decode_palette(uint8_t *rgb, uint8_t *rom, int count) {
     int i;
     for (i = 0; i < count; i++) {
     
-        uint8_t high = rom[i*2];
-        uint8_t low =  rom[i*2+1];
+        uint8_t low = rom[i*2];
+        uint8_t high =  rom[i*2+1];
         
-        rgb[i*3]   = (high & 0x1F) * 8;
-        rgb[i*3+1] = (((high & 0xE0) >> 5) + ((low & 0x03) << 3)) * 8;
-        rgb[i*3+2] = ((low & 0x7C) >> 2) * 8;
+        rgb[i*3]   = (low & 0x1F) * 8;
+        rgb[i*3+1] = (((low & 0xE0) >> 5) + ((high & 0x03) << 3)) * 8;
+        rgb[i*3+2] = ((high & 0x7C) >> 2) * 8;
         
     }
     
