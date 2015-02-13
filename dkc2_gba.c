@@ -34,7 +34,7 @@ struct dkc2_gba_levels {
     char *name;
 };
 
-void gba_data(uint8_t *rom, uint8_t *output, int *length, uint32_t location, uint32_t offset, uint8_t type) {
+static void gba_data(uint8_t *rom, uint8_t *output, int *length, uint32_t location, uint32_t offset, uint8_t type) {
     
         switch (type) {
             case 0:
@@ -61,7 +61,7 @@ void gba_data(uint8_t *rom, uint8_t *output, int *length, uint32_t location, uin
         if (type && offset) memmove(output, &output[offset], *length - offset);
 }
 
-void lay_double(uint8_t *lay_data, int laylen) {
+static void lay_double(uint8_t *lay_data, int laylen) {
     
     uint8_t *lay_double = malloc(laylen*2);
     int i;
