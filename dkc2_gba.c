@@ -82,17 +82,17 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {1, 0, {0x325534, 0, 1}, {0x4A4898, 0, 1}}, // Ship Hold
         {0, 1, {0x301BE0, 0, 1}, {0x49D664, 0, 2}}, // La-Va
         {0, 0, {0x3071D4, 0, 1}, {0x49E484, 0, 1}}, // Mine
-        {0, 0, {0x3315C0, 0, 1}, {0x4A68B0, 0, 1}}, // Swamp
+        {0, 0, {0x3315C0, 0, 1}, {0x4A68B0, 0, 1}}, // Swamp (5)
         {0, 0, {0x2A8664, 0, 2}, {0x48F278, 0, 1}}, // Brambles
         {0, 0, {0x2C674C, 0, 2}, {0x4944A8, 0, 1}}, // Hive
         {0, 0, {0x310748, 0, 1}, {0x4A0538, 0, 1}}, // Fair
         {0, 0, {0x2B7764, 0, 2}, {0x491240, 0, 1}}, // Forest
-        {0, 0, {0x2D2308, 0, 2}, {0x4977B0, 0, 1}}, // Ice
+        {0, 0, {0x2D2308, 0, 2}, {0x4977B0, 0, 1}}, // Ice (10)
         {1, 1, {0x2B3000, 0, 2}, {0x496FA0, 0, 1}}, // Castle
-        {0, 0, {0x2E1F90, 0, 2}, {0x499C88, 0, 1}}, // Jungle (12)
+        {0, 0, {0x2E1F90, 0, 2}, {0x499C88, 0, 1}}, // Jungle
         {0, 0, {0x2FADC4, 0, 3}, {0x4A8F38, 0, 2}}, // K.Rool Duel
         {1, 1, {0x2F6AB0, 0, 1}, {0x4C2AAC, 0, 2}}, // Krocodile Kore
-        {1, 1, {0x2DED9C, 0, 1}, {0x4A89D4, 0, 1}}, // K.Rool's Kabin
+        {1, 1, {0x2DED9C, 0, 1}, {0x4A89D4, 0, 1}}, // K.Rool's Kabin (15)
         {0, 0, {0x3F0440, 0, 3}, {0x4BECFC, 0, 3}}, // Overworld
         {0, 0, {0x33C528, 0, 3}, {0x4AA918, 0, 3}}, // Gangplank Galleon
         {0, 0, {0x353178, 0, 3}, {0x4AD45C, 0, 3}}, // Crocodile Cauldron
@@ -102,8 +102,6 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {0, 0, {0x3BA698, 0, 3}, {0x4B8D8C, 0, 3}}, // K.Rool's Keep
         {0, 1, {0x3D1B34, 0, 3}, {0x4BB578, 0, 3}}, // The Flying Krock
         {0, 0, {0x3D9584, 0, 3}, {0x4BC3FC, 0, 3}}, // The Lost World
-        
-        // {{0x5018DC, 0, 2}, {0x4A89D4, 0, 1}}, // K.Rool's Kabin / 1-3 B1
     };
     
     struct dkc2_gba_levels dkc[] = {
@@ -238,6 +236,7 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         
         { 6, {0x4DA104, 0, 1}, {0xECDB0, 0x0C00, 1}, "Screech's Sprint"},
         { 6, {0x4DC450, 0, 1}, {0xECDB0, 0x0C00, 1}, "Screech's Sprint B1"},
+        // {13, {0x5019BC, 0, 1}, {0xEE554, 0x1E00, 3}, "K.Rool Duel"},
         
         {12, {0x4EAEC8, 0, 1}, {0xECDB0, 0x0E00, 1}, "Jungle Jinx"},
         {12, {0x4ECF30, 0, 2}, {0xECDB0, 0x0E00, 1}, "Jungle Jinx B1"},
@@ -254,11 +253,10 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 6, {0x4DAF28, 0, 1}, {0xECDB0, 0x1C00, 1}, "Animal Antics - Squawks"},
         {12, {0x4EC924, 0, 1}, {0xECDB0, 0x1E00, 1}, "Animal Antics - Rattly"},
         { 6, {0x4DC29C, 0, 1}, {0xECDB0, 0x1C00, 1}, "Animal Antics B1"},
+        // {14, {0x501B60, 0x90, 0}, {0xEE554, 0x0600, 3}, "Krocodile Kore"},
         
         {15, {0x501870, 0x4A, 0}, {0xEE554, 0x0200, 3}, "K.Rool's Kabin"},
         
-        // {14, {0x501B60, 0x90, 0}, {0xEE554, 0x0600, 3}, "Krocodile Kore"},
-        // {13, {0x5019BC, 0, 1}, {0xEE554, 0x1E00, 3}, "K.Rool Duel"},
         
         {16, {0x503B58, 0, 2}, {0xEE554, 0x1A00, 3}, "Overworld"},
         {17, {0x501B54, 0, 2}, {0xEE554, 0x0800, 3}, "Gangplank Galleon"},
@@ -271,6 +269,13 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {23, {0x50370C, 0, 1}, {0xEE554, 0x1600, 3}, "The Flying Krock Overlay"},
         {24, {0x503768, 0, 2}, {0xEE554, 0x1800, 3}, "The Lost World"},
         
+        { 6, {0x4DCAEC, 0, 1}, {0xEB5F0, 0x0600, 1}, "Funky (1)"},
+        { 2, {0x4FCC58, 0, 1}, {0xEA2FC, 0x0800, 1}, "Funky (2)"},
+        {11, {0x4E2044, 0, 1}, {0xECDB0, 0x0600, 1}, "Funky (3)"},
+        { 7, {0x4E6B9C, 0, 1}, {0xEB5F0, 0x0A00, 1}, "Funky (4)"},
+        {10, {0x4E9868, 0, 1}, {0xEB5F0, 0x1C00, 1}, "Funky (5)"},
+        { 2, {0x4FD894, 0, 1}, {0xEA2FC, 0x0800, 1}, "Funky (6)"},
+        {11, {0x4E231C, 0, 1}, {0xECDB0, 0x0800, 1}, "Funky (7)"},
     };
     
     int i;
@@ -339,8 +344,8 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {0, 0, {0x34421C, 0, 2}, {0x5C7E60, 0, 1}}, // Cliff (10)
         {1, 1, {0x3EE6C4, 0, 1}, {0x5E3424, 0, 1}}, // Bleak
         {0, 0, {0x383694, 0, 2}, {0x5D1598, 0, 1}}, // Jungle
-        {1, 1, {0x4001F4, 0, 1}, {0x5E5840, 0, 3}}, // Kastle Kaos (Need Lay)
-        {1, 1, {0x4001F4, 0, 1}, {0x5E1E60, 0, 1}}, // Knautilus (Need Lay & BP)
+        {1, 1, {0x4001F4, 0, 1}, {0x5E5840, 0, 3}}, // Kastle Kaos
+        {1, 1, {0x4001F4, 0, 1}, {0x5E1E60, 0, 1}}, // Knautilus (Need BP)
         {0, 0, {0x49576C, 0x40000, 0}, {0x5FA36C, 0, 1}}, // Northern Kremisphere (15)
         {0, 0, {0x4C6558, 0x20000, 0}, {0x5FF804, 0, 2}}, // Lake Orangatanga
         {0, 0, {0x4E0ADC, 0x40000, 0}, {0x601EA0, 0, 3}}, // Kremwood Forest
@@ -351,10 +356,10 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {0, 0, {0x56DEE8, 0x40000, 0}, {0x60E630, 0, 3}}, // Razor Ridge
         {0, 0, {0x58AA70, 0x40000, 0}, {0x610D7C, 0, 3}}, // Kaos Kore
         {0, 0, {0x5A56C4, 0x40000, 0}, {0x613338, 0, 3}}, // Krematoa
+        {0, 1, {0x486314, 0, 2}, {0x5F7AB4, 0, 2}}, // All-Time Greats (25)
     };
     
     struct dkc2_gba_levels dkc[] = {
-        
         { 0, {0x615858, 0, 1}, {0xE6758, 0x0200, 1}, "Lakeside Limbo"},
         { 0, {0x617854, 0, 2}, {0xE6758, 0x0200, 1}, "Lakeside Limbo B1"},
         { 0, {0x617924, 0, 2}, {0xE6758, 0x0200, 1}, "Lakeside Limbo B2"},
@@ -499,7 +504,7 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 9, {0x645F98, 0, 1}, {0xE93BC, 0x1600, 1}, "Poisonous Pipeline"},
         { 9, {0x6477C4, 0, 1}, {0xE93BC, 0x1600, 1}, "Poisonous Pipeline B1"},
         { 9, {0x6475A4, 0, 1}, {0xE93BC, 0x1600, 1}, "Poisonous Pipeline B2"},
-        // {13, {0x64F8E4, 0, 1}, {0xE93BC, 0x1800, 1}, "Kastle Kaos"}, // Need lay
+        {13, {0x64ED70, 0x84, 0}, {0xE93BC, 0x1800, 1}, "Kastle Kaos"},
         
         {12, {0x62FD18, 0, 1}, {0xE93BC, 0x1A00, 1}, "Stampede Sprint"},
         {12, {0x631B08, 0, 2}, {0xE93BC, 0x1A00, 1}, "Stampede Sprint B1"},
@@ -518,7 +523,7 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 3, {0x642604, 0, 2}, {0xEAD70, 0x0000, 1}, "Swoopy Salvo B2"},
         { 3, {0x6426E4, 0, 2}, {0xEAD70, 0x0000, 1}, "Swoopy Salvo B3"},
         {10, {0x6203A0, 0, 1}, {0xEAD70, 0x0200, 1}, "Rocket Rush"},
-        // {14, {0x6203A0, 0, 1}, {0xEAD70, 0x0200, 1}, "Knautilus"},
+        // {14, {0x64E114, 0x84, 0}, {0xEAD70, 0x0400, 1}, "Knautilus"},
         
         {15, {0x6579B4, 0, 2}, {0xEAD70, 0x1400, 1}, "Northern Kremisphere"},
         {16, {0x658484, 0, 2}, {0xEAD70, 0x1600, 1}, "Lake Orangatanga"},
@@ -530,6 +535,10 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {22, {0x659DAC, 0, 2}, {0xEC8DC, 0x0200, 3}, "Razor Ridge"},
         {23, {0x65A14C, 0, 2}, {0xEC8DC, 0x0400, 3}, "Kaos Kore"},
         {24, {0x65A534, 0, 2}, {0xEC8DC, 0x0600, 3}, "Krematoa"},
+        
+        {25, {0x650764, 0x50, 0}, {0xF0584, 0x0E00, 1}, "ATG - Castle"},
+        {25, {0x6507B4, 0x50, 0}, {0xF0584, 0x1000, 1}, "ATG - Mill"},
+        {25, {0x650804, 0x50, 0}, {0xF0584, 0x1200, 1}, "ATG - Arich"},
         
     };
     
