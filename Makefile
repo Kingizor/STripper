@@ -2,6 +2,7 @@ CC = gcc
 CFLAGS = -O3 -Wall -Werror
 DFLAGS = -O0 -g -Wall -Werror
 LDFLAGS = -flto -s
+WINDRES = windres
 TARGET  = stripper
 DTARGET = stripper_d
 
@@ -27,7 +28,8 @@ FILES = \
     dkc2_decomp.o \
     dkc2_gba.o \
     dkl.o \
-	lodepng.o
+	lodepng.o \
+    str.res
 
 ODIR=obj
 OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))
@@ -37,6 +39,9 @@ stripper: $(OBJECTS)
     
 $(ODIR)/%.o: %.c
 	$(CC) $< -o $@ -c $(CFLAGS)
+    
+$(ODIR)/%.res: %.rc
+	$(WINDRES) $< -O coff -o $@
 
 debug: CFLAGS = $(DFLAGS)
 debug: LDFLAGS =

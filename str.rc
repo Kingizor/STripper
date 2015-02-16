@@ -1,0 +1,28 @@
+#define VER_F 0,0,3,1
+#define VER_S "0.31"
+
+ICO ICON "icon.ico"
+1 VERSIONINFO
+FILEVERSION     VER_F
+PRODUCTVERSION  VER_F
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "Kingizor"
+      VALUE "FileDescription", "An image extractor for Donkey Kong games."
+      VALUE "FileVersion", VER_S
+      VALUE "InternalName", "STripper"
+      VALUE "LegalCopyright", "Kingizor"
+      VALUE "OriginalFilename", "stripper.exe"
+      VALUE "ProductName", "Sprite & Tile ripper"
+      VALUE "ProductVersion", VER_S
+    END
+  END
+  
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
+END
