@@ -23,7 +23,7 @@ Floodlit Fish uses window clipping and other shenanigans.
 #include "main.h"
 
 static void show_usage() {
-    printf("Usage: stripper [ROM FILE] [OPTION]\n");
+    printf("Usage: stripper ROM_FILE [OPTION]\n");
     
     printf("\nDKC 1-3 (SNES), DKC 1-3 (GBA):");
     printf("\n\t-o Use palette index zero instead of transparent zero. (Opaque)\n");
