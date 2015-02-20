@@ -90,6 +90,7 @@ int main(int argc, char *argv[]) {
     }
     else {
         perror("\nError\n");
+        getchar();
         return 0;
     }
     
@@ -125,6 +126,7 @@ int main(int argc, char *argv[]) {
     else if (!strcmp(intname, "DONKEY KONG COUNTRY  ")) {
         if (rom[0xFFD9] != 1 || rom[0xFFDB] != 0) {
             printf("Unsupported ROM version.\n");
+            getchar();
             return 0;
         }
         game = 1;
@@ -144,6 +146,7 @@ int main(int argc, char *argv[]) {
     else if (!strcmp(gbaname, "RAREDKC1")) {
         if (rom[0xAF] != 0x45) {
             printf("Unsupported ROM version.\n");
+            getchar();
             return 0;
         }
         game = 8;
@@ -151,6 +154,7 @@ int main(int argc, char *argv[]) {
     else if (!strcmp(gbaname, "RAREDKC2")) {
         if (rom[0xAF] != 0x45) {
             printf("Unsupported ROM version.\n");
+            getchar();
             return 0;
         }
         game = 9;
@@ -158,6 +162,7 @@ int main(int argc, char *argv[]) {
     else if (!strcmp(gbaname, "RAREDKC3")) {
         if (rom[0xAF] != 0x45) {
             printf("Unsupported ROM version.\n");
+            getchar();
             return 0;
         }
         game = 10;
@@ -220,6 +225,7 @@ int main(int argc, char *argv[]) {
             }
             else {
                 printf("Unknown command \"%s\"\n", argv[2]);
+                getchar();
                 return 0;
             }
         }
