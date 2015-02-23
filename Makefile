@@ -28,8 +28,7 @@ FILES = \
     dkc2_decomp.o \
     dkc2_gba.o \
     dkl.o \
-	lodepng.o \
-    str.res
+	lodepng.o
 
 ODIR=obj
 OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))
