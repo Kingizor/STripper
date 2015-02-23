@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "bitplane.h"
+#include "dkc2_decomp.h"
 
 void huff_decomp(uint8_t *rom, uint8_t *output, int len, int rpos) {
 
@@ -127,6 +128,33 @@ void gba_decomp(uint8_t *rom, uint8_t *output, int *len, int address) {
     // printf("Done!\n");
     
 } // gba_decomp();
+
+void gba_data(uint8_t *rom, uint8_t *output, int *length, uint32_t location, uint32_t offset, uint8_t type) {
+    
+        switch (type) {
+            case 0:
+                memcpy(output, &rom[location], offset);
+                *length = offset;
+            break;
+            
+            case 1:
+                gba_decomp(rom, output, length, location);
+            break;
+            
+            case 2:
+                dkc2_decomp(rom, output, length, location);
+            break;
+            
+            case 3:
+                dkc2_decode(rom, output, length, location);
+            break;
+            
+            default:
+                printf("Error: %X\n", location);
+            break;
+        }
+        if (type && offset) memmove(output, &output[offset], *length - offset);
+}
 
 void gba_layout(uint8_t *lay_data, uint8_t *raw_data, uint8_t *att_data, int *width, int *height, int mode) {
 

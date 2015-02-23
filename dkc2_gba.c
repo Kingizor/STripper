@@ -6,20 +6,6 @@
 #include "gba_misc.h"
 #include "dkc2_decomp.h"
 
-struct comp {
-    uint32_t loc; // Data Location
-    uint32_t ofs; // (Compressed) ? Data Offset : Data Size
-    uint8_t type; // Compression Type
-    
-    /*
-    00 - Not Compressed
-    01 - BIOS
-    02 - DKC2-Type (Large)
-    03 - DKC3-Type (Small)
-    04 - Reserved
-    */
-};
-
 struct dkc2_archetype {
     uint8_t raw_split;
     uint8_t lay_split;
@@ -33,33 +19,6 @@ struct dkc2_gba_levels {
     struct comp pal;
     char *name;
 };
-
-static void gba_data(uint8_t *rom, uint8_t *output, int *length, uint32_t location, uint32_t offset, uint8_t type) {
-    
-        switch (type) {
-            case 0:
-                memcpy(output, &rom[location], offset);
-                *length = offset;
-            break;
-            
-            case 1:
-                gba_decomp(rom, output, length, location);
-            break;
-            
-            case 2:
-                dkc2_decomp(rom, output, length, location);
-            break;
-            
-            case 3:
-                dkc2_decode(rom, output, length, location);
-            break;
-            
-            default:
-                printf("Error: %X\n", location);
-            break;
-        }
-        if (type && offset) memmove(output, &output[offset], *length - offset);
-}
 
 static void lay_double(uint8_t *lay_data, int laylen) {
     
