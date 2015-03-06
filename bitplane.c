@@ -1376,7 +1376,7 @@ void gbc_assemble(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_
                 if (col_data[i+j] & 32) hflip = 1;
                 if (col_data[i+j] & 64) vflip = 1;
                 // ((*col_data)[i+j] & 128) priority = 1: priority = 0;
-            }
+            } // GBC
             
             tile = lay_data[i+j] * 16;
             
@@ -1420,4 +1420,20 @@ void gbc_assemble(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_
     return;
 
 } // gbc_assemble();
+
+void tile_generator(uint8_t *raw_data, int *rawlen, int tiles, int mode) {
+    
+    int i, j = 0;
+    for (i = 0; i < tiles; i++) {
+        
+        raw_data[j++] = i;
+        if (mode) i++; // 16-bit
+        
+    }
+    
+    *rawlen = tiles;
+    
+    return;
+    
+} // tile_generator
 

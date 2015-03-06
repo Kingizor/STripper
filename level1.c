@@ -214,7 +214,7 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
 
 } // dkc_tile_decomp();
 
-void level1(unsigned char *rom, char *dir, int priority, int mode) {
+void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) {
 
     uint8_t *bp_data = calloc(0xFFFF, 1);
     unsigned int bp_len = 0;
@@ -414,6 +414,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode) {
     coords[1] = 0xFF;
     
     int limit = (mode == 2) ? 14 : 130; // Layouts vs. Levels
+    char name[255];
     
     for (i = 0; i < limit; i++) {
     
@@ -449,7 +450,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode) {
             memcpy(lay_data, &rom[levels[i].lay_loc], levels[i].lay_len);
             raw_counter = archetype[arch].raw_len;
             lay_counter = levels[i].lay_len;
-        } // Layout
+        } // Complete Layouts
         else if (current != arch) {
             memcpy(raw_data, &rom[archetype[arch].raw_loc], archetype[arch].raw_len);
             memcpy(lay_data, &rom[levels[arch].lay_loc], levels[arch].lay_len);
@@ -460,12 +461,17 @@ void level1(unsigned char *rom, char *dir, int priority, int mode) {
         if (mode == 2) {
             decode_bitplane(rom, bp_data, raw_data, bitplane, levels[i].pal_ofs, raw_counter, bp_len, 1, 0, priority);
             assemble_level(bitplane, rom, lay_data, lay_counter, 0, vert, layout_size, 0, dir, levels[i].name);
-        }
+        } // Complete Layouts
+        else if (tileset) {
+            decode_bitplane(rom, bp_data, raw_data, bitplane, areas[i].pal_ofs, raw_counter, bp_len, 1, areas[i].pal_fix, priority);
+            strcpy(name, areas[i].name);
+            strcat(name, " Tiles.png");
+            assemble_bitplane(bitplane, 512, raw_counter, dir, name);
+        } // Tilesets
         else {
             decode_bitplane(rom, bp_data, raw_data, bitplane, areas[i].pal_ofs, raw_counter, bp_len, 1, areas[i].pal_fix, priority);
-            // assemble_bitplane(&bitplane, 512, raw_counter, dir, "Tiles.png");
             assemble_level(bitplane, coords, lay_data, lay_counter, 1, vert, layout_size, 0, dir, areas[i].name);
-        }
+        } // Levels
         
         current = arch;
     }

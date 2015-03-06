@@ -26,7 +26,7 @@ static void show_usage() {
     printf("Usage: stripper ROM_FILE [OPTION]\n");
     
     printf("\nDKC 1-3 (SNES), DKC 1-3 (GBA):");
-    printf("\n\t-o Use palette index zero instead of transparent zero. (Opaque)\n");
+    printf("\n\t-o Use palette zero instead of transparency. (Opaque)\n");
     
     printf("\nDKC 1-3 (SNES):");
     printf("\n\t-f Only use tiles with priority bit set. (Foreground)");
@@ -35,11 +35,11 @@ static void show_usage() {
     printf("\n\t-s Rip special screens.\n");
     
     printf("\nDKC 2-3 (SNES):");
-    printf("\n\t-a Rip level & tileset frames.");
     printf("\n\t-e Rip decompressed 8x8 tiles.\n");
     
     printf("\nDKL 1-3 (GB)");
     printf("\n\t-g Use greyscale palette.\n");
+    printf("\n\t-t Rip tilesets.\n");
     
     printf("\nPress enter to continue...\n");
     getchar();
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     
     printf("\nKingizor's DKC123/DKL123/DKCGBC/DKCGBA123 Decompressor\n\n");
     
-    if (argc < 2 || argc > 3) {
+    if (argc != 2 && argc != 3) {
         show_usage();
         return 0;
     }
@@ -173,9 +173,6 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     
-    int special = 0;
-    
-    int priority = 0;
     /*
         Priority flag:
             0 - Both layers with transparency (default)
@@ -187,48 +184,21 @@ int main(int argc, char *argv[]) {
             
     */
     
-    int i;
+    int i = 2;
+    int special = 0;
+    int priority = 0;
+    int tileset = 0;
     
-    for (i = 2; i < 4; i++) {
-        if (argc == i+1) {
-            if (!strcmp(argv[i], "-f")) {
-                priority = 2;
-                printf("Foreground mode enabled.\n\n");
-            }
-            else if (!strcmp(argv[i], "-b")) {
-                priority = 3;
-                printf("Background mode enabled.\n\n");
-            }
-            else if (!strcmp(argv[i], "-o")) {
-                priority = 1;
-                printf("Opaque mode enabled.\n\n");
-            }
-            else if (!strcmp(argv[i], "-a")) {
-                special = 1;
-                printf("Alternate tile mode.\n\n");
-            }
-            else if (!strcmp(argv[i], "-c")) {
-                special = 2;
-                printf("Full layout mode.\n\n");
-            }
-            else if (!strcmp(argv[i], "-s")) {
-                special = 3;
-                printf("Special screen mode.\n\n");
-            }
-            else if (!strcmp(argv[i], "-e")) {
-                special = 4;
-                printf("Raw bitplane mode.\n\n");
-            }
-            else if (!strcmp(argv[i], "-g")) {
-                special = 5;
-                printf("Gameboy mode.\n\n");
-            }
-            else {
-                printf("Unknown command \"%s\"\n", argv[2]);
-                getchar();
-                return 0;
-            }
-        }
+    if (argc == 3) {
+             if (!strcmp(argv[i], "-f")) priority = 2; // Foreground (Priority set)
+        else if (!strcmp(argv[i], "-b")) priority = 3; // Background (Priority not set)
+        else if (!strcmp(argv[i], "-o")) priority = 1; // Opaque (Use palette zero)
+        else if (!strcmp(argv[i], "-a")) special = 1;  // Animated (Experimental)
+        else if (!strcmp(argv[i], "-c")) special = 2;  // Complete layouts
+        else if (!strcmp(argv[i], "-s")) special = 3;  // Special Screens
+        else if (!strcmp(argv[i], "-e")) special = 4;  // Raw Bitplanes
+        else if (!strcmp(argv[i], "-g")) special = 5;  // Greyscale Palette
+        else if (!strcmp(argv[i], "-t")) tileset = 1;
     }
     
     /*
@@ -295,7 +265,7 @@ int main(int argc, char *argv[]) {
     } // Raw Bitplanes (DKC3)
     
     if (game == 1) {
-        level1(rom, dir, priority, special);
+        level1(rom, dir, priority, special, tileset);
         game = 0;
     } // DKC
     
@@ -314,27 +284,27 @@ int main(int argc, char *argv[]) {
         game = 0;
     } // DKC GBC
     if (game == 5) {
-        dkl_levels(rom, dir, special);
+        dkl_levels(rom, dir, special, tileset);
         game = 0;
     } // DKL
     if (game == 6) {
-        dkl2_levels(rom, dir, special);
+        dkl2_levels(rom, dir, special, tileset);
         game = 0;
     } // DKL2
     if (game == 7) {
-        dkl3_levels(rom, dir, special);
+        dkl3_levels(rom, dir, special, tileset);
         game = 0;
     } // DKL3
     if (game == 8) {
-        dkc_gba_levels(rom, dir, priority, special);
+        dkc_gba_levels(rom, dir, priority, tileset);
         game = 0;
     } // DKC GBA
     if (game == 9) {
-        dkc2_gba_levels(rom, dir, priority, special);
+        dkc2_gba_levels(rom, dir, priority, tileset);
         game = 0;
     } // DKC2 GBA
     if (game == 10) {
-        dkc3_gba_levels(rom, dir, priority, special);
+        dkc3_gba_levels(rom, dir, priority, tileset);
         game = 0;
     } // DKC3 GBA
     

@@ -4,132 +4,6 @@
 #include <stdint.h>
 #include "bitplane.h"
 
-/*
-static void arrange_gbc(uint8_t **source, char dir[255], int tile_w, int tile_h, int width, int height, int mode, char *name) {
-
-    int i, j, k;
-    int lay_len = 0x400 * tile_w * tile_h;
-    int img_size = 8*8*lay_len*4;
-    int px_width = 256 * 4; // 8pixels_wide * 32tiles_per_row * RGBA
-    uint8_t *image = calloc(img_size, 1);
-    
-    for (i = 0; i < lay_len; i++) {
-        for (j = 0; j < 8; j++) {
-            memcpy(&image[((i%32)*32)+(j*px_width)+((i/32)*(px_width*8))], &(*source)[(i*256)+(j*32)], 32);
-        }
-    } // Convert everything into 256x256 sections.
-    
-    // printf("\nConverting to levels... (img_size = %X), (lay_len = %X)\n", img_size, lay_len);
-    
-    for (i = 0; i < tile_h; i++) {
-        for (j = 0; j < tile_w; j++) {
-            for (k = 0; k < 256; k++) {
-                memcpy(&(*source)[ (i * tile_w * 1024 * 256) + (j * 1024) + (k * tile_w * 1024) ], &image[ (i * tile_w * 1024 * 256) + (j * 1024 * 256) + (k * 1024) ], 1024);
-            }
-        }
-    } // Convert 256x256 section into full levels.
-    
-    if (mode == 1 && tile_w > 8) {
-        for (i = 0; i < 2048; i++) {
-            memcpy(&image[i*2048*4], &(*source)[i*2*2048*4], 2048*4);
-            memcpy(&image[(i*2048*4)+(2048*2048*4)], &(*source)[((i*2)+1)*2048*4], 2048*4);
-        }
-        memcpy(&(*source)[0], &image[0], (tile_w*256)*(tile_h*256)*4);
-        tile_w /= 2;
-    }
-    
-    for (i = 0; i < height; i++) {
-        memcpy(&image[i*width*4], &(*source)[i*tile_w*256*4], width*4);
-    } // Crop output image.
-    
-    printf("Saving %s...", name);
-    char path[255];
-    strcpy(path, dir);
-    strcat(path, name);
-    lodepng_encode32_file(path, image, width, height);
-    printf("Done!\n");
-    free(image);
-    return;
-
-} // arrange_gbc();
-
-
-static void gbc_assemble(uint8_t **bitplane, uint8_t **bp_data, uint8_t **lay_data, uint8_t **col_data, uint8_t **rgb, int tile_w, int tile_h) {
-
-    // int img_size = 8*8*lay_len*4;
-    // uint8_t *image = calloc(img_size, 1);
-    int bank; // VRAM Bank
-    int pal_val; // 0-7
-    int bp_val;
-    int hflip;
-    int vflip;
-    int bits[] = {128, 64, 32, 16, 8, 4, 2, 1};
-    int one, two;
-    int i, j, k, m;
-    int tile;
-    int offset;
-    int laylen = 0x400 * tile_w * tile_h;
-    
-    for (i = 0; i < laylen; i+=16) {
-        for (j = 0; j < 16; j++) {
-            
-            pal_val = 0;
-            bank = 0;
-            hflip = 0;
-            vflip = 0;
-            
-            if ((*col_data)[i+j] & 1) pal_val += 1;
-            if ((*col_data)[i+j] & 2) pal_val += 2;
-            if ((*col_data)[i+j] & 4) pal_val += 4;
-            if ((*col_data)[i+j] & 8) bank = 0x1000;
-            if ((*col_data)[i+j] & 32) hflip = 1;
-            if ((*col_data)[i+j] & 64) vflip = 1;
-            // ((*col_data)[i+j] & 128) priority = 1: priority = 0;
-            
-            tile = (*lay_data)[i+j] * 16;
-            
-            for (k = 0; k < 8; k++) {
-                one = (*bp_data)[bank + tile + (k*2) + 0];
-                two = (*bp_data)[bank + tile + (k*2) + 1];
-                if (vflip) k = 7 - k;
-                // Layout data is signed.
-                for (m = 0; m < 8; m++) {
-                    
-                    bp_val = 0;
-                    if (one & bits[m]) bp_val += 1;
-                    if (two & bits[m]) bp_val += 2;
-                    if (hflip) m = 7 - m;
-                    
-                    offset = ((i*256)+(j*256)+(k*32)+(m*4));
-                    
-                    
-                    (*bitplane)[offset+0] = (*rgb)[((pal_val*4)+bp_val)*3];
-                    (*bitplane)[offset+1] = (*rgb)[((pal_val*4)+bp_val)*3+1];
-                    (*bitplane)[offset+2] = (*rgb)[((pal_val*4)+bp_val)*3+2];
-                    (*bitplane)[offset+3] = 255;
-                    
-                    
-                    // (*bitplane)[offset+0] = (pal_val+bp_val)*64;
-                    // (*bitplane)[offset+1] = (pal_val+bp_val)*64;
-                    // (*bitplane)[offset+2] = (pal_val+bp_val)*64;
-                    // (*bitplane)[offset+3] = 255;
-                    
-                    if (hflip) m = 7 - m;
-                }
-                if (vflip) k = 7 - k;
-            }
-        }
-    }
-    
-    // lodepng_encode32_file("tiles.png", image, 8, lay_len*8);
-    
-    // free(image);
-    
-    return;
-
-} // gbc_assemble();
-*/
-
 static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
 
     uint8_t a = 0, b = 1, c = ram_reg[1], d = 0, e = 0, h = ram_reg[2], l = ram_reg[3], carry = 0;
@@ -626,29 +500,41 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
     uint8_t *bitplane = malloc(0x4000000);
     int rawlen = 0;
     
-    int i;
+    int i, width, height, t_width, t_height;
     char name[255];
     int size = sizeof(dkc) / sizeof(struct gbc_levels);
     
     for (i = 0; i < size; i++) { // 119
     
         rawlen = 0;
+        t_width = dkc[i].t_width;
+        t_height = dkc[i].t_height;
+        width = dkc[i].width;
+        height = dkc[i].height;
         
-        memcpy(&bp_data[0], &rom[dkc[i].bp_addr], 0x2000); // BP_DATA
+        memcpy(bp_data, &rom[dkc[i].bp_addr], 0x2000);
         
-        ram_p(rom, raw_data, &rawlen, dkc[i].ram_reg); // RAW_DATA
-        tidy_gbc(raw_data, &rawlen, dkc[i].t_width, dkc[i].height, dkc[i].vert); // FILTER RAW_DATA
+        ram_p(rom, raw_data, &rawlen, dkc[i].ram_reg);
+        tidy_gbc(raw_data, &rawlen, t_width, height, dkc[i].vert);
         
-        gbc_layout(rom, raw_data, lay_data, col_data, dkc[i].rom_bank*0x4000, dkc[i].t_width, dkc[i].t_height);
+        // memset(raw_data, 0, 0x8000);
+        // tile_generator(raw_data, &rawlen, 255, 0);
+        // t_width = 16;
+        // t_height = rawlen / t_width;
+        // if (rawlen % t_width) t_height++;
+        // width = t_width * 32;
+        // height = t_height * 32;
+        
+        gbc_layout(rom, raw_data, lay_data, col_data, dkc[i].rom_bank*0x4000, t_width, t_height);
         
         memcpy(pal_data, &rom[dkc[i].pal_addr], 128);
         decode_palette(rgb, pal_data, 128);
 
-        gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, dkc[i].t_width, dkc[i].t_height, 1);
+        gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 1);
         
         strcpy(name, dkc[i].name);
         strcat(name, ".png");
-        arrange_gbc(bitplane, dkc[i].width, dkc[i].height, dir, name);
+        arrange_gbc(bitplane, width, height, dir, name);
         
     }
     
