@@ -788,6 +788,7 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         gbc_assemble(bitplane, bp_data, lay_data, lay_data, rgb, t_width, t_height, 0);
         
         strcpy(name, dkl[i].name);
+        if (tileset) strcat(name, " Tiles");
         strcat(name, ".png");
         arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
         
@@ -1123,6 +1124,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 0);
         
         strcpy(name, dkl[i].name);
+        if (tileset) strcat(name, " Tiles");
         strcat(name, ".png");
         arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
         
@@ -1341,6 +1343,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 0);
         
         strcpy(name, dkl[i].name);
+        if (tileset) strcat(name, " Tiles");
         strcat(name, ".png");
         arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
         
