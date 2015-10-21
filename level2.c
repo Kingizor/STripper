@@ -49,6 +49,10 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int region) 
         // Bonus 1 uses K.Rool's Kabin tiles.
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BE6F, 0, 16, 0, dir, "Gangplank Galley Bonus 2.png");
         
+        decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0CD0, raw_counter, bp_counter, 1, 65, priority);
+        assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Gangplank Galley (Sunset) Tiles.png");
+        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BE33, 0, 16, 0, dir, "Gangplank Galley (Sunset).png");
+        
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D324E, raw_counter, bp_counter, 1, 0, priority);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Rattle Battle Tiles.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BE3D, 0, 16, 0, dir, "Rattle Battle.png");
@@ -373,6 +377,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int region) 
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BFEB, 1, 24, 0, dir, "Kannon's Klaim.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C01D, 1, 24, 0, dir, "Kannon's Klaim Bonus 1.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C031, 1, 24, 0, dir, "Kannon's Klaim Bonus 2.png");
+        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C013, 1, 24, 0, dir, "Kannon's Klaim Bonus 3.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BFF5, 1, 24, 0, dir, "Kannon's Klaim Warp Room.png");
         
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D238E, raw_counter, bp_counter, 1, 0, priority);
@@ -381,6 +386,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int region) 
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C027, 1, 24, 0, dir, "Squawks's Shaft Bonus 1.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C031, 1, 24, 0, dir, "Squawks's Shaft Bonus 2.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C009, 1, 24, 0, dir, "Squawks's Shaft Bonus 3.png");
+        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BFF5, 1, 24, 0, dir, "Squawks's Shaft Warp Room.png");
         
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D248E, raw_counter, bp_counter, 1, 0, priority);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Windy Well Tiles.png");
@@ -425,7 +431,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int region) 
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Mudhole Marsh Tiles.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C05F, 0, 16, 0, dir, "Mudhole Marsh.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C091, 0, 16, 0, dir, "Mudhole Marsh Bonus 1.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C09B, 0, 16, 0, dir, "Mudhole Marsh Bonus 1.png");
+        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C09B, 0, 16, 0, dir, "Mudhole Marsh Bonus 2.png");
         
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C069, 0, 16, 0, dir, "Swamp Unused Area 1.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C0A5, 0, 16, 0, dir, "Swamp Unused Area 2.png");
