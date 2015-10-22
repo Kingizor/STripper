@@ -168,6 +168,7 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 7, {0x4E5168, 0, 1}, {0xEB5F0, 0x0A00, 1}, "Parrot Chute Panic"},
         { 7, {0x4E65D4, 0, 1}, {0xEB5F0, 0x0A00, 1}, "Parrot Chute Panic B1"},
         { 7, {0x4E6A74, 0, 1}, {0xEB5F0, 0x0A00, 1}, "Parrot Chute Panic B2"},
+        { 7, {0x4E6368, 0, 2}, {0xEB5F0, 0x0A00, 1}, "Parrot Chute Panic Rare Room"},
         { 9, {0x4DCEF4, 0, 1}, {0xEB5F0, 0x1800, 1}, "Web Woods"},
         { 9, {0x4E00EC, 0, 2}, {0xEB5F0, 0x1800, 1}, "Web Woods Room"},
         { 6, {0x4DBD3C, 0, 1}, {0xEB5F0, 0x0600, 1}, "Web Woods B1"},

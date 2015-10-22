@@ -257,6 +257,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int region) 
         assemble_level(bitplane, rom, lay_data_b, lay_counter_b, 0x35BFB3, 1, 16, 0, dir, "Parrot Chute Panic.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BE0F, 1, 80, 0, dir, "Parrot Chute Panic Bonus 1.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BDFB, 1, 80, 0, dir, "Parrot Chute Panic Bonus 2.png");
+        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BDE7, 1, 80, 0, dir, "Parrot Chute Panic Rare Room.png");
         assemble_level(bitplane, rom, lay_data_b, lay_counter_b, 0x35BFBD, 1, 16, 0, dir, "King Zing Sting.png");
     }
     
