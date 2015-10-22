@@ -19,7 +19,7 @@ void anim2(uint8_t *rom, char dir[255], int priority, int region) {
     uint8_t *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
     
     char name[255];
-    // int bp_width = 512;
+    int bp_width = 512;
     
     int i;
     /*
