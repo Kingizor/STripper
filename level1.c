@@ -424,14 +424,16 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
             bp_len = 0x8000;
             memcpy(bp_data, &rom[0x0F0000], bp_len);
         } // Gang-Plank Galleon
-        else {
-            if (current != arch) dkc_tile_decomp(rom, bp_data, &bp_len, archetype[arch].bp_a, archetype[arch].bp_y);
+        else if (arch != current) {
+            dkc_tile_decomp(rom, bp_data, &bp_len, archetype[arch].bp_a, archetype[arch].bp_y);
         }
         
         if (arch == 6 && arch != current) {
             memmove(&bp_data[0x22A0], bp_data, bp_len);
             memcpy(&bp_data[0x22C0], &rom[0x1300C0], 0xC0);
-        }
+            bp_len += 0x22A0;
+        } // Temple Fix
+        
         // dump_bitplane(&bp_data, bp_len, 4, 16, dir, "Bitplane.png");
         
         if (arch == 5 || arch == 8) {
