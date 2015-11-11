@@ -625,12 +625,12 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int region) 
     else {
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Klobber Karnage Tiles.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C1CD, 0, 16, 0, dir, "Klobber Karnage.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C1EB, 0, 16, 0, dir, "Klobber Karnage Bonus.png");
+        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C1F5, 0, 16, 0, dir, "Jungle Jinx Bonus.png");
         
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D440E, raw_counter, bp_counter, 1, 0, priority);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Jungle Jinx Tiles.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C1FF, 0, 16, 0, dir, "Jungle Jinx.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C1F5, 0, 16, 0, dir, "Jungle Jinx Bonus.png");
+        assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C1EB, 0, 16, 0, dir, "Klobber Karnage Bonus.png");
         
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D3B6E, raw_counter, bp_counter, 1, 0, priority);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Animal Antics Jungle Tiles.png");
