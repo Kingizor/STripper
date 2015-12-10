@@ -167,6 +167,14 @@ int main(int argc, char *argv[]) {
         }
         game = 10;
     }
+    else if (!strcmp(gbaname, "KINGOFSW")) {
+        if (rom[0xAF] != 0x45) {
+            printf("Unsupported ROM version.\n");
+            getchar();
+            return 0;
+        }
+        game = 11;
+    }
     else {
         printf("Incorrect ROM file.\n");
         getchar();
@@ -264,49 +272,53 @@ int main(int argc, char *argv[]) {
         game = 0;
     } // Raw Bitplanes (DKC3)
     
-    if (game == 1) {
-        level1(rom, dir, priority, special, tileset);
-        game = 0;
-    } // DKC
     
-    if (game == 2) {
-        level2(rom, dir, priority, special, region);
-        game = 0;
-    } // DKC2
-    
-    if (game == 3) {
-        level3(rom, dir, priority, special, region);
-        game = 0;
-    } // DKC3
-    
-    if (game == 4) {
-        gbc_levels(rom, dir);
-        game = 0;
-    } // DKC GBC
-    if (game == 5) {
-        dkl_levels(rom, dir, special, tileset);
-        game = 0;
-    } // DKL
-    if (game == 6) {
-        dkl2_levels(rom, dir, special, tileset);
-        game = 0;
-    } // DKL2
-    if (game == 7) {
-        dkl3_levels(rom, dir, special, tileset);
-        game = 0;
-    } // DKL3
-    if (game == 8) {
-        dkc_gba_levels(rom, dir, priority, tileset);
-        game = 0;
-    } // DKC GBA
-    if (game == 9) {
-        dkc2_gba_levels(rom, dir, priority, tileset);
-        game = 0;
-    } // DKC2 GBA
-    if (game == 10) {
-        dkc3_gba_levels(rom, dir, priority, tileset);
-        game = 0;
-    } // DKC3 GBA
+    switch (game) {
+        case 1: {
+            level1(rom, dir, priority, special, tileset);
+            break;
+        }
+        case 2: {
+            level2(rom, dir, priority, special, region);
+            break;
+        }
+        case 3: {
+            level3(rom, dir, priority, special, region);
+            break;
+        }
+        case 4: {
+            gbc_levels(rom, dir);
+            break;
+        }
+        case 5: {
+            dkl_levels(rom, dir, special, tileset);
+            break;
+        }
+        case 6: {
+            dkl2_levels(rom, dir, special, tileset);
+            break;
+        }
+        case 7: {
+            dkl3_levels(rom, dir, special, tileset);
+            break;
+        }
+        case 8: {
+            dkc_gba_levels(rom, dir, priority, tileset);
+            break;
+        }
+        case 9: {
+            dkc2_gba_levels(rom, dir, priority, tileset);
+            break;
+        }
+        case 10: {
+            dkc3_gba_levels(rom, dir, priority, tileset);
+            break;
+        }
+        case 11: {
+            kos_levels(rom, dir);
+            break;
+        }
+    }
     
     free(rom);
     

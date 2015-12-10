@@ -28,6 +28,7 @@ FILES = \
     dkc2_decomp.o \
     dkc2_gba.o \
     dkl.o \
+    kos.o \
 	lodepng.o
 
 ODIR=obj
