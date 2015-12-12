@@ -434,7 +434,6 @@ static void colourfix_pre(uint8_t *rom, uint8_t *pal_data, int fix) {
         memcpy(&pal_data[2], &new_pal[(fix-66)*0x1E], 0x1E);
     } // Mine Sparkles (DKC2)
     if (fix >= 97 && fix <= 129) {
-        /*
         uint8_t new_pal[] = {
             0,0x10,2,0x28,4,0x44,6,0x68,0x29,0x3C,3,0x18,
             0,0x10,2,0x28,4,0x44,6,0x68,0x29,0x3C,3,0x18,
@@ -468,7 +467,7 @@ static void colourfix_pre(uint8_t *rom, uint8_t *pal_data, int fix) {
             1,0x14,3,0x2C,0x25,0x48,0x27,0x6C,0x4A,0x40,0x24,0x1C,
             1,0x14,3,0x2C,0x25,0x48,0x27,0x6C,0x4A,0x40,0x24,0x1C,
         };
-        */
+        /*
         uint8_t new_pal[] = {
             1,0,0x6C,0,0xF1,0,0xB5,1,0xEE,0,0x48,0,
             1,0,0x6C,0,0xF1,0,0xB5,1,0xEE,0,0x48,0,
@@ -501,9 +500,9 @@ static void colourfix_pre(uint8_t *rom, uint8_t *pal_data, int fix) {
             1,0,0x8C,0,0x11,1,0xD5,1,0x0E,1,0x68,0,
             1,0,0x8C,0,0x11,1,0xD5,1,0x0E,1,0x68,0,
             1,0,0x8C,0,0x11,1,0xD5,1,0x0E,1,0x68,0,
-        };
+        }; */
         memcpy(&pal_data[0x42], &new_pal[(fix-97)*0x0C], 0x0C);
-    }
+    } // Mine Sparkles (Gold)
 
 } // colourfix_pre();
 
@@ -703,7 +702,6 @@ static void colourfix_post(uint8_t *rgb, int fix) {
 
 } // colourfix_post();
 
-
 static void decode_tile(uint8_t *bp_data, uint8_t *raw_data, uint8_t *rgb, uint8_t *bitplane, int raw_address, int bp_ofs, int bp_len, int mode, int bg) {
     
     unsigned int low =  raw_data[raw_address+1];
@@ -828,7 +826,6 @@ static void decode_tile(uint8_t *bp_data, uint8_t *raw_data, uint8_t *rgb, uint8
 
 } // decode_tile();
 
-
 void decode_bitplane(uint8_t *rom, uint8_t *bp_data, uint8_t *raw_data, uint8_t *bitplane, int pal_addr, unsigned int raw_len, unsigned int bp_len, int mode, int fix, int bg) {
 
     unsigned int i, j, k;
@@ -873,7 +870,6 @@ void decode_bitplane(uint8_t *rom, uint8_t *bp_data, uint8_t *raw_data, uint8_t 
     return;
     
 } // decode_bitplane();
-
 
 void dump_bitplane(uint8_t *bp_data, int bp_len, int bpp, int width, char dir[255], char name[255]) {
 
@@ -939,17 +935,14 @@ void dump_bitplane(uint8_t *bp_data, int bp_len, int bpp, int width, char dir[25
     } // Each Tile
     
     char path[255];
-    strcpy(path, dir);
-    strcat(path, name);
-    printf("Saving %s...", name);
+    sprintf(path, "%s%s.png", dir, name);
+    printf("Saving %s...\n", name);
     lodepng_encode32_file(path, image, px_width, px_height);
     free(image);
-    printf("Done!\n");
     
     return;
 
 } // dump_bitplane();
-
 
 void assemble_bitplane(uint8_t *bitplane, unsigned int width, unsigned int raw_len, char dir[255], char name[255]) {
 
@@ -984,15 +977,12 @@ void assemble_bitplane(uint8_t *bitplane, unsigned int width, unsigned int raw_l
     } // i
     
     char path[255];
-    strcpy(path, dir);
-    strcat(path, name);
-    printf("Saving %s...", name);
+    sprintf(path, "%s%s Tiles.png", dir, name);
+    printf("Saving %s...\n", name);
     lodepng_encode32_file(path, out, width, height);
     free(out);
-    printf("Done!\n");
     
 } // assemble_bitplane();
-
 
 void assemble_screen(uint8_t *bitplane, unsigned int raw_len, unsigned int width, char dir[255], char name[255]) {
 
@@ -1017,15 +1007,12 @@ void assemble_screen(uint8_t *bitplane, unsigned int raw_len, unsigned int width
     } // Each row
     
     char path[255];
-    strcpy(path, dir);
-    strcat(path, name);
-    printf("Saving %s...", name);
+    sprintf(path, "%s%s.png", dir, name);
+    printf("Saving %s...\n", name);
     lodepng_encode32_file(path, out, (width*8), (height*8));
     free(out);
-    printf("Done!\n");
     
 } // assemble_screen();
-
 
 static unsigned int get_position(uint8_t *rom, int address) {
 
@@ -1037,7 +1024,6 @@ static unsigned int get_position(uint8_t *rom, int address) {
     return coordinate;
 
 } // get_position();
-
 
 void assemble_level(uint8_t *bitplane, uint8_t *rom, uint8_t *layout, unsigned int layout_len, int position_addr, int vert, int layout_size, int fix, char dir[255], char name[255]) {
 
@@ -1184,15 +1170,12 @@ void assemble_level(uint8_t *bitplane, uint8_t *rom, uint8_t *layout, unsigned i
     }
     
     char path[255];
-    strcpy(path, dir);
-    strcat(path, name);
-    printf("Saving %s...", name);
+    sprintf(path, "%s%s.png", dir, name);
+    printf("Saving %s...\n", name);
     lodepng_encode32_file(path, group, width, height);
     free(group);
-    printf("Done!\n");
 
 } // assemble_level();
-
 
 void bbc_pal(uint8_t *rom, uint8_t *palette, int seed) {
 
@@ -1431,11 +1414,10 @@ List of known "seeds":
     
 } // bbc_pal();
 
-
 void arrange_gbc(uint8_t *source, int width, int height, char dir[255], char *name) {
 
     int laylen = width * height / 64;
-    uint8_t *image = calloc(width * height * 4, 1);
+    uint8_t *image = malloc(width * height * 4);
     int i, j, k;
     
     for (j = 0; j < laylen/(width/8); j++) {
@@ -1448,12 +1430,10 @@ void arrange_gbc(uint8_t *source, int width, int height, char dir[255], char *na
     }
     source = image;
     
-    printf("Saving %s...", name);
+    printf("Saving %s...\n", name);
     char path[255];
-    strcpy(path, dir);
-    strcat(path, name);
+    sprintf(path, "%s%s.png", dir, name);
     lodepng_encode32_file(path, source, width, height);
-    printf("Done!\n");
     free(image);
 
 } // arrange_gbc();

@@ -2,11 +2,11 @@
 #define main_h
 
 void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset);
-void level2(uint8_t *rom, char dir[255], int priority, int special, int region);
+void level2(uint8_t *rom, char dir[255], int priority, int special, int tileset, int region);
+void level3(uint8_t *rom, char dir[255], int priority, int special, int tileset, int region);
 void spec1(uint8_t *rom, char dir[255]);
 void spec2(uint8_t *rom, char dir[255], int region);
 void spec3(uint8_t *rom, char dir[255], int region);
-void level3(uint8_t *rom, char dir[255], int priority, int special, int region);
 void anim2(uint8_t *rom, char dir[255], int priority, int region);
 void anim3(uint8_t *rom, char dir[255], int priority, int region);
 void raw_bitplane2(uint8_t *rom, char dir[255]);

@@ -490,27 +490,22 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         {0x016, 0x40, 0x214000, 0xA8, {0x01, 0xEC, 0x68, 0x58}, 1, 0x200BD7, 704, 640, "Candy's Challenge - Chimp Caverns"} // 12
     };
     
-    
-    uint8_t *bp_data = calloc(0x2000, 1); // Tiles Bank 0:1
-    uint8_t *raw_data = calloc(0x8000, 1);
-    uint8_t *lay_data = calloc(0x20000, 1);
-    uint8_t *col_data = calloc(0x20000, 1);
-    uint8_t *pal_data = calloc(0x200, 1);
-    uint8_t *rgb = calloc(384, 1);
-    uint8_t *bitplane = malloc(0x4000000);
-    int rawlen = 0;
-    
-    int i, width, height, t_width, t_height;
-    char name[255];
     int size = sizeof(dkc) / sizeof(struct gbc_levels);
     
-    for (i = 0; i < size; i++) { // 119
-    
-        rawlen = 0;
-        t_width = dkc[i].t_width;
-        t_height = dkc[i].t_height;
-        width = dkc[i].width;
-        height = dkc[i].height;
+    #pragma omp parallel for
+    for (int i = 0; i < size; i++) { // 119
+        
+        uint8_t *bp_data = malloc(0x2000); // Tiles Bank 0:1
+        uint8_t *raw_data = malloc(0x8000);
+        uint8_t *lay_data = malloc(0x20000);
+        uint8_t *col_data = malloc(0x20000);
+        uint8_t *pal_data = malloc(0x200);
+        uint8_t *rgb = malloc(384);
+        int rawlen = 0;
+        int t_width = dkc[i].t_width;
+        int t_height = dkc[i].t_height;
+        int width = dkc[i].width;
+        int height = dkc[i].height;
         
         memcpy(bp_data, &rom[dkc[i].bp_addr], 0x2000);
         
@@ -529,22 +524,22 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         
         memcpy(pal_data, &rom[dkc[i].pal_addr], 128);
         decode_palette(rgb, pal_data, 128);
-
+        
+        uint8_t *bitplane = malloc(t_width * t_height * 1024 * 4);
+        
         gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 1);
         
-        strcpy(name, dkc[i].name);
-        strcat(name, ".png");
-        arrange_gbc(bitplane, width, height, dir, name);
+        arrange_gbc(bitplane, width, height, dir, dkc[i].name);
         
+        free(bp_data);
+        free(lay_data);
+        free(raw_data);
+        free(col_data);
+        free(pal_data);
+        free(rgb);
+        free(bitplane);
     }
     
-    free(bp_data);
-    free(lay_data);
-    free(raw_data);
-    free(col_data);
-    free(pal_data);
-    free(rgb);
-    free(bitplane);
     
     
     /*

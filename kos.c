@@ -121,13 +121,9 @@ void kos_levels(uint8_t *rom, char *dir) {
     };
     
     uint32_t length = sizeof(levels) / sizeof(struct kos_levels);
-    uint32_t i, j, k, m;
     
-    uint8_t *rgb = calloc(768, 1);
-    uint8_t *bitplane = calloc(1024*4096*4, 1);
-    char name[255];
-    
-    for (i = 0; i < length; i++) {
+    #pragma omp parallel for
+    for (int i = 0; i < length; i++) {
         
         uint32_t index = levels[i].tilemap;
         uint32_t tilemap_counter = 0;
@@ -142,7 +138,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         uint32_t tilemaps[tilemap_counter];
         
         // Load pointers
-        for (j = 0; j < tilemap_counter; j++) {
+        for (int j = 0; j < tilemap_counter; j++) {
             tilemaps[j] = rom[index] + (rom[index+1] << 8) + (rom[index+2] << 16);
             index += 4;
         }
@@ -154,11 +150,11 @@ void kos_levels(uint8_t *rom, char *dir) {
         index = 0; // Write index
         
         // Each row of nametables
-        for (j = 0; j < (tilemap_counter/4); j++) {
+        for (int j = 0; j < (tilemap_counter/4); j++) {
             // Each row of tiles
-            for (k = 0; k < 32; k++) {
+            for (int k = 0; k < 32; k++) {
                 // Particular row within nametable
-                for (m = 0; m < 4; m++) {
+                for (int m = 0; m < 4; m++) {
                     memcpy(&layout[index], &rom[tilemaps[(j*4)+m]+(k*0x40)], 0x40);
                     index += 0x40;
                 }
@@ -168,13 +164,19 @@ void kos_levels(uint8_t *rom, char *dir) {
         uint8_t *att_data = malloc(tilemap_size/2);
         gba_split(layout, att_data, tilemap_size/2); // Damn DKC
         
+        uint8_t *rgb = malloc(768);
+        uint8_t *bitplane = malloc(1024*4096*4);
+        
         decode_palette(rgb, &rom[levels[i].palette] - 0x40, 256);
         
         // Convert tiles to rgba
         gba_tiles(bitplane, &rom[levels[i].tileset], layout, att_data, rgb, tilemap_size/2, 0);
+        arrange_gbc(bitplane, 1024, (tilemap_counter/4)*256, dir, levels[i].name);
         
-        sprintf(name, "%s.png", levels[i].name);
-        arrange_gbc(bitplane, 1024, (tilemap_counter/4)*256, dir, name);
+        free(layout);
+        free(att_data);
+        free(rgb);
+        free(bitplane);
         
     }
     

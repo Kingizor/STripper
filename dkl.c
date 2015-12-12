@@ -620,18 +620,6 @@ static void dkl_layout(uint8_t *rom, uint8_t *raw_data, uint8_t *lay_data, uint8
 } // dkl_layout();
 
 void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
-
-    uint8_t *bp_data = calloc(0x2000, 1);
-    int bp_len = 0;
-    
-    uint8_t *lay_data = calloc(0x20000, 1);
-    uint8_t *rgb = calloc(384, 1);
-    uint8_t *bitplane = calloc(0x4000000, 1);
-    
-    uint8_t *raw_data = calloc(0x4000, 1);
-    int rawlen = 0;
-    int t_width, t_height;
-    char name[255];
     
     struct dkl_arch arch[] = {
         {0x00, 113, {0x82, 0x01, 0x03}}, // Jungle
@@ -734,22 +722,22 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         { 6, 0x09, {0x0B, 0x7F, 0x03}, 0xEA06, "4-B K. Rool's Kingdom"}
     };
     
-    
-    int a, i, bank;
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
-    // uint8_t skyfix[] = {0x12, 0xFF, 0x1F, 0xFF, 0x1F, 0xFF, 0x1F, 0xFF, 0x1F, 0xFF, 0x1F, 0xFF, 0x1F, 0xFF, 0x1F, 0xFF};
-    
-    // rom[0x1E2A8] = 0x1C;
-    
     int size = sizeof(dkl) / sizeof(struct dkl_levels);
     
-    for (i = 0; i < size; i++) {
-    
-        a = dkl[i].arch;
-        rawlen = 0;
-        bp_len = 0;
+    #pragma omp parallel for
+    for (int i = 0; i < size; i++) {
         
-        memset(raw_data, 0, 0x4000);
+        uint8_t *bp_data = malloc(0x2000);
+        uint8_t *lay_data = malloc(0x20000);
+        uint8_t *rgb = malloc(384);
+        uint8_t *raw_data = calloc(0x4000, 1);
+        int t_width, t_height;
+        
+        int a = dkl[i].arch;
+        int rawlen = 0;
+        int bp_len = 0;
+        
         if (!tileset) {
             dkl_raw(rom, raw_data, &rawlen, dkl[i].raw[0], dkl[i].raw[1], dkl[i].raw[2]);
             t_width  = dkl[i].t_width;
@@ -773,7 +761,7 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
             memcpy(&bp_data[0x1D0], &bp_data[0x1000], 16);
         }
         
-        bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
+        int bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
         
         // Assemble complete layout from lay and raw
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
@@ -785,20 +773,17 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
             decode_palette(rgb, &rom[dkl[i].pal], 4);
         }
         
+        uint8_t *bitplane = malloc(t_width * t_height * 1024 * 4);
         gbc_assemble(bitplane, bp_data, lay_data, lay_data, rgb, t_width, t_height, 0);
+        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, dkl[i].name);
         
-        strcpy(name, dkl[i].name);
-        if (tileset) strcat(name, " Tiles");
-        strcat(name, ".png");
-        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
-        
-    }
+        free(bp_data);
+        free(lay_data);
+        free(raw_data);
+        free(rgb);
+        free(bitplane);
     
-    free(bp_data);
-    free(lay_data);
-    free(raw_data);
-    free(rgb);
-    free(bitplane);
+    }
     
     return;
 
@@ -937,18 +922,6 @@ static void dkl2_raw_fix(uint8_t *rom, uint8_t *raw_data, int rawlen, int addr, 
 } // dkl2_raw_fix();
 
 void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
-
-    uint8_t *bp_data = calloc(0x2000, 1);
-    int bp_len = 0;
-    uint8_t *lay_data = calloc(0x20000, 1);
-    uint8_t *col_data = calloc(0x20000, 1);
-    uint8_t *pal_data = calloc(0x200, 1);
-    uint8_t *rgb = calloc(384, 1);
-    uint8_t *bitplane = calloc(0x4000000, 1);
-    uint8_t *raw_data = calloc(0x4000, 1);
-    int rawlen = 0;
-    int t_width, t_height;
-    char name[255];
     
     struct dkl2_arches arch[] = {
         //  3A35 ROM,  HL/SP, A      2FB8 DBD0, ROM & H
@@ -1080,19 +1053,23 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x08, 0x03, {0x5F, 0xD3}, {0x51, 0x56}, {0x1A, 0x5F, 0xAB}, "7-B Krocodile Kore"}, // 11
     };
     
-    int a, i, bank;
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
-    
-    
     int size = sizeof(dkl) / sizeof(struct dkl2_levels);
     
-    for (i = 0; i < size; i++) {
-    
-        a = dkl[i].arch;
-        rawlen = 0;
-        bp_len = 0;
+    #pragma omp parallel for
+    for (int i = 0; i < size; i++) {
+        
+        uint8_t *bp_data = malloc(0x2000);
+        uint8_t *lay_data = malloc(0x20000);
+        uint8_t *col_data = malloc(0x20000);
+        uint8_t *pal_data = malloc(0x200);
+        uint8_t *rgb = malloc(384);
+        uint8_t *raw_data = calloc(0x4000, 1);
+        int t_width, t_height;
+        int a = dkl[i].arch;
+        int rawlen = 0;
+        int bp_len = 0;
        
-        memset(raw_data, 0, 0x4000);
         if (!tileset) {
             dkl_raw(rom, raw_data, &rawlen, dkl[i].raw[0], dkl[i].raw[1], dkl[i].raw[2]);
             dkl2_raw_fix(rom, raw_data, rawlen, (dkl[i].raw[0]*0x4000)+((dkl[i].rf1[0]-0x40)*256)+dkl[i].rf1[1], (0x10 * 0x4000)+((dkl[i].rf2[0]-0x40)*256)+dkl[i].rf2[1]);
@@ -1109,7 +1086,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         // Decompress Bitplane data
         dkl2_tiles(rom, bp_data, &bp_len, arch[a].bp_bank[0], ((arch[a].bp_bank[1]-0x40)*256)+arch[a].bp_bank[2], arch[a].bp_bank[3]);
         
-        bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
+        int bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
         
         // Decode layout (raw is stored uncompressed in ROM)
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
@@ -1121,42 +1098,23 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
             decode_palette(rgb, &arch[a].pal[0], 4);
         }
         
+        uint8_t *bitplane = malloc(t_width * t_height * 1024 * 4);
         gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 0);
-        
-        strcpy(name, dkl[i].name);
-        if (tileset) strcat(name, " Tiles");
-        strcat(name, ".png");
-        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
-        
+        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, dkl[i].name);
+    
+        free(bp_data);
+        free(lay_data);
+        free(raw_data);
+        free(col_data);
+        free(pal_data);
+        free(rgb);
+        free(bitplane);
     }
-    
-    free(rom);
-    free(bp_data);
-    free(lay_data);
-    free(raw_data);
-    free(col_data);
-    free(pal_data);
-    free(rgb);
-    free(bitplane);
-    
 
 } // dkl2_levels();
 
 void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
 
-    uint8_t *bp_data = calloc(0x2000, 1);
-    int bp_len = 0;
-    
-    uint8_t *lay_data = calloc(0x20000, 1);
-    uint8_t *col_data = calloc(0x20000, 1);
-    uint8_t *pal_data = calloc(0x200, 1);
-    uint8_t *rgb = calloc(384, 1);
-    uint8_t *bitplane = calloc(0x4000000, 1);
-    uint8_t *raw_data = calloc(0x4000, 1);
-    int rawlen = 0;
-    int t_width, t_height;
-    char name[255];
-    
     struct dkl3_arches arch[] = {
         //  3A67 ROM,  HL/SP, A      3020 DBD0, ROM & H, TILES
         { {0x12, 0x5C, 0xB1, 0xE0}, {0x00, 0x11, 0x00}, 128}, // Boardwalk
@@ -1302,18 +1260,23 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x0B, 0x0B, {0x7E, 0x5E}, {0x55, 0xA8}, {0x1A, 0x7E, 0x0E}, {0xFF, 0x3A, 0xB8, 0x11, 0xF0, 0x08, 0x00, 0x00}, "6-B K.Rool's Last Stand"},
     };
     
-    int a, i, bank;
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
-    
     int size = sizeof(dkl) / sizeof(struct dkl3_levels);
     
-    for (i = 0; i < size; i++) {
+    #pragma omp parallel for
+    for (int i = 0; i < size; i++) {
         
-        a = dkl[i].arch;
-        rawlen = 0;
-        bp_len = 0;
+        uint8_t *bp_data = malloc(0x2000);
+        uint8_t *lay_data = malloc(0x20000);
+        uint8_t *col_data = malloc(0x20000);
+        uint8_t *pal_data = malloc(0x200);
+        uint8_t *rgb = malloc(384);
+        uint8_t *raw_data = calloc(0x4000, 1);
+        int t_width, t_height;
+        int a = dkl[i].arch;
+        int rawlen = 0;
+        int bp_len = 0;
         
-        memset(raw_data, 0, 0x4000);
         if (!tileset) {
             dkl_raw(rom, raw_data, &rawlen, dkl[i].raw[0], dkl[i].raw[1], dkl[i].raw[2]);
             dkl2_raw_fix(rom, raw_data, rawlen, (dkl[i].raw[0]*0x4000)+((dkl[i].rf1[0]-0x40)*256)+dkl[i].rf1[1], (0x10 * 0x4000)+((dkl[i].rf2[0]-0x40)*256)+dkl[i].rf2[1]);
@@ -1329,7 +1292,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         
         dkl2_tiles(rom, bp_data, &bp_len, arch[a].bp_bank[0], ((arch[a].bp_bank[1]-0x40)*256)+arch[a].bp_bank[2], arch[a].bp_bank[3]);
         
-        bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
+        int bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
         
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
         
@@ -1340,22 +1303,18 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
             decode_palette(rgb, &dkl[i].pal[0], 4);
         }
         
+        uint8_t *bitplane = malloc(t_width * t_height * 1024 * 4);
         gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 0);
-        
-        strcpy(name, dkl[i].name);
-        if (tileset) strcat(name, " Tiles");
-        strcat(name, ".png");
-        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
+        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, dkl[i].name);
+    
+        free(bp_data);
+        free(lay_data);
+        free(raw_data);
+        free(col_data);
+        free(pal_data);
+        free(rgb);
+        free(bitplane);
         
     }
-    
-    free(bp_data);
-    free(lay_data);
-    free(raw_data);
-    free(col_data);
-    free(pal_data);
-    free(rgb);
-    free(bitplane);
-    
 
 } // dkl3_levels();

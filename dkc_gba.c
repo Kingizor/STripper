@@ -197,33 +197,28 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
     
     };
     
-    int i;
-    int width = 0;
-    int height = 0;
-    int bp_len = 0;
-    int raw_len = 0;
-    int lay_len = 0;
-    uint8_t *bp_data = calloc(0x20000, 1);
-    uint8_t *raw_data = calloc(0x10000, 1);
-    uint8_t *lay_data = calloc(0x100000, 1);
-    uint8_t *att_data = calloc(0x50000, 1);
-    uint8_t *bitplane = calloc(0x2500000, 1);
-    uint8_t *rgb = calloc(768, 1);
-    char name[255];
-    
-    int mode = 0;
-    int a = 0;
     int size = (sizeof(dkc) / sizeof(struct dkc_gba_levels));
     
-    for (i = 0; i < size; i++) {
+    #pragma omp parallel for
+    for (int i = 0; i < size; i++) {
     
-        a = dkc[i].arch;
+        uint8_t *bp_data = malloc(0x20000);
+        uint8_t *raw_data = malloc(0x10000);
+        uint8_t *lay_data = malloc(0x100000);
+        uint8_t *att_data = malloc(0x50000);
+        uint8_t *rgb = malloc(768);
+        int bp_len = 0;
+        int raw_len = 0;
+        int lay_len = 0;
+        int width = 0;
+        int height = 0;
+        int a = dkc[i].arch;
         
         gba_decomp(rom,  bp_data,  &bp_len, arch[a].bp);
         gba_decomp(rom, raw_data, &raw_len, arch[a].raw);
         gba_data(rom, lay_data, &lay_len, dkc[i].lay.loc, dkc[i].lay.ofs, dkc[i].lay.type);
         
-        mode = (a == 8 || (a > 11 && a < 18)) ? 1 : 0; // Levels/Areas with fewer sets of tiles.
+        int mode = (a == 8 || (a > 11 && a < 18)) ? 1 : 0; // Levels/Areas with fewer sets of tiles.
         
         if (tileset) gba_tileset(lay_data, raw_data);
         
@@ -233,13 +228,17 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         
         decode_palette(rgb, &rom[dkc[i].pal], 256);
         
+        uint8_t *bitplane = malloc((lay_len / 2) * 576 * 4);
         gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority);
+        arrange_gbc(bitplane, width*24, height*24, dir, dkc[i].name);
         
-        strcpy(name, dkc[i].name);
-        if (tileset) strcat(name, " Tiles");
-        strcat(name, ".png");
-        arrange_gbc(bitplane, width*24, height*24, dir, name);
-    
+        free(bp_data);
+        free(raw_data);
+        free(lay_data);
+        free(att_data);
+        free(rgb);
+        free(bitplane);
+        
     }
     
 }

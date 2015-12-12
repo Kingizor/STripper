@@ -31,6 +31,7 @@ static void show_usage() {
     printf("\nDKC 1-3 (SNES):");
     printf("\n\t-f Only use tiles with priority bit set. (Foreground)");
     printf("\n\t-b Only use tiles with priority bit not set. (Background)");
+    printf("\n\t-t Rip tilesets.");
     printf("\n\t-c Rip complete layouts.");
     printf("\n\t-s Rip special screens.\n");
     
@@ -279,11 +280,11 @@ int main(int argc, char *argv[]) {
             break;
         }
         case 2: {
-            level2(rom, dir, priority, special, region);
+            level2(rom, dir, priority, special, tileset, region);
             break;
         }
         case 3: {
-            level3(rom, dir, priority, special, region);
+            level3(rom, dir, priority, special, tileset, region);
             break;
         }
         case 4: {

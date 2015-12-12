@@ -217,7 +217,6 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         
         {15, {0x501870, 0x4A, 0}, {0xEE554, 0x0200, 3}, "K.Rool's Kabin"},
         
-        
         {16, {0x503B58, 0, 2}, {0xEE554, 0x1A00, 3}, "Overworld"},
         {17, {0x501B54, 0, 2}, {0xEE554, 0x0800, 3}, "Gangplank Galleon"},
         {18, {0x501FAC, 0, 2}, {0xEE554, 0x0A00, 3}, "Crocodile Cauldron"},
@@ -238,51 +237,48 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {11, {0x4E231C, 0, 1}, {0xECDB0, 0x0800, 1}, "Funky (7)"},
     };
     
-    int i;
-    int width = 0;
-    int height = 0;
-    int bp_len = 0;
-    int raw_len = 0;
-    int lay_len = 0;
-    int pal_len = 0;
-    uint8_t *bp_data = calloc(0x20000, 1);
-    uint8_t *raw_data = calloc(0x10000, 1);
-    uint8_t *lay_data = calloc(0x100000, 1);
-    uint8_t *att_data = calloc(0x50000, 1);
-    uint8_t *pal_data = calloc(0x50000, 1);
-    uint8_t *bitplane = calloc(0x2500000, 1);
-    uint8_t *rgb = calloc(768, 1);
-    char name[255];
-    
-    int mode = 0;
-    int a = 0;
     int size = (sizeof(dkc) / sizeof(struct dkc2_gba_levels));
     
-    for (i = 0; i < size; i++) {
-    
-        a = dkc[i].arch;
+    #pragma omp parallel for
+    for (int i = 0; i < size; i++) {
+        
+        uint8_t *bp_data = malloc(0x21000);
+        uint8_t *raw_data = malloc(0x10000);
+        uint8_t *lay_data = malloc(0x100000);
+        uint8_t *att_data = malloc(0x80000);
+        uint8_t *pal_data = malloc(0x50000);
+        uint8_t *rgb = malloc(768);
+        int width = 0;
+        int height = 0;
+        int bp_len = 0;
+        int raw_len = 0;
+        int lay_len = 0;
+        int pal_len = 0;
+        int a = dkc[i].arch;
+        int mode = 0;
+        
         gba_data(rom, bp_data, &bp_len, arch[a].bp.loc, arch[a].bp.ofs, arch[a].bp.type);
         gba_data(rom, raw_data, &raw_len, arch[a].raw.loc, arch[a].raw.ofs, arch[a].raw.type);
         gba_data(rom, lay_data, &lay_len, dkc[i].lay.loc, dkc[i].lay.ofs, dkc[i].lay.type);
         gba_data(rom, pal_data, &pal_len, dkc[i].pal.loc, dkc[i].pal.ofs, dkc[i].pal.type);
         
         if (arch[a].lay_split) lay_double(lay_data, lay_len);
-        
         if (tileset) gba_tileset(lay_data, raw_data);
-        
         gba_layout(lay_data, raw_data, att_data, &width, &height, mode);
-        
         if (arch[a].raw_split) gba_split(lay_data, att_data, width*height*9);
-        
         decode_palette(rgb, pal_data, 256);
         
+        uint8_t *bitplane = malloc(width * height * 24 * 24 * 4);
         gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority);
+        arrange_gbc(bitplane, width*24, height*24, dir, dkc[i].name);
         
-        strcpy(name, dkc[i].name);
-        if (tileset) strcat(name, " Tiles");
-        strcat(name, ".png");
-        arrange_gbc(bitplane, width*24, height*24, dir, name);
-    
+        free(bp_data);
+        free(raw_data);
+        free(lay_data);
+        free(att_data);
+        free(pal_data);
+        free(rgb);
+        free(bitplane);
     }
     
 }
@@ -624,50 +620,47 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {24, {0x65A840, 0, 1}, {0xEC8DC, 0x0600, 3}, "Krematoa FG"}
     };
     
-    int i;
-    int width = 0;
-    int height = 0;
-    int bp_len = 0;
-    int raw_len = 0;
-    int lay_len = 0;
-    int pal_len = 0;
-    uint8_t *bp_data = calloc(0x40000, 1);
-    uint8_t *raw_data = calloc(0x10000, 1);
-    uint8_t *lay_data = calloc(0x100000, 1);
-    uint8_t *att_data = calloc(0x50000, 1);
-    uint8_t *pal_data = calloc(0x50000, 1);
-    uint8_t *bitplane = calloc(0x2500000, 1);
-    uint8_t *rgb = calloc(768, 1);
-    char name[255];
-    
-    int mode = 0;
-    int a = 0;
     int size = (sizeof(dkc) / sizeof(struct dkc2_gba_levels));
     
-    for (i = 0; i < size; i++) {
-    
-        a = dkc[i].arch;
+    #pragma omp parallel for
+    for (int i = 0; i < size; i++) {
+        
+        uint8_t *bp_data = malloc(0x40000);
+        uint8_t *raw_data = malloc(0x10000);
+        uint8_t *lay_data = malloc(0x100000);
+        uint8_t *att_data = malloc(0x50000);
+        uint8_t *pal_data = malloc(0x50000);
+        uint8_t *rgb = malloc(768);
+        int width = 0;
+        int height = 0;
+        int bp_len = 0;
+        int raw_len = 0;
+        int lay_len = 0;
+        int pal_len = 0;
+        int mode = 0;
+        int a = dkc[i].arch;
         gba_data(rom, bp_data, &bp_len, arch[a].bp.loc, arch[a].bp.ofs, arch[a].bp.type);
         gba_data(rom, raw_data, &raw_len, arch[a].raw.loc, arch[a].raw.ofs, arch[a].raw.type);
         gba_data(rom, lay_data, &lay_len, dkc[i].lay.loc, dkc[i].lay.ofs, dkc[i].lay.type);
         gba_data(rom, pal_data, &pal_len, dkc[i].pal.loc, dkc[i].pal.ofs, dkc[i].pal.type);
         
         if (arch[a].lay_split) lay_double(lay_data, lay_len);
-        
         if (tileset) gba_tileset(lay_data, raw_data);
-        
         gba_layout(lay_data, raw_data, att_data, &width, &height, mode);
-        
         if (arch[a].raw_split) gba_split(lay_data, att_data, width*height*9);
-        
         decode_palette(rgb, pal_data, 256);
         
+        uint8_t *bitplane = malloc(width * height * 24 * 24 * 4);
         gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority);
+        arrange_gbc(bitplane, width*24, height*24, dir, dkc[i].name);
         
-        strcpy(name, dkc[i].name);
-        if (tileset) strcat(name, " Tiles");
-        strcat(name, ".png");
-        arrange_gbc(bitplane, width*24, height*24, dir, name);
+        free(bp_data);
+        free(raw_data);
+        free(lay_data);
+        free(att_data);
+        free(pal_data);
+        free(rgb);
+        free(bitplane);
     
     }
     

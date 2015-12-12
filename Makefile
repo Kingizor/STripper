@@ -1,10 +1,16 @@
 CC = gcc
-CFLAGS = -O3 -Wall -Werror
-DFLAGS = -O0 -g -Wall -Werror
-LDFLAGS = -flto -s
+CFLAGS = -fopenmp -O3 -Wall -Werror
+DFLAGS = -fopenmp -O0 -g -Wall -Werror
+LDFLAGS = -flto -s -fopenmp
+DLDFLAGS = -fopenmp
 WINDRES = windres
-TARGET  = stripper
-DTARGET = stripper_d
+TARGET  := stripper
+DTARGET := stripper_d
+
+ifeq ($(OS),Windows_NT)
+	TARGET = stripper.exe
+	DTARGET = stripper_d.exe
+endif
 
 FILES = \
 	main.o \
@@ -22,13 +28,13 @@ FILES = \
 	raw_bit3.o \
 	anim2.o \
 	anim3.o \
-    dkc_gbc.o \
-    dkc_gba.o \
-    gba_misc.o \
-    dkc2_decomp.o \
-    dkc2_gba.o \
-    dkl.o \
-    kos.o \
+	dkc_gbc.o \
+	dkc_gba.o \
+	gba_misc.o \
+	dkc2_decomp.o \
+	dkc2_gba.o \
+	dkl.o \
+	kos.o \
 	lodepng.o
 
 ODIR=obj
@@ -36,15 +42,15 @@ OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))
 
 stripper: $(OBJECTS)
 	$(CC) $^ -o $(TARGET) $(LDFLAGS)
-    
+	
 $(ODIR)/%.o: %.c
 	$(CC) $< -o $@ -c $(CFLAGS)
-    
+	
 $(ODIR)/%.res: %.rc
 	$(WINDRES) $< -O coff -o $@
 
 debug: CFLAGS = $(DFLAGS)
-debug: LDFLAGS =
+debug: LDFLAGS = $(DLDFLAGS)
 debug: TARGET = $(DTARGET)
 debug: stripper
 
