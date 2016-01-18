@@ -3,261 +3,84 @@
 #include <stdint.h>
 #include "bitplane.h"
 
+struct Level {
+    uint16_t bp_len;
+    uint16_t raw_len;
+    uint16_t bp_ofs;
+    uint16_t raw_ofs;
+    uint32_t bp_addr;
+    uint32_t raw_addr;
+    uint32_t palette;
+    uint8_t palette_fix;
+    uint8_t mode;
+    uint8_t opacity;
+    char *name;
+};
+
+
 void spec1(uint8_t *rom, char dir[255]) {
-
-    uint8_t  *bp_data = malloc(65535);
-    uint8_t *raw_data = malloc(65535);
-    int bp_counter;
-    int raw_counter;
     
-    uint8_t *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
+    struct Level levels[] = {
+        {0x7000, 0x700, 0, 0, 0x0116F1, 0x010FF0, 0x39BE03, 0, 2, 1, "DKC Overworld"},
+        {0x7000, 0x700, 0, 0, 0x0116F1, 0x010FF0, 0x39BE03, 0, 2, 1, "DKC Overworld"},
+        {0x7000, 0x700, 0, 0, 0x051012, 0x050912, 0x39C103, 0, 2, 1, "Kongo Jungle (Left)"},
+        {0x7000, 0x700, 0, 0, 0x061757, 0x061057, 0x39C003, 0, 2, 1, "Kongo Jungle (Right)"},
+        {0x7000, 0x700, 0, 0, 0x067CF7, 0x0675F7, 0x39C523, 0, 2, 1, "Monkey Mines (Left)"},
+        {0x7000, 0x700, 0, 0, 0x0C8BB4, 0x0C84B4, 0x39C423, 0, 2, 1, "Monkey Mines (Right)"},
+        {0x7000, 0x700, 0, 0, 0x0A0701, 0x0A0000, 0x39CF43, 0, 2, 1, "Vine Valley (Left)"},
+        {0x7000, 0x700, 0, 0, 0x0828E4, 0x0821E4, 0x39D043, 0, 2, 1, "Vine Valley (Right)"},
+        {0x7000, 0x700, 0, 0, 0x370000, 0x040000, 0x39C323, 0, 2, 1, "Gorilla Glacier (Left)"},
+        {0x7000, 0x700, 0, 0, 0x341558, 0x340E57, 0x39C223, 0, 2, 1, "Gorilla Glacier (Right)"},
+        {0x7000, 0x700, 0, 0, 0x320700, 0x320000, 0x39CC83, 0, 2, 1, "Kremkroc Industries Inc (Left)"},
+        {0x7000, 0x700, 0, 0, 0x3F0701, 0x3F0000, 0x39CD63, 0, 2, 1, "Kremkroc Industries Inc (Right)"},
+        {0x7000, 0x700, 0, 0, 0x110701, 0x110000, 0x39D143, 0, 2, 1, "Chimp Caverns (Left)"},
+        {0x7000, 0x700, 0, 0, 0x116DC3, 0x1166C2, 0x39D243, 0, 2, 1, "Chimp Caverns (Right)"},
+        {0x7000, 0x700, 0, 0, 0x34A0FE, 0x3499FD, 0x39B983, 0, 2, 1, "Funky's Flights"},
+        {0x6EE0, 0x700, 0, 0, 0x001A41, 0x001340, 0x39BAC3, 0, 2, 1, "Candy's Save Point"},
+        {0x5EE0, 0x6C0, 0, 0, 0x329DD2, 0x329712, 0x39BCA3, 0, 2, 0, "Cranky's Cabin BG1"},
+        {0x36E0, 0x240, 0, 0, 0x27095E, 0x2EFC5D, 0x39BCA3, 0, 2, 1, "Cranky's Cabin BG2"},
+        {0x7000, 0x700, 0, 0, 0x0468AA, 0x387728, 0x39B7E3, 0, 2, 1, "Game Over Screen"},
+        {0x7000, 0x700, 0, 0, 0x2F0700, 0x2F0000, 0x39B4A3, 0, 2, 1, "Title Screen"},
+        {0x2600, 0x700, 0, 0, 0x2F8DBE, 0x2F86BE, 0x39D463, 0, 2, 0, "Mode Screen BG"},
+        {0x3400, 0x700, 0, 0, 0x096A77, 0x2F7FBE, 0x39D563, 0, 3, 1, "File Screen BG3"},
+        {0x2000, 0x700, 0, 0x200, 0x240690, 0x240450, 0x39C203, 0, 2, 1, "Nintendo 1994"},
+        {0x8000, 0x700, 0, 0, 0x0F84A0, 0x0F7DA0, 0x39D683, 0, 2, 1, "DK's Treehouse"},
+        {0x400, 0x2000, 0, 0, 0x27FCE9, 0x27DCE9, 0x39A01C, 0, 3, 0, "Cave FG3"},
+        {0x400, 0x2000, 0, 0, 0x27FCE9, 0x27DCE9, 0x39AD65, 0, 3, 0, "Cave FG3 (Alt)"},
+        {0x1000, 0x700, 0, 0, 0x3B6ED8, 0x3B67D8, 0x399C1C, 0, 2, 0, "Water BG2"},
+        {0x1000, 0x800, 0, 0, 0x287A4A, 0x288A2A, 0x39A2DC, 0, 2, 0, "Walkway BG2 (Left)"},
+        {0x1000, 0x800, 0, 0, 0x287A4A, 0x28922A, 0x39A2DC, 0, 2, 0, "Walkway BG2 (Right)"},
+        {0xF00, 0x800, 0, 0, 0x34831D, 0x3491FD, 0x399A14, 0, 3, 1, "Mine Cart Carnage BG3"},
+        {0x1300, 0x800, 0, 0, 0x14EB52, 0x14DF52, 0x39B3A3, 0, 3, 1, "Temple BG3"},
+        {0xFE0, 0x800, 0, 0, 0x22896D, 0x22816D, 0x39B0A3, 0, 3, 1, "Oil Drum Alley BG3"},
+        {0xFE0, 0x800, 0, 0, 0x22896D, 0x22816D, 0x39B0A3, 63, 3, 1, "Blackout Basement BG3"},
+        {0x1800, 0x800, 0, 0, 0x238BFB, 0x2383FB, 0x39C623, 0, 3, 1, "Forest BG3"},
+        {0x21A0, 0x800, 0xE60, 0, 0xC3BFE, 0xC33FE, 0x39B2A3, 0, 2, 0, "Tree Top Town BG2"},
+        {0x21A0, 0x800, 0xE60, 0, 0xC3BFE, 0xC33FE, 0x39B1A3, 0, 2, 0, "Rope Bridge Rumble BG2"},
+        {0x2000, 0x800, 0x1000, 0, 0x318502, 0x317D02, 0x39B2A3, 0, 3, 1, "Tree Top Town BG3"},
+        {0x2000, 0x800, 0x1000, 0, 0x318502, 0x317D02, 0x39B1A3, 0, 3, 1, "Rope Bridge Rumble BG3"}
+    };
     
-    // Special Screens
+    int length = sizeof(levels) / sizeof(struct Level);
     
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x0116F1], bp_counter);
-    memcpy(raw_data, &rom[0x010FF0], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39BE03, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "DKC Overworld");
+    #pragma omp parallel for
+    for (int i = 0; i < length; i++) {
+        
+        uint8_t *bp_data = calloc(0x8000, 1);
+        uint8_t *raw_data = calloc(0x2000, 1);
+        uint8_t *bitplane = malloc(0x100000);
+        
+        memcpy(&bp_data[levels[i].bp_ofs], &rom[levels[i].bp_addr], levels[i].bp_len);
+        memcpy(&raw_data[levels[i].raw_ofs], &rom[levels[i].raw_addr], levels[i].raw_len);
+        
+        decode_bitplane(rom, bp_data, raw_data, bitplane, levels[i].palette, levels[i].raw_len, levels[i].bp_len, levels[i].mode, levels[i].palette_fix, levels[i].opacity);
+        assemble_screen(bitplane, levels[i].raw_len, 32, dir, levels[i].name);
+        
+        free(bp_data);
+        free(raw_data);
+        free(bitplane);
+    }
     
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x051012], bp_counter);
-    memcpy(raw_data, &rom[0x050912], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39C103, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kongo Jungle (Left)");
+    return;
     
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x061757], bp_counter);
-    memcpy(raw_data, &rom[0x061057], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39C003, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kongo Jungle (Right)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x067CF7], bp_counter);
-    memcpy(raw_data, &rom[0x0675F7], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39C523, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Monkey Mines (Left)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x0C8BB4], bp_counter);
-    memcpy(raw_data, &rom[0x0C84B4], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39C423, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Monkey Mines (Right)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x0A0701], bp_counter);
-    memcpy(raw_data, &rom[0x0A0000], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39CF43, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Vine Valley (Left)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x0828E4], bp_counter);
-    memcpy(raw_data, &rom[0x0821E4], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39D043, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Vine Valley (Right)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x370000], bp_counter);
-    memcpy(raw_data, &rom[0x040000], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39C323, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Gorilla Glacier (Left)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x341558], bp_counter);
-    memcpy(raw_data, &rom[0x340E57], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39C223, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Gorilla Glacier (Right)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x320700], bp_counter);
-    memcpy(raw_data, &rom[0x320000], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39CC83, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kremkroc Industries Inc (Left)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x3F0701], bp_counter);
-    memcpy(raw_data, &rom[0x3F0000], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39CD63, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kremkroc Industries Inc (Right)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x110701], bp_counter);
-    memcpy(raw_data, &rom[0x110000], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39D143, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Chimp Caverns (Left)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x116DC3], bp_counter);
-    memcpy(raw_data, &rom[0x1166C2], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39D243, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Chimp Caverns (Right)");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x34A0FE], bp_counter);
-    memcpy(raw_data, &rom[0x3499FD], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B983, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Funky's Flights");
-    
-     bp_counter = 0x6EE0;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x001A41], bp_counter);
-    memcpy(raw_data, &rom[0x001340], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39BAC3, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Candy's Save Point");
-    
-     bp_counter = 0x5EE0;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x329DD2], bp_counter);
-    memset(raw_data, 0, 0x40);
-    memcpy(&raw_data[0x40], &rom[0x329712], 0x6C0);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39BCA3, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cranky's Cabin BG1");
-    
-     bp_counter = 0x36E0;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x27095E], bp_counter);
-    memset(raw_data, 0, raw_counter);
-    memcpy(raw_data, &rom[0x2EFC5D], 0x240);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39BCA3, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cranky's Cabin BG2");
-    
-     bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x0468AA], bp_counter);
-    memcpy(raw_data, &rom[0x387728], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B7E3, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Game Over Screen");
-    
-    bp_counter = 0x7000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x2F0700], bp_counter);
-    memcpy(raw_data, &rom[0x2F0000], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B4A3, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Title Screen");
-    
-    bp_counter = 0x2600;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x2F8DBE], bp_counter);
-    memcpy(raw_data, &rom[0x2F86BE], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39D463, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Mode Screen BG");
-    
-    bp_counter = 0x3400;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x096A77], bp_counter);
-    memcpy(raw_data, &rom[0x2F7FBE], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39D563, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "File Screen BG3");
-    
-    bp_counter = 0x2000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x240690], bp_counter);
-    memset(raw_data, 0, raw_counter);
-    memcpy(&raw_data[0x200], &rom[0x240450], 0x240);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39C203, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Nintendo 1994");
-    
-    bp_counter = 0x8000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x0F84A0], bp_counter);
-    memcpy(raw_data, &rom[0x0F7DA0], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39D683, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "DK's Treehouse");
-    
-    bp_counter = 0x400;
-    raw_counter = 0x2000;
-    memcpy(bp_data, &rom[0x27FCE9], bp_counter);
-    memcpy(raw_data, &rom[0x27DCE9], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39A01C, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cave FG3");
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39AD65, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cave FG3 (Alt)");
-    
-    bp_counter = 0x1000;
-    raw_counter = 0x700;
-    memcpy(bp_data, &rom[0x3B6ED8], bp_counter);
-    memcpy(raw_data, &rom[0x3B67D8], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x399C1C, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Water BG2");
-    
-    bp_counter = 0x1000;
-    raw_counter = 0x800;
-    memcpy(bp_data, &rom[0x287A4A], bp_counter);
-    memcpy(raw_data, &rom[0x288A2A], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39A2DC, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Walkway BG2 (Left)");
-    
-    raw_counter = 0x800;
-    memcpy(raw_data, &rom[0x28922A], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39A2DC, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Walkway BG2 (Right)");
-    
-    bp_counter = 0xF00;
-    raw_counter = 0x800;
-    memcpy(bp_data, &rom[0x34831D], bp_counter);
-    memcpy(raw_data, &rom[0x3491FD], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x399A14, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Mine Cart Carnage BG3");
-    
-    bp_counter = 0x1300;
-    raw_counter = 0x800;
-    memcpy(bp_data, &rom[0x14EB52], bp_counter);
-    memcpy(raw_data, &rom[0x14DF52], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B3A3, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Temple BG3");
-    
-    bp_counter = 0xFE0;
-    raw_counter = 0x800;
-    memcpy(bp_data, &rom[0x22896D], bp_counter);
-    memcpy(raw_data, &rom[0x22816D], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B0A3, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Oil Drum Alley BG3");
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B0A3, raw_counter, bp_counter, 3, 63, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Blackout Basement BG3");
-    
-    bp_counter = 0x1800;
-    raw_counter = 0x800;
-    memcpy(bp_data, &rom[0x238BFB], bp_counter);
-    memcpy(raw_data, &rom[0x2383FB], raw_counter);
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39C623, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Forest BG3");
-    
-    bp_counter = 0x21A0;
-    raw_counter = 0x800;
-    memcpy(&bp_data[0xE60], &rom[0x0C3BFE], bp_counter);
-    memcpy(raw_data, &rom[0x0C33FE], raw_counter);
-    bp_counter = 0x3000;
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B2A3, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tree Top Town BG2");
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B1A3, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Rope Bridge Rumble BG2");
-    
-    bp_counter = 0x1000;
-    raw_counter = 0x800;
-    memcpy(&bp_data[0x1000], &rom[0x318502], bp_counter);
-    memcpy(raw_data, &rom[0x317D02], raw_counter);
-    bp_counter = 0x2000;
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B2A3, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tree Top Town BG3");
-    decode_bitplane(rom, bp_data, raw_data, bitplane, 0x39B1A3, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Rope Bridge Rumble BG3");
-    
-    free( bp_data);
-    free(raw_data);
-    free(bitplane);
-
-} // Special Screens (DKC)
+}
