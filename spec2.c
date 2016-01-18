@@ -27,7 +27,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     decomp(raw_data, rom, &raw_counter, 0x8F99C);
     
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2170, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "K.Rool's Kabin & Rattly Room.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "K.Rool's Kabin & Rattly Room");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -40,9 +40,9 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 37 + 0x2C7CF0);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D3C6E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "File Screen.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "File Screen");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x000000, raw_counter, bp_counter, 2, 3, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bonus Screen.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Bonus Screen");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -60,7 +60,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 37 + 0x2D02A1);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D26AE, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Title Screen.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Title Screen");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -81,7 +81,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 35 + 0x2D9C9A);
     } // (En, De)
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x000000, raw_counter, bp_counter, 2, 3, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Find the Token Overlay.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Find the Token Overlay");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -102,7 +102,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 35 + 0x2D9E72);
     } // (En, De)
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x000000, raw_counter, bp_counter, 2, 4, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Destroy Them All Overlay.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Destroy Them All Overlay");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -123,7 +123,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 35 + 0x2DA030);
     } // (En, De)
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x000000, raw_counter, bp_counter, 2, 5, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Collect the Stars Overlay.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Collect the Stars Overlay");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -136,7 +136,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 33 + 0x2C4749);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D3C6E, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Game Selection.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Game Selection");
     
     raw_counter = 0;
     if (region == 1) {
@@ -146,7 +146,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 33 + 0x2C4AAD);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D3C6E, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Music Test.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Music Test");
     
     raw_counter = 0;
     if (region == 1) {
@@ -156,14 +156,14 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 34 + 0x2C4C1C);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D3C6E, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cheat Mode.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Cheat Mode");
     
      bp_counter = 0;
     raw_counter = 0x700;
     decomp( bp_data, rom,  &bp_counter, 0x12B9FD);
     memcpy(raw_data, &rom[0x0EFA9F], 0x700);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D11F0, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kong Kollege.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Kong Kollege");
     
      bp_counter = 0;
     raw_counter = 0x700;
@@ -181,7 +181,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     } // (En, De)
     decomp(raw_data, rom, &raw_counter, 0x05FAA8);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D12F0, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swanky's Bonus Bonanza.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Swanky's Bonus Bonanza");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -195,7 +195,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     raw_counter = 0x700;
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0FF0, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Monkey Museum.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Monkey Museum");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -208,7 +208,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     decomp(raw_data, rom, &raw_counter, 0x03FD35);
     raw_counter = 0x700;
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D10F0, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Funky's Flights.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Funky's Flights");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -221,7 +221,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     decomp(raw_data, rom, &raw_counter, 0x0AFABE);
     raw_counter = 0x700;
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D10F0, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Funky's Flights BG.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Funky's Flights BG");
     
      bp_counter = 0;
     raw_counter = 0x700;
@@ -233,7 +233,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     memcpy(raw_data, &rom[0x330000], 0x700);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D13F0, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Klubba's Kiosk.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Klubba's Kiosk");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -246,7 +246,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 37 + 0x2CF8CE);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D402E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Video Game Heroes Screen (Unused Version).png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Video Game Heroes Screen (Unused Version)");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -259,28 +259,28 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     raw_counter = 0x700;
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D402E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Video Game Heroes Screen.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Video Game Heroes Screen");
     
      bp_counter = 0;
     raw_counter = 0;
     decomp( bp_data, rom,  &bp_counter, 0x399400);
     decomp(raw_data, rom, &raw_counter, 0x39C775);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x000000, raw_counter, bp_counter, 2, 6, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ending Screen Background.png"); // Not broken. There is transparency in the sunset.
+    assemble_screen(bitplane, raw_counter, 32, dir, "Ending Screen Background"); // Not broken. There is transparency in the sunset.
     
      bp_counter = 0;
     raw_counter = 0;
     decomp( bp_data, rom,  &bp_counter, 0x3661C1);
     decomp(raw_data, rom, &raw_counter, 0x367D1B);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x000000, raw_counter, bp_counter, 2, 6, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ending Screen Foreground.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Ending Screen Foreground");
     
      bp_counter = 0;
     raw_counter = 0x700;
     decomp( bp_data, rom,  &bp_counter, 0x3444D2);
     memcpy(raw_data, &rom[0x3A56C1], 0x700);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D258E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Game Over Screen.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Game Over Screen");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -292,7 +292,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp( bp_data, rom,  &bp_counter, 35 + 0x2ADA86);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0B10, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Overworld Map.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Overworld Map");
     
      bp_counter = 0;
     raw_counter = 0x700;
@@ -304,7 +304,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp( bp_data, rom,  &bp_counter, 35 + 0x26FCF3);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1870, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Gangplank Galleon.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Gangplank Galleon");
     
      bp_counter = 0;
     raw_counter = 0x700;
@@ -317,7 +317,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp( bp_data, rom,  &bp_counter, 35 + 0x275471);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1970, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Crocodile Cauldron.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Crocodile Cauldron");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -329,12 +329,12 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp( bp_data, rom,  &bp_counter, 35 + 0x279E78);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1A70, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krem Quay Left.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Krem Quay Left");
     
     raw_counter = 0;
     decomp(raw_data, rom, &raw_counter, 0x04F9C0);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1A70, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krem Quay Right.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Krem Quay Right");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -346,7 +346,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp( bp_data, rom,  &bp_counter, 35 + 0x280535);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1B70, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krazy Kremland Top.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Krazy Kremland Top");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -358,7 +358,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp( bp_data, rom,  &bp_counter, 35 + 0x2909EC);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2070, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krazy Kremland Bottom.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Krazy Kremland Bottom");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -371,7 +371,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 35 + 0x284E0D);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1C70, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Gloomy Gulch.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Gloomy Gulch");
     
      bp_counter = 0;
     raw_counter = 0;
@@ -383,7 +383,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         decomp(raw_data, rom, &raw_counter, 35 + 0x28A6D7);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1D70, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "K.Rool's Keep.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "K.Rool's Keep");
     
      bp_counter = 0;
     raw_counter = 0x700;
@@ -396,7 +396,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         memcpy(raw_data, &rom[35 + 0x28B224], 0x700);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1E70, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "The Flying Krock.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "The Flying Krock");
     
      bp_counter = 0;
     raw_counter = 0x700;
@@ -408,7 +408,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         memcpy(raw_data, &rom[35 + 0x298407], 0x700);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1F70, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "The Lost World.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "The Lost World");
     // The Lost World has an overlay that requires some palette alterations and unusual layout generation.
     
     bp_counter = 0;
@@ -421,11 +421,11 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x07FCB8);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0CD0, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Pirate Panic Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Pirate Panic Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0CD0, raw_counter, bp_counter, 2, 65, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Gangplank Galley Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Gangplank Galley Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D324E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Rattle Battle Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Rattle Battle Background");
     
     /*
     bp_counter = 0x1C20;
@@ -436,16 +436,16 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         FILE *vh = fopen("VH.bin", "rb");
         fread(raw_data, 1, 0x800, vl);
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D324E, raw_counter, bp_counter, 3, 0, 0);
-        assemble_screen(bitplane, raw_counter, 32, dir, "PP_FG_UL.png");
+        assemble_screen(bitplane, raw_counter, 32, dir, "PP_FG_UL");
         fread(raw_data, 1, 0x800, vl);
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D324E, raw_counter, bp_counter, 3, 0, 0);
-        assemble_screen(bitplane, raw_counter, 32, dir, "PP_FG_UR.png");
+        assemble_screen(bitplane, raw_counter, 32, dir, "PP_FG_UR");
         fread(raw_data, 1, 0x800, vh);
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D324E, raw_counter, bp_counter, 3, 0, 0);
-        assemble_screen(bitplane, raw_counter, 32, dir, "PP_FG_LL.png");
+        assemble_screen(bitplane, raw_counter, 32, dir, "PP_FG_LL");
         fread(raw_data, 1, 0x800, vh);
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D324E, raw_counter, bp_counter, 3, 0, 0);
-        assemble_screen(bitplane, raw_counter, 32, dir, "PP_FG_LR.png");
+        assemble_screen(bitplane, raw_counter, 32, dir, "PP_FG_LR");
     }
     */
     
@@ -459,11 +459,11 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x0AFABE);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1610, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Mainbrace Mayhem Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Mainbrace Mayhem Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D14F0, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Topsail Trouble Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Topsail Trouble Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D304E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Slime Climb Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Slime Climb Background");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -475,40 +475,40 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x02FAC9);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0910, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lockjaw's Locker Background-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lockjaw's Locker Background-1");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2BEE, raw_counter, bp_counter, 2, 1, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Glimmer's Galleon Background-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Glimmer's Galleon Background-1");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D07F0, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lava Lagoon Background-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lava Lagoon Background-1");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2DEE, raw_counter, bp_counter, 2, 44, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Toxic Tower Background-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Toxic Tower Background-1");
     
     raw_counter = 0;
     decomp(raw_data, rom, &raw_counter, 0x06FC11);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0910, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lockjaw's Locker Background-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lockjaw's Locker Background-2");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2BEE, raw_counter, bp_counter, 2, 1, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Glimmer's Galleon Background-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Glimmer's Galleon Background-2");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D07F0, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lava Lagoon Background-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lava Lagoon Background-2");
     
     raw_counter = 0;
     decomp(raw_data, rom, &raw_counter, 0x0CFD95);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0910, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lockjaw's Locker Background-3.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lockjaw's Locker Background-3");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2BEE, raw_counter, bp_counter, 2, 1, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Glimmer's Galleon Background-3.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Glimmer's Galleon Background-3");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D07F0, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lava Lagoon Background-3.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lava Lagoon Background-3");
     
     raw_counter = 0;
     decomp(raw_data, rom, &raw_counter, 0x09FF37);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0910, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lockjaw's Locker Background-4.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lockjaw's Locker Background-4");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2BEE, raw_counter, bp_counter, 2, 1, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Glimmer's Galleon Background-4.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Glimmer's Galleon Background-4");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D07F0, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lava Lagoon Background-4.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lava Lagoon Background-4");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -527,11 +527,11 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     memcpy(&raw_data[0x7C0], &raw_data[0x6C0], 0x40);
     raw_counter = 0x800;
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D27EE, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Bayou Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Bayou Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D450E, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krockhead Klamber Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Krockhead Klamber Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D460E, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Mudhole Marsh Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Mudhole Marsh Background");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -543,38 +543,38 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x0DFEE1);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D27EE, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Bayou Foreground-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Bayou Foreground-1");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D450E, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krockhead Klamber Foreground-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Krockhead Klamber Foreground-1");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D460E, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Mudhole Marsh Foreground-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Mudhole Marsh Foreground-1");
     
     raw_counter = 0;
     decomp(raw_data, rom, &raw_counter, 0x1AFBB1);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D27EE, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Bayou Foreground-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Bayou Foreground-2");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D450E, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krockhead Klamber Foreground-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Krockhead Klamber Foreground-2");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D460E, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Mudhole Marsh Foreground-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Mudhole Marsh Foreground-2");
     
     bp_counter = 0;
     raw_counter = 0;
     decomp( bp_data, rom,  &bp_counter, 0x360000);
     decomp(raw_data, rom, &raw_counter, 0x13FAF0);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D228E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kannon's Klaim Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Kannon's Klaim Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D238E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Squawks's Shaft Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Squawks's Shaft Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D248E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Windy Well Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Windy Well Background");
     
     bp_counter = 0;
     raw_counter = 0;
     decomp( bp_data, rom,  &bp_counter, 0x16F791);
     decomp(raw_data, rom, &raw_counter, 0x14FC2D);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0A10, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Hive Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Hive Background");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -589,7 +589,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     bp_counter += 0x600;
     decomp(raw_data, rom, &raw_counter, 0x18FB53);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0A10, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Hive Foreground.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Hive Foreground");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -601,11 +601,11 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x380000);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D28EE, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bramble Blast Background-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Bramble Blast Background-1");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2AEE, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bramble Scramble Background-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Bramble Scramble Background-1");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D29EE, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Screech's Sprint Background-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Screech's Sprint Background-1");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -620,11 +620,11 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     bp_counter += 0x111*16;
     decomp(raw_data, rom, &raw_counter, 0x1DFDBA);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D28EE, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bramble Blast Background-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Bramble Blast Background-2");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2AEE, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bramble Scramble Background-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Bramble Scramble Background-2");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D29EE, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Screech's Sprint Background-2.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Screech's Sprint Background-2");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -636,7 +636,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x0FFFD9);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1710, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Fair Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Fair Background");
     
     // Long BG.
     bp_counter = 0;
@@ -652,7 +652,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     bp_counter = 0x1000;
     raw_counter = 0x1000;
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2EEE, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Hall Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Hall Background");
     
     // BG Only
     bp_counter = 0;
@@ -668,7 +668,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     bp_counter += 0x6A0;
     decomp(raw_data, rom, &raw_counter, 0x0CFEDF);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2EEE, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kackle Body.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Kackle Body");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -680,7 +680,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x10FE0D);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D06F0, raw_counter, bp_counter, 2, 43, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Gloomy Gulch Foreground.png"); // Lights
+    assemble_screen(bitplane, raw_counter, 32, dir, "Gloomy Gulch Foreground"); // Lights
     
     bp_counter = 0;
     raw_counter = 0;
@@ -688,9 +688,9 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     bp_counter = 0x1000;
     decomp( raw_data, rom, &raw_counter, 0x15FEB3);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D06F0, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ghostly Grove & Gusty Glade Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Ghostly Grove & Gusty Glade Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D3A4E, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Web Woods Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Web Woods Background");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -702,7 +702,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x1CFA5E);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D398E, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ice Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Ice Background");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -717,13 +717,13 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     bp_counter += 0x14C*16;
     decomp(raw_data, rom, &raw_counter, 0x01FEC0);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D07F0, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lava.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lava");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0910, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Water.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Water");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D398E, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ice Water.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Ice Water");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2DEE, raw_counter, bp_counter, 3, 44, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Toxic Tower Water.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Toxic Tower Water");
     
     bp_counter = 0;
     raw_counter = 0x800;
@@ -737,7 +737,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
         memcpy(&raw_data[0x480], &rom[35 + 0x29A745], 0x1C0);
     }
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2DEE, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Castle Background-1.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Castle Background-1");
     
     bp_counter = 0;
     raw_counter = 0;
@@ -749,11 +749,11 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     }
     decomp(raw_data, rom, &raw_counter, 0x330802);
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D430E, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Klobber Karnage Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Klobber Karnage Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D440E, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Jungle Jinx Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Jungle Jinx Background");
     decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D3B6E, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Animal Antics Background.png");
+    assemble_screen(bitplane, raw_counter, 32, dir, "Animal Antics Background");
     
     // Animated
     // bp_counter = 0;
@@ -761,7 +761,7 @@ void spec2(uint8_t *rom, char dir[255], int region) {
     // decomp( bp_data, rom,  &bp_counter, 0x2AD7DE);
     // decomp(raw_data, rom, &raw_counter, 0x2694EC);
     // decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2CEE, raw_counter, bp_counter, 2, 0, 1);
-    // assemble_screen(bitplane, raw_counter, 32, dir, "Krocodile Kore Background.png");
+    // assemble_screen(bitplane, raw_counter, 32, dir, "Krocodile Kore Background");
     
     free( bp_data);
     free(raw_data);
