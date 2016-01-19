@@ -49,12 +49,7 @@ static void show_usage() {
 
 int main(int argc, char *argv[]) {
 
-    
-    uint8_t *rom;
-    unsigned int romlen;
-    FILE * romfile;
-    
-    printf("\nKingizor's DKC123/DKL123/DKCGBC/DKCGBA123 Decompressor\n\n");
+    printf("\nKingizor's multi-Kong Decompressor\n\n");
     
     if (argc != 2 && argc != 3) {
         show_usage();
@@ -70,30 +65,28 @@ int main(int argc, char *argv[]) {
         dir[pntr-dir+1] = '\0';
     #endif
     
-    romfile = fopen(argv[1], "r");
+    FILE *romfile = fopen(argv[1], "rb");
 
-    if (romfile != NULL) {
-        fseek(romfile, 0, SEEK_END);
-        romlen = ftell(romfile);
-        rewind(romfile);
-        
-        if (romlen > 16777216) {
-            printf("Invalid ROM file.\n");
-            getchar();
-            return 0;
-        }
-        
-        
-        rom = malloc(romlen);
-        fread(rom, 1, romlen, romfile);
-        fclose(romfile);
-        // printf("\nROM file loaded.\n");
-    }
-    else {
+    if (romfile == NULL) {
         perror("\nError\n");
         getchar();
         return 0;
     }
+    fseek(romfile, 0, SEEK_END);
+    uint32_t romlen = ftell(romfile);
+    rewind(romfile);
+    
+    uint8_t *rom = malloc(romlen);
+    
+    if (rom == NULL) {
+        printf("Unable to allocate memory for ROM.\n");
+        return -1;
+    }
+    if (fread(rom, 1, romlen, romfile) != romlen) {
+        printf("Error reading from input file.\n");
+        return -1;
+    }
+    fclose(romfile);
     
     char intname[25];
     memcpy(intname, &rom[0xFFC0], 21);
