@@ -123,7 +123,7 @@ void kos_levels(uint8_t *rom, char *dir) {
     uint32_t length = sizeof(levels) / sizeof(struct kos_levels);
     
     #pragma omp parallel for
-    for (int i = 0; i < length; i++) {
+    for (uint32_t i = 0; i < length; i++) {
         
         uint32_t index = levels[i].tilemap;
         uint32_t tilemap_counter = 0;
@@ -138,23 +138,23 @@ void kos_levels(uint8_t *rom, char *dir) {
         uint32_t tilemaps[tilemap_counter];
         
         // Load pointers
-        for (int j = 0; j < tilemap_counter; j++) {
+        for (uint32_t j = 0; j < tilemap_counter; j++) {
             tilemaps[j] = rom[index] + (rom[index+1] << 8) + (rom[index+2] << 16);
             index += 4;
         }
         
         // A single nametable is 32x32, each tile is 2 bytes.
         // 32 * 32 * 2 = 2048 (0x800)
-        int tilemap_size = tilemap_counter * 0x800;
+        uint32_t tilemap_size = tilemap_counter * 0x800;
         uint8_t *layout = malloc(tilemap_size);
         index = 0; // Write index
         
         // Each row of nametables
-        for (int j = 0; j < (tilemap_counter/4); j++) {
+        for (uint32_t j = 0; j < (tilemap_counter/4); j++) {
             // Each row of tiles
-            for (int k = 0; k < 32; k++) {
+            for (uint8_t k = 0; k < 32; k++) {
                 // Particular row within nametable
-                for (int m = 0; m < 4; m++) {
+                for (uint8_t m = 0; m < 4; m++) {
                     memcpy(&layout[index], &rom[tilemaps[(j*4)+m]+(k*0x40)], 0x40);
                     index += 0x40;
                 }
