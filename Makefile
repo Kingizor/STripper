@@ -35,6 +35,7 @@ FILES = \
 	dkc2_gba.o \
 	dkl.o \
 	kos.o \
+	jc.o \
 	lodepng.o
 
 ODIR=obj

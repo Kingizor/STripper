@@ -97,6 +97,9 @@ int main(int argc, char *argv[]) {
     char gbaname[10];
     memcpy(gbaname, &rom[0x0A0], 8);
     gbaname[8] = '\0';
+    char dsname[5];
+    memcpy(dsname, rom, 4);
+    dsname[4] = '\0';
     
     int game = 0;
     int region = 3;
@@ -168,6 +171,9 @@ int main(int argc, char *argv[]) {
             return 0;
         }
         game = 11;
+    }
+    else if (!strcmp(dsname, "DKJC")) {
+        game = 12;
     }
     else {
         printf("Incorrect ROM file.\n");
@@ -310,6 +316,10 @@ int main(int argc, char *argv[]) {
         }
         case 11: {
             kos_levels(rom, dir);
+            break;
+        }
+        case 12: {
+            jc_levels(rom, dir);
             break;
         }
     }

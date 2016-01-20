@@ -19,5 +19,6 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset);
 void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset);
 void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset);
 void kos_levels(uint8_t *rom, char *dir);
+void jc_levels(uint8_t *rom, char *dir);
 
 #endif
