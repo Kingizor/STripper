@@ -29,7 +29,7 @@ void gba_layout(uint8_t *lay_data, uint8_t *raw_data, uint8_t *att_data, int *wi
 
 void gba_split(uint8_t *lay_data, uint8_t *att_data, int size);
 
-void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *att_data, uint8_t *rgb, int lay_len, int priority);
+void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *att_data, uint8_t *rgb, int lay_len, int priority, int mode);
 
 void gba_tileset(uint8_t *lay_data, uint8_t *raw_data);
 

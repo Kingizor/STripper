@@ -203,16 +203,21 @@ void gba_split(uint8_t *lay_data, uint8_t *att_data, int size) {
 
 } // gba_split();
 
-void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *att_data, uint8_t *rgb, int lay_len, int priority) {
+void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *att_data, uint8_t *rgb, int lay_len, int priority, int mode) {
     
-    int pal_val, hflip, vflip, ofs, i, j, k, m, lp, rp, tile, temp;
+    // mode flags:
+    // 0 = 16 palettes, 1 = 256 colour mode
+    // 0 = 4bpp, 2 = 8pp
+    
+    int pal_val, pal_ofs, hflip, vflip, ofs, i, j, k, m, lp, rp, tile, temp;
     
     for (i = 0; i < lay_len; i+=9) {
-        for (j = 0; j < 9; j++) {
+        for (j = 0; j < 9 && i+j < lay_len; j++) {
         
             hflip   = (att_data[i+j] & 4) ? 1 : 0;
             vflip   = (att_data[i+j] & 8) ? 1 : 0;
             pal_val = att_data[i+j] >> 4;
+            pal_ofs = (mode & 1) ? 0 : pal_val * 16;
             tile = (lay_data[((i+j)*2)+1]*256) + lay_data[((i+j)*2)];
             for (k = 0; k < 8; k++) {
                 
@@ -220,8 +225,14 @@ void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *
                 for (m = 0; m < 4; m++) {
                 
                     if (hflip) m = 3 - m;
-                    lp =  bp_data[(tile*32)+(k*4)+m] & 0x0F;
-                    rp = (bp_data[(tile*32)+(k*4)+m] & 0xF0) >> 4;
+                    if (mode & 2) {
+                        lp = bp_data[(tile*64)+(k*8)+(m*2)];
+                        rp = bp_data[(tile*64)+(k*8)+(m*2)+1];
+                    }
+                    else {
+                        lp =  bp_data[(tile*32)+(k*4)+m] & 0x0F;
+                        rp = (bp_data[(tile*32)+(k*4)+m] & 0xF0) >> 4;
+                    }
                     if (hflip) m = 3 - m;
                     
                     if (vflip) k = 7 - k;
@@ -234,14 +245,14 @@ void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *
                         rp = temp;
                     }
                     
-                    bitplane[ofs] = rgb[(((pal_val * 16) + lp) * 3)];
-                    bitplane[ofs+1] = rgb[(((pal_val * 16) + lp) * 3) + 1];
-                    bitplane[ofs+2] = rgb[(((pal_val * 16) + lp) * 3) + 2];
+                    bitplane[ofs] = rgb[((pal_ofs + lp) * 3)];
+                    bitplane[ofs+1] = rgb[((pal_ofs + lp) * 3) + 1];
+                    bitplane[ofs+2] = rgb[((pal_ofs + lp) * 3) + 2];
                     bitplane[ofs+3] = 255;
                         
-                    bitplane[ofs+4] = rgb[(((pal_val * 16) + rp) * 3)];
-                    bitplane[ofs+5] = rgb[(((pal_val * 16) + rp) * 3) + 1];
-                    bitplane[ofs+6] = rgb[(((pal_val * 16) + rp) * 3) + 2];
+                    bitplane[ofs+4] = rgb[((pal_ofs + rp) * 3)];
+                    bitplane[ofs+5] = rgb[((pal_ofs + rp) * 3) + 1];
+                    bitplane[ofs+6] = rgb[((pal_ofs + rp) * 3) + 2];
                     bitplane[ofs+7] = 255;
                     
                     if (!lp && !priority) {
