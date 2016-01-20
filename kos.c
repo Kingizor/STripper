@@ -170,7 +170,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         decode_palette(rgb, &rom[levels[i].palette] - 0x40, 256);
         
         // Convert tiles to rgba
-        gba_tiles(bitplane, &rom[levels[i].tileset], layout, att_data, rgb, tilemap_size/2, 0);
+        gba_tiles(bitplane, &rom[levels[i].tileset], layout, att_data, rgb, tilemap_size/2, 0, 0);
         arrange_gbc(bitplane, 1024, (tilemap_counter/4)*256, dir, levels[i].name);
         
         free(layout);

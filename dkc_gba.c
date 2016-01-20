@@ -229,7 +229,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         decode_palette(rgb, &rom[dkc[i].pal], 256);
         
         uint8_t *bitplane = malloc((lay_len / 2) * 576 * 4);
-        gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority);
+        gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority, 0);
         arrange_gbc(bitplane, width*24, height*24, dir, dkc[i].name);
         
         free(bp_data);
