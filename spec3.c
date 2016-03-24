@@ -720,6 +720,8 @@ void spec3(uint8_t *rom, char dir[255], int region) {
     assemble_screen(bitplane, raw_counter, 32, dir, "Bobbing Barrel Brawl BG1");
     decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 2, 0, 0);
     assemble_screen(bitplane, raw_counter, 32, dir, "Lightning Look-Out BG1");
+    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7C21, raw_counter, bp_counter, 2, 0, 0);
+    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning Look-Out BG1 (Bright)");
     
     bp_counter = 0;
     raw_counter = 0;
