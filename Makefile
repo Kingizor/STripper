@@ -3,7 +3,7 @@ CFLAGS = -fopenmp -Os -Wall -Werror
 DFLAGS = -fopenmp -O0 -g -Wall -Werror
 LDFLAGS = -flto -s -fopenmp
 DLDFLAGS = -fopenmp
-LIBS = -L. -llodepng
+LIBS = -L.
 WINDRES = windres
 TARGET  := stripper
 DTARGET := stripper_d
@@ -11,6 +11,14 @@ DTARGET := stripper_d
 ifeq ($(OS),Windows_NT)
 	TARGET = stripper.exe
 	DTARGET = stripper_d.exe
+endif
+
+ifdef LIBPNG
+	LIBS += -llibpng
+	CFLAGS +=-DLIBPNG
+else
+	LIBS += -llodepng 
+	CFLAGS += -DLODEPNG
 endif
 
 FILES = \
@@ -36,7 +44,8 @@ FILES = \
 	dkc2_gba.o \
 	dkl.o \
 	kos.o \
-	jc.o
+	jc.o \
+    png.o
 
 ODIR=obj
 OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))

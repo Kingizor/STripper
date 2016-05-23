@@ -936,7 +936,7 @@ void dump_bitplane(uint8_t *bp_data, int bp_len, int bpp, int width, char dir[25
     char path[255];
     sprintf(path, "%s%s.png", dir, name);
     printf("Saving %s...\n", name);
-    lodepng_encode32_file(path, image, px_width, px_height);
+    write_png(path, image, px_width, px_height);
     free(image);
     
     return;
@@ -978,7 +978,7 @@ void assemble_bitplane(uint8_t *bitplane, unsigned int width, unsigned int raw_l
     char path[255];
     sprintf(path, "%s%s Tiles.png", dir, name);
     printf("Saving %s...\n", name);
-    lodepng_encode32_file(path, out, width, height);
+    write_png(path, out, width, height);
     free(out);
     
 } // assemble_bitplane();
@@ -1008,7 +1008,7 @@ void assemble_screen(uint8_t *bitplane, unsigned int raw_len, unsigned int width
     char path[255];
     sprintf(path, "%s%s.png", dir, name);
     printf("Saving %s...\n", name);
-    lodepng_encode32_file(path, out, (width*8), (height*8));
+    write_png(path, out, (width*8), (height*8));
     free(out);
     
 } // assemble_screen();
@@ -1171,7 +1171,7 @@ void assemble_level(uint8_t *bitplane, uint8_t *rom, uint8_t *layout, unsigned i
     char path[255];
     sprintf(path, "%s%s.png", dir, name);
     printf("Saving %s...\n", name);
-    lodepng_encode32_file(path, group, width, height);
+    write_png(path, group, width, height);
     free(group);
 
 } // assemble_level();
@@ -1432,7 +1432,7 @@ void arrange_gbc(uint8_t *source, int width, int height, char dir[255], char *na
     printf("Saving %s...\n", name);
     char path[255];
     sprintf(path, "%s%s.png", dir, name);
-    lodepng_encode32_file(path, source, width, height);
+    write_png(path, source, width, height);
     free(image);
 
 } // arrange_gbc();
@@ -1504,7 +1504,7 @@ void gbc_assemble(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_
         }
     }
     
-    // lodepng_encode32_file("tiles.png", image, 8, lay_len*8);
+    // write_png("tiles.png", image, 8, lay_len*8);
     
     // free(image);
     
