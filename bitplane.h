@@ -1,6 +1,8 @@
 #ifndef bitplane_h
 #define bitplane_h
 
+unsigned lodepng_encode32_file(const char* filename, const unsigned char* image, unsigned w, unsigned h);
+
 void assemble_level(uint8_t *bitplane, uint8_t *rom, uint8_t *layout, unsigned int layout_len, int position_addr, int vert, int layout_size, int fix, char dir[255], char name[255]);
 void assemble_screen(uint8_t *bitplane, unsigned int raw_len, unsigned int width, char dir[255], char name[255]);
 void assemble_bitplane(uint8_t *bitplane, unsigned int width, unsigned int raw_len, char dir[255], char name[255]);

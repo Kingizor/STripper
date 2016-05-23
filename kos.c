@@ -4,7 +4,6 @@
 #include <string.h>
 #include "gba_misc.h"
 #include "bitplane.h"
-#include "lodepng.h"
 
 struct kos_levels {
     uint32_t palette;

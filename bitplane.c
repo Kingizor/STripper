@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "lodepng.h"
 #include "bitplane.h"
 
 void decode_palette(uint8_t *rgb, uint8_t *rom, int count) {

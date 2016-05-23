@@ -1,8 +1,9 @@
 CC = gcc
-CFLAGS = -fopenmp -O3 -Wall -Werror
+CFLAGS = -fopenmp -Os -Wall -Werror
 DFLAGS = -fopenmp -O0 -g -Wall -Werror
 LDFLAGS = -flto -s -fopenmp
 DLDFLAGS = -fopenmp
+LIBS = -L. -llodepng
 WINDRES = windres
 TARGET  := stripper
 DTARGET := stripper_d
@@ -35,14 +36,13 @@ FILES = \
 	dkc2_gba.o \
 	dkl.o \
 	kos.o \
-	jc.o \
-	lodepng.o
+	jc.o
 
 ODIR=obj
 OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))
 
 stripper: $(OBJECTS)
-	$(CC) $^ -o $(TARGET) $(LDFLAGS)
+	$(CC) $^ -o $(TARGET) $(LIBS) $(LDFLAGS)
 	
 $(ODIR)/%.o: %.c
 	$(CC) $< -o $@ -c $(CFLAGS)
