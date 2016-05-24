@@ -870,7 +870,7 @@ void decode_bitplane(uint8_t *rom, uint8_t *bp_data, uint8_t *raw_data, uint8_t 
     
 } // decode_bitplane();
 
-void dump_bitplane(uint8_t *bp_data, int bp_len, int bpp, int width, char dir[255], char name[255]) {
+void dump_bitplane(uint8_t *bp_data, int bp_len, int bpp, int width, char *dir, char *name) {
 
     const int tile_count = (bpp == 4) ? (bp_len/32) : (bp_len/16);
     
@@ -933,17 +933,14 @@ void dump_bitplane(uint8_t *bp_data, int bp_len, int bpp, int width, char dir[25
         } // Each line
     } // Each Tile
     
-    char path[255];
-    sprintf(path, "%s%s.png", dir, name);
-    printf("Saving %s...\n", name);
-    write_png(path, image, px_width, px_height);
+    write_png(dir, name, image, px_width, px_height);
     free(image);
     
     return;
 
 } // dump_bitplane();
 
-void assemble_bitplane(uint8_t *bitplane, unsigned int width, unsigned int raw_len, char dir[255], char name[255]) {
+void assemble_bitplane(uint8_t *bitplane, unsigned int width, unsigned int raw_len, char *dir, char *name) {
 
     unsigned int height = (((raw_len/32) - ((raw_len/32) % (width/32))) / (width/32))*32;
     if ((raw_len/32) % (width/32)) height += 32;
@@ -976,14 +973,13 @@ void assemble_bitplane(uint8_t *bitplane, unsigned int width, unsigned int raw_l
     } // i
     
     char path[255];
-    sprintf(path, "%s%s Tiles.png", dir, name);
-    printf("Saving %s...\n", name);
-    write_png(path, out, width, height);
+    sprintf(path, "%s Tiles", name);
+    write_png(dir, path, out, width, height);
     free(out);
     
 } // assemble_bitplane();
 
-void assemble_screen(uint8_t *bitplane, unsigned int raw_len, unsigned int width, char dir[255], char name[255]) {
+void assemble_screen(uint8_t *bitplane, unsigned int raw_len, unsigned int width, char *dir, char *name) {
 
     unsigned int height = (raw_len / 2) / width;
     
@@ -1005,10 +1001,7 @@ void assemble_screen(uint8_t *bitplane, unsigned int raw_len, unsigned int width
         } // Each column
     } // Each row
     
-    char path[255];
-    sprintf(path, "%s%s.png", dir, name);
-    printf("Saving %s...\n", name);
-    write_png(path, out, (width*8), (height*8));
+    write_png(dir, name, out, (width*8), (height*8));
     free(out);
     
 } // assemble_screen();
@@ -1024,7 +1017,7 @@ static unsigned int get_position(uint8_t *rom, int address) {
 
 } // get_position();
 
-void assemble_level(uint8_t *bitplane, uint8_t *rom, uint8_t *layout, unsigned int layout_len, int position_addr, int vert, int layout_size, int fix, char dir[255], char name[255]) {
+void assemble_level(uint8_t *bitplane, uint8_t *rom, uint8_t *layout, unsigned int layout_len, int position_addr, int vert, int layout_size, int fix, char *dir, char *name) {
 
     /*
     1 = Riverside Level (DKC3). Crop top two rows of tiles (64px).
@@ -1168,10 +1161,7 @@ void assemble_level(uint8_t *bitplane, uint8_t *rom, uint8_t *layout, unsigned i
         group = level;
     }
     
-    char path[255];
-    sprintf(path, "%s%s.png", dir, name);
-    printf("Saving %s...\n", name);
-    write_png(path, group, width, height);
+    write_png(dir, name, group, width, height);
     free(group);
 
 } // assemble_level();
@@ -1413,7 +1403,7 @@ List of known "seeds":
     
 } // bbc_pal();
 
-void arrange_gbc(uint8_t *source, int width, int height, char dir[255], char *name) {
+void arrange_gbc(uint8_t *source, int width, int height, char *dir, char *name) {
 
     int laylen = width * height / 64;
     uint8_t *image = malloc(width * height * 4);
@@ -1429,10 +1419,7 @@ void arrange_gbc(uint8_t *source, int width, int height, char dir[255], char *na
     }
     source = image;
     
-    printf("Saving %s...\n", name);
-    char path[255];
-    sprintf(path, "%s%s.png", dir, name);
-    write_png(path, source, width, height);
+    write_png(dir, name, source, width, height);
     free(image);
 
 } // arrange_gbc();

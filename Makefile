@@ -14,9 +14,9 @@ ifeq ($(OS),Windows_NT)
 endif
 
 ifdef LIBPNG
-	LIBS += -llibpng
+	LIBS += -llibpng16
 	CFLAGS +=-DLIBPNG
-else
+else ifndef BITMAP
 	LIBS += -llodepng 
 	CFLAGS += -DLODEPNG
 endif

@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #if (defined(LODEPNG))
 
@@ -8,6 +10,7 @@ unsigned lodepng_encode32_file(const char* filename, const unsigned char* image,
 #elif (defined(LIBPNG))
 
 #include <png.h>
+#include <zlib.h>
 
 static int libpng_write(char *name, uint8_t *image, int w, int h) {
     
@@ -88,18 +91,89 @@ static int libpng_write(char *name, uint8_t *image, int w, int h) {
 }
 
 #else
-    #error "No PNG library defined. libpng or lodepng is required."
+
+static int bitmap_write32(char *name, uint8_t *image, int w, int h) {
+    
+    FILE *bmp = fopen(name, "wb");
+    
+    if (bmp == NULL) {
+        perror("Error opening output file: ");
+        return -1;
+    }
+    
+    int image_size = w * h * 4;
+    
+    #define HEADER_SIZE 0x48
+    int size = image_size + HEADER_SIZE;
+    
+    uint8_t bmp_header[HEADER_SIZE] = {
+        0x42, 0x4D, // Sig
+        size, size>>8, size>>16, size>>24, // Size
+        0x00, 0x00, 0x00, 0x00, // Reserved
+        0x48, 0x00, 0x00, 0x00, // Start of pixel data (absolute)
+
+        0x3A, 0x00, 0x00, 0x00, // Subheader size
+        w, w>>8, w>>16, w>>24, // Width
+        h, h>>8, h>>16, h>>24, // Height
+        0x01, 0x00, // Planes
+        0x20, 0x00, // Bits per pixel
+        0x03, 0x00, 0x00, 0x00, // Compression (3 = Bitmask)
+        image_size, image_size>>8, image_size>>16, image_size>>24, // Image size
+        0x00, 0x00, 0x00, 0x00, // Horizontal resolution
+        0x00, 0x00, 0x00, 0x00, // Vertical resolution
+        0x00, 0x00, 0x00, 0x00, // Number of colours
+        0x00, 0x00, 0x00, 0x00, // Important colours
+        
+        0xFF, 0x00, 0x00, 0x00, // Bitmask Red
+        0x00, 0xFF, 0x00, 0x00, // Bitmask Green
+        0x00, 0x00, 0xFF, 0x00, // Bitmask Blue
+        0x00, 0x00, 0x00, 0xFF, // Bitmask Alpha
+        0x00, 0x00, // Align to four bytes
+        
+        }; 
+    
+    if (fwrite(bmp_header, 1, HEADER_SIZE, bmp) != HEADER_SIZE) {
+        printf("Error writing BITMAP header.\n");
+        return -1;
+    }
+    
+    int row_size = w * 4;
+    
+    for (int i = h-1; i >= 0; i--) {
+        if (fwrite(&image[i*row_size], 1, row_size, bmp) != row_size) {
+            printf("Error writing image data.\n");
+            return -1;
+        }
+    }
+    
+    return 0;
+}
+
 #endif
 
-void write_png(char *name, uint8_t *image, int w, int h) {
+int write_png(char *dir, char *name, uint8_t *image, int w, int h) {
+    
+    if ((strlen(dir) + strlen(name) + 4) > 255) {
+        printf("Error: Path is longer than 255 characters. (%s)", name);
+        return -1;
+    }
+    
+    printf("Saving %s...\n", name);
+    
+    char path[255];
+    sprintf(path, "%s%s", dir, name);
     
     // RGBA assumed
     #if (defined(LODEPNG))
-        lodepng_encode32_file(name, image, w, h);
+        sprintf(path, "%s.png", name);
+        lodepng_encode32_file(path, image, w, h);
     #elif (defined(LIBPNG))
-        libpng_write(name, image, w, h);
+        sprintf(path, "%s.png", name);
+        libpng_write(path, image, w, h);
     #else
-        #error "No PNG library defined."
+        sprintf(path, "%s.bmp", name);
+        bitmap_write32(path, image, w, h);
     #endif
     
+    return 0;
 }
