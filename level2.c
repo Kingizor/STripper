@@ -224,7 +224,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         };
         int length = sizeof(arch_list) / sizeof(int);
         
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(dynamic)
         for (int i = 0; i < length; i++) {
             uint8_t *tileset = malloc(65535);
             uint8_t *raw_map = malloc(65535);
@@ -279,7 +279,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
     else if (special) { // Layout
         int length = sizeof(archetype) / sizeof(struct Arch);
         
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(dynamic)
         for (int i = 0; i < length; i++) {
             uint8_t *tileset = malloc(65535);
             uint8_t *raw_map = malloc(65535);
@@ -333,7 +333,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
     else {
         int length = sizeof(levels) / sizeof(struct Level);
         
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(dynamic)
         for (int i = 0; i < length; i++) {
             uint8_t *tileset = malloc(65535);
             uint8_t *raw_map = malloc(65535);

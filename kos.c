@@ -121,7 +121,7 @@ void kos_levels(uint8_t *rom, char *dir) {
     
     uint32_t length = sizeof(levels) / sizeof(struct kos_levels);
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (uint32_t i = 0; i < length; i++) {
         
         uint32_t index = levels[i].tilemap;

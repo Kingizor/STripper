@@ -63,7 +63,7 @@ void spec1(uint8_t *rom, char dir[255]) {
     
     int length = sizeof(levels) / sizeof(struct Level);
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
         
         uint8_t *bp_data = calloc(0x8000, 1);

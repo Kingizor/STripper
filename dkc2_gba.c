@@ -239,7 +239,7 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
     
     int size = (sizeof(dkc) / sizeof(struct dkc2_gba_levels));
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
         
         uint8_t *bp_data = malloc(0x21000);
@@ -622,7 +622,7 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
     
     int size = (sizeof(dkc) / sizeof(struct dkc2_gba_levels));
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
         
         uint8_t *bp_data = malloc(0x40000);

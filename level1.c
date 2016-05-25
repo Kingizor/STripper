@@ -399,7 +399,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
     
     int length = (mode == 2) ? 14 : 130; // Layouts vs. Levels
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
         
         uint8_t *bp_data = malloc(0xFFFF);

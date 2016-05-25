@@ -492,7 +492,7 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
     
     int size = sizeof(dkc) / sizeof(struct gbc_levels);
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) { // 119
         
         uint8_t *bp_data = malloc(0x2000); // Tiles Bank 0:1

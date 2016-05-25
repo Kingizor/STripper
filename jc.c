@@ -790,7 +790,7 @@ void jc_levels(uint8_t *rom, char *dir) {
     
     int length = sizeof(levels) / sizeof(struct Level);
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
         
         int tileset, tilemap, palette; // Addresses within ROM

@@ -725,7 +725,7 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
     int size = sizeof(dkl) / sizeof(struct dkl_levels);
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
         
         uint8_t *bp_data = malloc(0x2000);
@@ -1056,7 +1056,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
     int size = sizeof(dkl) / sizeof(struct dkl2_levels);
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
         
         uint8_t *bp_data = malloc(0x2000);
@@ -1263,7 +1263,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
     int size = sizeof(dkl) / sizeof(struct dkl3_levels);
     
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
         
         uint8_t *bp_data = malloc(0x2000);
