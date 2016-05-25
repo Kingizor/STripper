@@ -42,7 +42,7 @@ static void show_usage() {
     printf("\n\t-g Use greyscale palette.\n");
     printf("\n\t-t Rip tilesets.\n");
     
-    printf("\nPress enter to continue...\n");
+    printf("\nPress enter to exit...\n");
     getchar();
 }
 
@@ -68,7 +68,11 @@ int main(int argc, char *argv[]) {
     FILE *romfile = fopen(argv[1], "rb");
 
     if (romfile == NULL) {
-        perror("\nError\n");
+        char err_msg[255];
+        sprintf(err_msg, "Error opening \"%s\"", argv[1]);
+        perror(err_msg);
+        
+        printf("\nPress enter to exit...\n");
         getchar();
         return 0;
     }
@@ -327,7 +331,7 @@ int main(int argc, char *argv[]) {
     free(rom);
     
     printf("\nProgram completed.\n");
-    printf("\nPress enter to continue...");
+    printf("\nPress enter to exit...");
     getchar();
     
     return 0;

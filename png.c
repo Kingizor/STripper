@@ -27,7 +27,7 @@ static int libpng_write(char *name, uint8_t *image, int w, int h) {
     FILE *out = fopen(name, "wb");
     
     if (out == NULL) {
-        perror("Error: ");
+        perror("Write error");
         return -1;
     }
     
@@ -97,7 +97,7 @@ static int bitmap_write32(char *name, uint8_t *image, int w, int h) {
     FILE *bmp = fopen(name, "wb");
     
     if (bmp == NULL) {
-        perror("Error opening output file: ");
+        perror("Write error");
         return -1;
     }
     
