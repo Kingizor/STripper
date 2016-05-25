@@ -215,100 +215,109 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
 
     };
     
+    int arch_list[] = {
+         0,  2,  4,  6,
+         7,  8,  9, 10,
+        11, 12, 13, 16
+    };
+    int length;
     
     if (tilesets) {
-        int arch_list[] = {
-             0,  2,  4,  6,
-             7,  8,  9, 10,
-            11, 12, 13, 16
-        };
-        int length = sizeof(arch_list) / sizeof(int);
-        
-        #pragma omp parallel for schedule(dynamic)
-        for (int i = 0; i < length; i++) {
-            uint8_t *tileset = malloc(65535);
-            uint8_t *raw_map = malloc(65535);
-            uint8_t *tilemap = malloc(65535);
-            int set_counter = 0;
-            int raw_counter = 0;
-            int map_counter = 0;
-            int arch = arch_list[i];
-            
-            decomp(tileset, rom, &set_counter, archetype[arch].tileset);
-            decomp(raw_map, rom, &raw_counter, archetype[arch].raw_map);
-            decomp(tilemap, rom, &map_counter, archetype[arch].tilemap);
-            uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
-            
-            if (region == 0) archetype[arch].palette -= 77; // JP Palette Offsetting
-            
-            decode_bitplane(rom, tileset, raw_map, bitplane, archetype[arch].palette, raw_counter, set_counter, 1, 0, priority);
-            assemble_bitplane(bitplane, 512, raw_counter, dir, archetype[arch].name);
-            
-            free(tileset);
-            free(raw_map);
-            free(tilemap);
-            free(bitplane);
-        }
+        length = sizeof(arch_list) / sizeof(int);
     }
     else if (special) {
-        int length = sizeof(archetype) / sizeof(struct Arch);
-        
-        #pragma omp parallel for schedule(dynamic)
-        for (int i = 0; i < length; i++) {
-            uint8_t *tileset = malloc(65535);
-            uint8_t *raw_map = malloc(65535);
-            uint8_t *tilemap = malloc(65535);
-            int set_counter = 0;
-            int raw_counter = 0;
-            int map_counter = 0;
-            
-            decomp(tileset, rom, &set_counter, archetype[i].tileset);
-            decomp(raw_map, rom, &raw_counter, archetype[i].raw_map);
-            decomp(tilemap, rom, &map_counter, archetype[i].tilemap);
-            uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
-            
-            if (region == 0) archetype[i].palette -= 77; // JP Palette Offsetting
-            
-            decode_bitplane(rom, tileset, raw_map, bitplane, archetype[i].palette, raw_counter, set_counter, 1, 0, priority);
-            assemble_level(bitplane, rom, tilemap, map_counter, 0, archetype[i].vert, archetype[i].map_size, 0, dir, archetype[i].name);
-            
-            free(tileset);
-            free(raw_map);
-            free(tilemap);
-            free(bitplane);
-        }
+        length = sizeof(archetype) / sizeof(struct Arch);
     }
     else {
-        int length = sizeof(levels) / sizeof(struct Level);
+        length = sizeof(levels) / sizeof(struct Level);
+    }
+    
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < length; i++) {
         
-        #pragma omp parallel for schedule(dynamic)
-        for (int i = 0; i < length; i++) {
-            uint8_t *tileset = malloc(65535);
-            uint8_t *raw_map = malloc(65535);
-            uint8_t *tilemap = malloc(65535);
-            int set_counter = 0;
-            int raw_counter = 0;
-            int map_counter = 0;
-            int arch = levels[i].arch;
-            
-            decomp(tileset, rom, &set_counter, archetype[arch].tileset);
-            decomp(raw_map, rom, &raw_counter, archetype[arch].raw_map);
-            decomp(tilemap, rom, &map_counter, archetype[arch].tilemap);
-            uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
-            
-            int palette = levels[i].palette;
-            if (region == 0) palette -= 77; // JP Palette Offsetting
-            int fix = (arch == 9) ? 1 : 0; // Riverside Garbage
-            if (arch == 6) jungle_rope_fix(rom, tileset, region); // Jungle Rope
-            
-            decode_bitplane(rom, tileset, raw_map, bitplane, palette, raw_counter, set_counter, 1, levels[i].palette_fix, priority);
-            assemble_level(bitplane, rom, tilemap, map_counter, levels[i].position, archetype[arch].vert, archetype[arch].map_size, fix, dir, levels[i].name);
-            
-            free(tileset);
-            free(raw_map);
-            free(tilemap);
-            free(bitplane);
+        int arch, palette, pfix, river_fix, position;
+        char *name;
+        
+        if (tilesets) {
+            arch = arch_list[i];
         }
+        else if (special) {
+            arch = i;
+        }
+        else {
+            arch = levels[i].arch;
+        }
+        
+        uint8_t *tileset = calloc(0xFFFF, 1);
+        uint8_t *raw_map = calloc(0xFFFF, 1);
+        uint8_t *tilemap = calloc(0xFFFF, 1);
+        int set_counter = 0;
+        int raw_counter = 0;
+        int map_counter = 0;
+        
+        if ((tileset == NULL) || (raw_map == NULL) || (tilemap == NULL)) {
+            printf("Failed to allocate memory for decompression.\n");
+            continue;
+        }
+        
+        // Decompression
+        if (decomp(tileset, rom, &set_counter, archetype[arch].tileset)) {
+            printf("Error: Tileset decompression failed.\n");
+            continue;
+        }
+        if (decomp(raw_map, rom, &raw_counter, archetype[arch].raw_map)) {
+            printf("Error: Raw map decompression failed.\n");
+            continue;
+        }
+        if (decomp(tilemap, rom, &map_counter, archetype[arch].tilemap)) {
+            printf("Error: Tilemap decompression failed.\n");
+            continue;
+        }
+        
+        uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
+        
+        if (bitplane == NULL) {
+            printf("Failed to allocate memory for image data.\n");
+            continue;
+        }
+        
+        if (tilesets || special) {
+            palette = archetype[arch].palette;
+            pfix = 0;
+        }
+        else {
+            palette = levels[i].palette;
+            pfix = levels[i].palette_fix;
+        }
+        
+        if (region == 0) palette -= 77; // JP Palette Offsetting
+        
+        decode_bitplane(rom, tileset, raw_map, bitplane, palette, raw_counter, set_counter, 1, pfix, priority);
+        
+        if (tilesets) {
+            assemble_bitplane(bitplane, 512, raw_counter, dir, archetype[arch].name);
+        }
+        else {
+            if (special) {
+                position = 0;
+                river_fix = 0;
+                name = archetype[i].name;
+            }
+            else {
+                position = levels[i].position;
+                river_fix = (arch == 9) ? 1 : 0; // Riverside Garbage
+                if (arch == 6) jungle_rope_fix(rom, tileset, region); // Jungle Rope
+                name = levels[i].name;
+            }
+            
+            assemble_level(bitplane, rom, tilemap, map_counter, position, archetype[arch].vert, archetype[arch].map_size, river_fix, dir, name);
+            
+        }
+        
+        free(tileset);
+        free(raw_map);
+        free(tilemap);
+        free(bitplane);
     }
     
     return;

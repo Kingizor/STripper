@@ -215,176 +215,133 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {18, 0x35C1D7, 0x3D3B6E, 0, "Jungle BG"}
     };
     
-    if (tilesets) { // 1 = Complete Layouts, 2 = Tilesets
-        int arch_list[] = {
-              0,  1,  2,  3,
-              4,  6,  7,  8,
-              9, 10, 11, 13,
-             14, 15, 16, 18
-        };
-        int length = sizeof(arch_list) / sizeof(int);
-        
-        #pragma omp parallel for schedule(dynamic)
-        for (int i = 0; i < length; i++) {
-            uint8_t *tileset = malloc(65535);
-            uint8_t *raw_map = malloc(65535);
-            uint8_t *tilemap = malloc(65535);
-            int set_counter = 0;
-            int raw_counter = 0;
-            int map_counter = 0;
-            int arch = arch_list[i];
-            
-            if (region != 1) {
-                archetype[arch].raw_map += 25;
-                archetype[arch].tilemap += 25;
-                if (arch > 15) {
-                    archetype[arch].raw_map += 10;
-                    archetype[arch].tileset += 25;
-                }
-            }
-            
-            decomp(tileset, rom, &set_counter, archetype[arch].tileset);
-            decomp(raw_map, rom, &raw_counter, archetype[arch].raw_map);
-            
-            if (arch == 15) { // K.Rool Duel
-                memcpy(tilemap, &rom[archetype[arch].tilemap], 0x100);
-                map_counter = 0x100;
-            }
-            else {
-                decomp(tilemap, rom, &map_counter, archetype[arch].tilemap);
-            }
-            
-            if (arch == 8) { // Lava Numbers
-                memcpy(&tileset[0x340], &rom[0x3B4FC0], 0x1A0);
-                memcpy(&tileset[0x020], &rom[0x351047], 0x180);
-                memcpy(&tileset[0x4E0], &rom[0x3B0AE0], 0x2C0);
-                memcpy(&tileset[0x1A0], &rom[0x3B3AA0], 0x1A0);
-            }
-            if (arch == 13) { // Castle Tiles
-                memcpy(tileset, &rom[0x2199BE], 0x257F);
-                memcpy(&tileset[0x4840], &rom[0x21BF3E], 0x37C0);
-                set_counter = 0x8000;
-            }
-            
-            uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
-            decode_bitplane(rom, tileset, raw_map, bitplane, archetype[arch].palette, raw_counter, set_counter, 1, 0, priority);
-            assemble_bitplane(bitplane, 512, raw_counter, dir, archetype[arch].name);
-            
-            free(tileset);
-            free(raw_map);
-            free(tilemap);
-            free(bitplane);
-        }
+    int arch_list[] = {
+          0,  1,  2,  3,
+          4,  6,  7,  8,
+          9, 10, 11, 13,
+         14, 15, 16, 18
+    };
+
+    int length;
+    
+    if (tilesets) {
+        length = sizeof(arch_list) / sizeof(int);
     }
-    else if (special) { // Layout
-        int length = sizeof(archetype) / sizeof(struct Arch);
-        
-        #pragma omp parallel for schedule(dynamic)
-        for (int i = 0; i < length; i++) {
-            uint8_t *tileset = malloc(65535);
-            uint8_t *raw_map = malloc(65535);
-            uint8_t *tilemap = malloc(65535);
-            int set_counter = 0;
-            int raw_counter = 0;
-            int map_counter = 0;
-            
-            if (region != 1) {
-                archetype[i].raw_map += 25;
-                archetype[i].tilemap += 25;
-                if (i > 15) {
-                    archetype[i].raw_map += 10;
-                    archetype[i].tileset += 25;
-                }
-            }
-            
-            decomp(tileset, rom, &set_counter, archetype[i].tileset);
-            decomp(raw_map, rom, &raw_counter, archetype[i].raw_map);
-            
-            if (i == 15) { // K.Rool Duel
-                memcpy(tilemap, &rom[archetype[i].tilemap], 0x100);
-                map_counter = 0x100;
-            }
-            else {
-                decomp(tilemap, rom, &map_counter, archetype[i].tilemap);
-            }
-            
-            if (i == 8) { // Lava Numbers
-                memcpy(&tileset[0x340], &rom[0x3B4FC0], 0x1A0);
-                memcpy(&tileset[0x020], &rom[0x351047], 0x180);
-                memcpy(&tileset[0x4E0], &rom[0x3B0AE0], 0x2C0);
-                memcpy(&tileset[0x1A0], &rom[0x3B3AA0], 0x1A0);
-            }
-            if (i == 13) { // Castle Tiles
-                memcpy(tileset, &rom[0x2199BE], 0x257F);
-                memcpy(&tileset[0x4840], &rom[0x21BF3E], 0x37C0);
-                set_counter = 0x8000;
-            }
-            
-            uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
-            decode_bitplane(rom, tileset, raw_map, bitplane, archetype[i].palette, raw_counter, set_counter, 1, 0, priority);
-            assemble_level(bitplane, rom, tilemap, map_counter, 0, archetype[i].vert, archetype[i].map_size, 0, dir, archetype[i].name);
-            
-            free(tileset);
-            free(raw_map);
-            free(tilemap);
-            free(bitplane);
-        }
+    else if (special) {
+        length = sizeof(archetype) / sizeof(struct Arch);
     }
     else {
-        int length = sizeof(levels) / sizeof(struct Level);
+        length = sizeof(levels) / sizeof(struct Level);
+    }
+    
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < length; i++) {
         
-        #pragma omp parallel for schedule(dynamic)
-        for (int i = 0; i < length; i++) {
-            uint8_t *tileset = malloc(65535);
-            uint8_t *raw_map = malloc(65535);
-            uint8_t *tilemap = malloc(65535);
-            int set_counter = 0;
-            int raw_counter = 0;
-            int map_counter = 0;
-            int arch = levels[i].arch;
-            
-            if (region != 1) {
-                archetype[arch].raw_map += 25;
-                archetype[arch].tilemap += 25;
-                if (arch > 15) {
-                    archetype[arch].raw_map += 10;
-                    archetype[arch].tileset += 25;
-                }
+        int arch, palette, pfix, position;
+        char *name;
+        
+        if (tilesets) {
+            arch = arch_list[i];
+        }
+        else if (special) {
+            arch = i;
+        }
+        else {
+            arch = levels[i].arch;
+        }
+        
+        uint8_t *tileset = calloc(0xFFFF, 1);
+        uint8_t *raw_map = calloc(0xFFFF, 1);
+        uint8_t *tilemap = calloc(0xFFFF, 1);
+        int set_counter = 0;
+        int raw_counter = 0;
+        int map_counter = 0;
+        
+        if ((tileset == NULL) || (raw_map == NULL) || (tilemap == NULL)) {
+            printf("Failed to allocate memory for decompression.\n");
+            continue;
+        }
+        
+        // Data offsets for different regions
+        if (region != 1) {
+            archetype[arch].raw_map += 25;
+            archetype[arch].tilemap += 25;
+            if (arch > 15) {
+                archetype[arch].raw_map += 10;
+                archetype[arch].tileset += 25;
             }
-            
-            decomp(tileset, rom, &set_counter, archetype[arch].tileset);
-            decomp(raw_map, rom, &raw_counter, archetype[arch].raw_map);
-            
-            if (arch == 15) { // K.Rool Duel
-                memcpy(tilemap, &rom[archetype[arch].tilemap], 0x100);
-                map_counter = 0x100;
+        }
+        
+        // Decompression
+        if (decomp(tileset, rom, &set_counter, archetype[arch].tileset)) {
+            printf("Error: Tileset decompression failed.\n");
+            continue;
+        }
+        if (decomp(raw_map, rom, &raw_counter, archetype[arch].raw_map)) {
+            printf("Error: Raw map decompression failed.\n");
+            continue;
+        }
+        
+        if (arch == 15) { // K.Rool Duel
+            memcpy(tilemap, &rom[archetype[arch].tilemap], 0x100);
+            map_counter = 0x100;
+        }
+        else if (decomp(tilemap, rom, &map_counter, archetype[arch].tilemap)) {
+            printf("Error: Tilemap decompression failed.\n");
+            continue;
+        }
+        
+        if (arch == 8) { // Lava Numbers
+            memcpy(&tileset[0x340], &rom[0x3B4FC0], 0x1A0);
+            memcpy(&tileset[0x020], &rom[0x351047], 0x180);
+            memcpy(&tileset[0x4E0], &rom[0x3B0AE0], 0x2C0);
+            memcpy(&tileset[0x1A0], &rom[0x3B3AA0], 0x1A0);
+        }
+        if (arch == 13) { // Castle Tiles
+            memcpy(tileset, &rom[0x2199BE], 0x257F);
+            memcpy(&tileset[0x4840], &rom[0x21BF3E], 0x37C0);
+            set_counter = 0x8000;
+        }
+        
+        uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
+        
+        if (bitplane == NULL) {
+            printf("Failed to allocate memory for image data.\n");
+            continue;
+        }
+        
+        if (tilesets || special) {
+            palette = archetype[arch].palette;
+            pfix = 0;
+        }
+        else {
+            palette = levels[i].palette;
+            pfix = levels[i].palette_fix;
+        }
+        
+        decode_bitplane(rom, tileset, raw_map, bitplane, palette, raw_counter, set_counter, 1, pfix, priority);
+        
+        if (tilesets) {
+            assemble_bitplane(bitplane, 512, raw_counter, dir, archetype[arch].name);
+        }
+        else {
+            if (special) {
+                position = 0;
+                name = archetype[i].name;
             }
             else {
-                decomp(tilemap, rom, &map_counter, archetype[arch].tilemap);
+                position = levels[i].position;
+                name = levels[i].name;
             }
             
-            if (arch == 8) { // Lava Numbers
-                memcpy(&tileset[0x340], &rom[0x3B4FC0], 0x1A0);
-                memcpy(&tileset[0x020], &rom[0x351047], 0x180);
-                memcpy(&tileset[0x4E0], &rom[0x3B0AE0], 0x2C0);
-                memcpy(&tileset[0x1A0], &rom[0x3B3AA0], 0x1A0);
-            }
-            if (arch == 13) { // Castle Tiles
-                memcpy(tileset, &rom[0x2199BE], 0x257F);
-                memcpy(&tileset[0x4840], &rom[0x21BF3E], 0x37C0);
-                set_counter = 0x8000;
-            }
-            
-            uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
-            decode_bitplane(rom, tileset, raw_map, bitplane, levels[i].palette, raw_counter, set_counter, 1, levels[i].palette_fix, priority);
-            assemble_level(bitplane, rom, tilemap, map_counter, levels[i].position, archetype[arch].vert, archetype[arch].map_size, 0, dir, levels[i].name);
-            
-            free(tileset);
-            free(raw_map);
-            free(tilemap);
-            free(bitplane);
-            
+            assemble_level(bitplane, rom, tilemap, map_counter, position, archetype[arch].vert, archetype[arch].map_size, 0, dir, name);
         }
+        
+        free(tileset);
+        free(raw_map);
+        free(tilemap);
+        free(bitplane);
+        
     }
     
     return;
