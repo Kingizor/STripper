@@ -26,20 +26,18 @@ static void show_usage() {
     printf("Usage: stripper ROM_FILE [OPTION]\n");
     
     printf("\nDKC 1-3 (SNES), DKC 1-3 (GBA):");
-    printf("\n\t-o Use palette zero instead of transparency. (Opaque)\n");
+    printf("\n\t-o Use palette zero instead of transparency. (Opaque)");
+    printf("\n\t-t Rip tilesets.\n");
     
     printf("\nDKC 1-3 (SNES):");
     printf("\n\t-f Only use tiles with priority bit set. (Foreground)");
     printf("\n\t-b Only use tiles with priority bit not set. (Background)");
-    printf("\n\t-t Rip tilesets.");
     printf("\n\t-c Rip complete layouts.");
-    printf("\n\t-s Rip special screens.\n");
-    
-    printf("\nDKC 2-3 (SNES):");
-    printf("\n\t-e Rip decompressed 8x8 tiles.\n");
+    printf("\n\t-s Rip special screens.");
+    printf("\n\t-e Rip decompressed 8x8 tiles. (2&3 only)\n");
     
     printf("\nDKL 1-3 (GB)");
-    printf("\n\t-g Use greyscale palette.\n");
+    printf("\n\t-g Use greyscale palette instead of SGB.");
     printf("\n\t-t Rip tilesets.\n");
     
     printf("\nPress enter to exit...\n");
@@ -71,7 +69,6 @@ int main(int argc, char *argv[]) {
         char err_msg[255];
         sprintf(err_msg, "Error opening \"%s\"", argv[1]);
         perror(err_msg);
-        
         printf("\nPress enter to exit...\n");
         getchar();
         return 0;
