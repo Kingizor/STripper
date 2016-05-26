@@ -402,6 +402,19 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
         
+        if (tileset) {
+            int duplicate = 0;
+            for (int j = 0; j < i; j++) {
+                if (areas[j].type == areas[i].type && areas[j].pal_ofs == areas[i].pal_ofs && areas[j].pal_fix == areas[i].pal_fix) {
+                    duplicate = 1;
+                    j = i;
+                }
+            }
+            if (duplicate) {
+                continue;
+            }
+        }
+        
         uint8_t *bp_data = malloc(0xFFFF);
         uint8_t *lay_data = malloc(0xFFFF);
         uint8_t *raw_data = malloc(0xFFFF);
@@ -420,7 +433,9 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
             bp_len = 0x8000;
             memcpy(bp_data, &rom[0x0F0000], bp_len);
         } // Gang-Plank Galleon
-        dkc_tile_decomp(rom, bp_data, &bp_len, archetype[arch].bp_a, archetype[arch].bp_y);
+        else {
+            dkc_tile_decomp(rom, bp_data, &bp_len, archetype[arch].bp_a, archetype[arch].bp_y);
+        }
         
         if (arch == 6) {
             memmove(&bp_data[0x22A0], bp_data, bp_len);
@@ -461,9 +476,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         } // Complete Layouts
         else if (tileset) {
             decode_bitplane(rom, bp_data, raw_data, bitplane, areas[i].pal_ofs, raw_counter, bp_len, 1, areas[i].pal_fix, priority);
-            char name[255];
-            sprintf(name, "%s Tiles", areas[i].name);
-            assemble_bitplane(bitplane, 512, raw_counter, dir, name);
+            assemble_bitplane(bitplane, 512, raw_counter, dir, areas[i].name);
         } // Tilesets
         else {
             decode_bitplane(rom, bp_data, raw_data, bitplane, areas[i].pal_ofs, raw_counter, bp_len, 1, areas[i].pal_fix, priority);

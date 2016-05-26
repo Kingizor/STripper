@@ -215,19 +215,9 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {18, 0x35C1D7, 0x3D3B6E, 0, "Jungle BG"}
     };
     
-    int arch_list[] = {
-          0,  1,  2,  3,
-          4,  6,  7,  8,
-          9, 10, 11, 13,
-         14, 15, 16, 18
-    };
-
     int length;
     
-    if (tilesets) {
-        length = sizeof(arch_list) / sizeof(int);
-    }
-    else if (special) {
+    if (special) {
         length = sizeof(archetype) / sizeof(struct Arch);
     }
     else {
@@ -240,14 +230,28 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         int arch, palette, pfix, position;
         char *name;
         
-        if (tilesets) {
-            arch = arch_list[i];
-        }
-        else if (special) {
+        if (special) {
             arch = i;
+            palette = archetype[arch].palette;
+            pfix = 0;
         }
         else {
             arch = levels[i].arch;
+            palette = levels[i].palette;
+            pfix = levels[i].palette_fix;
+        }
+        
+        if (tilesets) {
+            int duplicate = 0;
+            for (int j = 0; j < i; j++) {
+                if (levels[j].palette == palette && levels[j].palette_fix == pfix) {
+                    duplicate = 1;
+                    j = i;
+                }
+            }
+            if (duplicate) {
+                continue;
+            }
         }
         
         uint8_t *tileset = calloc(0xFFFF, 1);
@@ -310,19 +314,10 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             continue;
         }
         
-        if (tilesets || special) {
-            palette = archetype[arch].palette;
-            pfix = 0;
-        }
-        else {
-            palette = levels[i].palette;
-            pfix = levels[i].palette_fix;
-        }
-        
         decode_bitplane(rom, tileset, raw_map, bitplane, palette, raw_counter, set_counter, 1, pfix, priority);
         
         if (tilesets) {
-            assemble_bitplane(bitplane, 512, raw_counter, dir, archetype[arch].name);
+            assemble_bitplane(bitplane, 512, raw_counter, dir, levels[i].name);
         }
         else {
             if (special) {

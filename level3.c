@@ -188,10 +188,10 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {12, 0x37B503, 0x3DBF79, 0, "Swoopy Salvo Bonus 1"},
         {12, 0x37B50D, 0x3DBF79, 0, "Swoopy Salvo Bonus 2"},
         {12, 0x37B517, 0x3DBF79, 0, "Swoopy Salvo Bonus 3"},
-        {12, 0x37B521, 0x3DBF79, 0, "Swoopy Salvo (Krematoa)"},
-        {12, 0x37B503, 0x3DBF79, 0, "Swoopy Salvo Bonus 1 (Krematoa)"},
-        {12, 0x37B50D, 0x3DBF79, 0, "Swoopy Salvo Bonus 2 (Krematoa)"},
-        {12, 0x37B517, 0x3DBF79, 0, "Swoopy Salvo Bonus 3 (Krematoa)"},
+        {12, 0x37B521, 0x3D5DE1, 0, "Swoopy Salvo (Krematoa)"},
+        {12, 0x37B503, 0x3D5DE1, 0, "Swoopy Salvo Bonus 1 (Krematoa)"},
+        {12, 0x37B50D, 0x3D5DE1, 0, "Swoopy Salvo Bonus 2 (Krematoa)"},
+        {12, 0x37B517, 0x3D5DE1, 0, "Swoopy Salvo Bonus 3 (Krematoa)"},
         {12, 0x37B4B3, 0x3D5EC1, 0, "Arich's Ambush"},
         {13, 0x37B536, 0x3D7F61, 0, "Low-G Labyrinth"},
         {13, 0x37B540, 0x3D7F61, 0, "Low-G Labyrinth Bonus 1"},
@@ -215,17 +215,9 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
 
     };
     
-    int arch_list[] = {
-         0,  2,  4,  6,
-         7,  8,  9, 10,
-        11, 12, 13, 16
-    };
     int length;
     
-    if (tilesets) {
-        length = sizeof(arch_list) / sizeof(int);
-    }
-    else if (special) {
+    if (special) {
         length = sizeof(archetype) / sizeof(struct Arch);
     }
     else {
@@ -238,14 +230,28 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         int arch, palette, pfix, river_fix, position;
         char *name;
         
-        if (tilesets) {
-            arch = arch_list[i];
-        }
-        else if (special) {
+        if (special) {
             arch = i;
+            palette = archetype[arch].palette;
+            pfix = 0;
         }
         else {
             arch = levels[i].arch;
+            palette = levels[i].palette;
+            pfix = levels[i].palette_fix;
+        }
+        
+        if (tilesets) {
+            int duplicate = 0;
+            for (int j = 0; j < i; j++) {
+                if (levels[j].palette == palette && levels[j].palette_fix == pfix) {
+                    duplicate = 1;
+                    j = i;
+                }
+            }
+            if (duplicate) {
+                continue;
+            }
         }
         
         uint8_t *tileset = calloc(0xFFFF, 1);
@@ -281,21 +287,12 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             continue;
         }
         
-        if (tilesets || special) {
-            palette = archetype[arch].palette;
-            pfix = 0;
-        }
-        else {
-            palette = levels[i].palette;
-            pfix = levels[i].palette_fix;
-        }
-        
         if (region == 0) palette -= 77; // JP Palette Offsetting
         
         decode_bitplane(rom, tileset, raw_map, bitplane, palette, raw_counter, set_counter, 1, pfix, priority);
         
         if (tilesets) {
-            assemble_bitplane(bitplane, 512, raw_counter, dir, archetype[arch].name);
+            assemble_bitplane(bitplane, 512, raw_counter, dir, levels[i].name);
         }
         else {
             if (special) {

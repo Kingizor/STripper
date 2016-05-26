@@ -242,7 +242,20 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
         
-        uint8_t *bp_data = malloc(0x21000);
+        if (tileset) {
+            int duplicate = 0;
+            for (int j = 0; j < i; j++) {
+                if (dkc[j].arch == dkc[i].arch && dkc[j].pal.loc == dkc[i].pal.loc && dkc[j].pal.ofs == dkc[i].pal.ofs) {
+                    duplicate = 1;
+                    j = i;
+                }
+            }
+            if (duplicate) {
+                continue;
+            }
+        }
+        
+        uint8_t *bp_data  = malloc(0x21000);
         uint8_t *raw_data = malloc(0x10000);
         uint8_t *lay_data = malloc(0x100000);
         uint8_t *att_data = malloc(0x80000);
@@ -256,6 +269,12 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         int pal_len = 0;
         int a = dkc[i].arch;
         int mode = 0;
+        char name[255];
+        
+        if (bp_data == NULL || raw_data == NULL || lay_data == NULL || att_data == NULL || pal_data == NULL || rgb == NULL) {
+            printf("Error allocating memory for decompression.\n");
+            continue;
+        }
         
         gba_data(rom, bp_data, &bp_len, arch[a].bp.loc, arch[a].bp.ofs, arch[a].bp.type);
         gba_data(rom, raw_data, &raw_len, arch[a].raw.loc, arch[a].raw.ofs, arch[a].raw.type);
@@ -263,14 +282,31 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         gba_data(rom, pal_data, &pal_len, dkc[i].pal.loc, dkc[i].pal.ofs, dkc[i].pal.type);
         
         if (arch[a].lay_split) lay_double(lay_data, lay_len);
-        if (tileset) gba_tileset(lay_data, raw_data);
+        
+        if (tileset) {
+            gba_tileset(lay_data, raw_data);
+            lay_len = (raw_data[0] + (raw_data[1] * 256) + 24) * 2;
+            sprintf(name, "%s Tiles", dkc[i].name);
+        }
+        else {
+            strcpy(name, dkc[i].name);
+        }
+        
         gba_layout(lay_data, raw_data, att_data, &width, &height, mode);
+        
         if (arch[a].raw_split) gba_split(lay_data, att_data, width*height*9);
         decode_palette(rgb, pal_data, 256);
         
-        uint8_t *bitplane = malloc(width * height * 24 * 24 * 4);
+        uint8_t *bitplane = malloc((lay_len / 2) * 576 * 4);
+        
+        if (bitplane == NULL) {
+            printf("Error allocating memory for output.\n");
+            continue;
+        }
+        
         gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority, 0);
-        arrange_gbc(bitplane, width*24, height*24, dir, dkc[i].name);
+        
+        arrange_gbc(bitplane, width*24, height*24, dir, name);
         
         free(bp_data);
         free(raw_data);
@@ -625,6 +661,19 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
         
+        if (tileset) {
+            int duplicate = 0;
+            for (int j = 0; j < i; j++) {
+                if (dkc[j].arch == dkc[i].arch && dkc[j].pal.loc == dkc[i].pal.loc && dkc[j].pal.ofs == dkc[i].pal.ofs) {
+                    duplicate = 1;
+                    j = i;
+                }
+            }
+            if (duplicate) {
+                continue;
+            }
+        }
+        
         uint8_t *bp_data = malloc(0x40000);
         uint8_t *raw_data = malloc(0x10000);
         uint8_t *lay_data = malloc(0x100000);
@@ -639,20 +688,42 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         int pal_len = 0;
         int mode = 0;
         int a = dkc[i].arch;
+        char name[255];
+        
+        if (bp_data == NULL || raw_data == NULL || lay_data == NULL || att_data == NULL || pal_data == NULL || rgb == NULL) {
+            printf("Error allocating memory for decompression.\n");
+            continue;
+        }
+        
         gba_data(rom, bp_data, &bp_len, arch[a].bp.loc, arch[a].bp.ofs, arch[a].bp.type);
         gba_data(rom, raw_data, &raw_len, arch[a].raw.loc, arch[a].raw.ofs, arch[a].raw.type);
         gba_data(rom, lay_data, &lay_len, dkc[i].lay.loc, dkc[i].lay.ofs, dkc[i].lay.type);
         gba_data(rom, pal_data, &pal_len, dkc[i].pal.loc, dkc[i].pal.ofs, dkc[i].pal.type);
         
         if (arch[a].lay_split) lay_double(lay_data, lay_len);
-        if (tileset) gba_tileset(lay_data, raw_data);
+        
+        if (tileset) {
+            gba_tileset(lay_data, raw_data);
+            lay_len = (raw_data[0] + (raw_data[1] * 256) + 24) * 2;
+            sprintf(name, "%s Tiles", dkc[i].name);
+        }
+        else {
+            strcpy(name, dkc[i].name);
+        }
+        
         gba_layout(lay_data, raw_data, att_data, &width, &height, mode);
         if (arch[a].raw_split) gba_split(lay_data, att_data, width*height*9);
         decode_palette(rgb, pal_data, 256);
         
-        uint8_t *bitplane = malloc(width * height * 24 * 24 * 4);
+        uint8_t *bitplane = malloc(width * height * 576 * 4);
+        
+        if (bitplane == NULL) {
+            printf("Error allocating memory for output.\n");
+            continue;
+        }
+        
         gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority, 0);
-        arrange_gbc(bitplane, width*24, height*24, dir, dkc[i].name);
+        arrange_gbc(bitplane, width*24, height*24, dir, name);
         
         free(bp_data);
         free(raw_data);

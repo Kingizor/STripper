@@ -158,17 +158,18 @@ void gba_data(uint8_t *rom, uint8_t *output, int *length, uint32_t location, uin
 
 void gba_layout(uint8_t *lay_data, uint8_t *raw_data, uint8_t *att_data, int *width, int *height, int mode) {
 
-    
-    if (raw_data[1] & 0x80) raw_data[1] -= 0x80;
-    if (raw_data[1] & 0x40) raw_data[1] -= 0x40;
+    raw_data[1] &= ~0xC0;
     
     int raw_size = (raw_data[0] + (raw_data[1] * 256)) * 0x12;
     *width  = lay_data[0] + (lay_data[1] * 256);
     *height = lay_data[2] + (lay_data[3] * 256);
-    
     int lay_size = *width * *height * 0x12 * 2;
     
     uint8_t *lev_data = calloc(lay_size, 1);
+    
+    if (lev_data == NULL) {
+        printf("Error allocating memory for tile conversion.\n");
+    }
     
     int i, j, ij, k, tile_group, write;
     
@@ -189,7 +190,6 @@ void gba_layout(uint8_t *lay_data, uint8_t *raw_data, uint8_t *att_data, int *wi
     memcpy(&lay_data[0], &lev_data[0], lay_size);
     
     free(lev_data);
-    
 
 } // gba_layout();
 
@@ -278,7 +278,7 @@ void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *
 
 void gba_tileset(uint8_t *lay_data, uint8_t *raw_data) {
 
-    if (raw_data[1] & 0x80) raw_data[1] -= 0x80;
+    raw_data[1] &= ~0xC0;
     int total = raw_data[0] + (raw_data[1]*256); // Number of tile groups.
     int i;
     
@@ -296,6 +296,6 @@ void gba_tileset(uint8_t *lay_data, uint8_t *raw_data) {
         lay_data[4+(i*2)+1] = (i-(i % 256))/256;
     }
     memset(&lay_data[4+(total*2)], 0, (width*height*2)-(total*2));
-
+    
 } // gba_tileset();
 

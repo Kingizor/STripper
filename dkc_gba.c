@@ -201,7 +201,20 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
     
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
-    
+        
+        if (tileset) {
+            int duplicate = 0;
+            for (int j = 0; j < i; j++) {
+                if (dkc[j].arch == dkc[i].arch && dkc[j].pal == dkc[i].pal) {
+                    duplicate = 1;
+                    j = i;
+                }
+            }
+            if (duplicate) {
+                continue;
+            }
+        }
+        
         uint8_t *bp_data = malloc(0x20000);
         uint8_t *raw_data = malloc(0x10000);
         uint8_t *lay_data = malloc(0x100000);
@@ -213,6 +226,12 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         int width = 0;
         int height = 0;
         int a = dkc[i].arch;
+        char name[255];
+        
+        if (bp_data == NULL || raw_data == NULL || lay_data == NULL || att_data == NULL || rgb == NULL) {
+            printf("Error allocating memory for decompression.\n");
+            continue;
+        }
         
         gba_decomp(rom,  bp_data,  &bp_len, arch[a].bp);
         gba_decomp(rom, raw_data, &raw_len, arch[a].raw);
@@ -220,7 +239,15 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         
         int mode = (a == 8 || (a > 11 && a < 18)) ? 1 : 0; // Levels/Areas with fewer sets of tiles.
         
-        if (tileset) gba_tileset(lay_data, raw_data);
+        if (tileset) {
+            gba_tileset(lay_data, raw_data);
+            // Number of tiles + extra row
+            lay_len = (raw_data[0] + (raw_data[1]*256) + 24) * 2;
+            sprintf(name, "%s Tiles", dkc[i].name);
+        }
+        else {
+            strcpy(name, dkc[i].name);
+        }
         
         gba_layout(lay_data, raw_data, att_data, &width, &height, mode);
         
@@ -228,9 +255,16 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         
         decode_palette(rgb, &rom[dkc[i].pal], 256);
         
+        // (Number of 24x24 tiles) * (24*24 dots) * (RGBA)
         uint8_t *bitplane = malloc((lay_len / 2) * 576 * 4);
+        
+        if (bitplane == NULL) {
+            printf("Error allocating memory for output.\n");
+            continue;
+        }
+        
         gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority, 0);
-        arrange_gbc(bitplane, width*24, height*24, dir, dkc[i].name);
+        arrange_gbc(bitplane, width*24, height*24, dir, name);
         
         free(bp_data);
         free(raw_data);
