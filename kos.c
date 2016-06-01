@@ -12,6 +12,48 @@ struct kos_levels {
     char *name;
 };
 
+static int crop_kos(uint8_t *layout, uint32_t *tilemap_size, int *width, int height) {
+    
+    /*
+    Simple cropping.
+    
+    Each area is always 128 tiles wide, so start at right of a row and determine the rightmost tile that isn't blank.
+    Do this for each row and crop the frame along the rightmost tile.
+    */
+    
+    *width = 0;
+    
+    for (int i = 0; i < height; i++) {
+        int row = i * 128;
+        for (int j = 127; j >= 0; j--) {
+            int rpos = (row + j) * 2;
+            if (layout[rpos] != 0 && layout[rpos + 1] != 0) {
+                if (j > *width) {
+                    *width = j;
+                }
+                break;
+            }
+        }
+    }
+    (*width)++;
+    
+    *tilemap_size = *width * height * 2;
+    uint8_t *new_layout = malloc(*tilemap_size);
+    
+    if (new_layout == NULL) {
+        printf("Failed to allocate memory for cropping.\n");
+        return -1;
+    }
+    for (int i = 0; i < height; i++) {
+        memcpy(&new_layout[*width * i * 2], &layout[i * 128 * 2], *width * 2);
+    }
+    memcpy(layout, new_layout, *tilemap_size);
+    free(new_layout);
+    
+    return 0;
+    
+}
+
 void kos_levels(uint8_t *rom, char *dir) {
     
     struct kos_levels levels[] = {
@@ -123,7 +165,6 @@ void kos_levels(uint8_t *rom, char *dir) {
     
     #pragma omp parallel for schedule(dynamic)
     for (uint32_t i = 0; i < length; i++) {
-        
         uint32_t index = levels[i].tilemap;
         uint32_t tilemap_counter = 0;
         
@@ -137,7 +178,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         uint32_t tilemaps[tilemap_counter];
         
         // Load pointers
-        for (uint32_t j = 0; j < tilemap_counter; j++) {
+        for (int j = 0; j < tilemap_counter; j++) {
             tilemaps[j] = rom[index] + (rom[index+1] << 8) + (rom[index+2] << 16);
             index += 4;
         }
@@ -147,9 +188,17 @@ void kos_levels(uint8_t *rom, char *dir) {
         uint32_t tilemap_size = tilemap_counter * 0x800;
         uint8_t *layout = malloc(tilemap_size);
         index = 0; // Write index
+        int width = 0, height = (tilemap_counter / 4) * 32;
+        
+        if (layout == NULL) {
+            printf("Failed to allocate memory for layout.\n");
+            continue;
+        }
+        
+        
         
         // Each row of nametables
-        for (uint32_t j = 0; j < (tilemap_counter/4); j++) {
+        for (uint32_t j = 0; j < (tilemap_counter / 4); j++) {
             // Each row of tiles
             for (uint8_t k = 0; k < 32; k++) {
                 // Particular row within nametable
@@ -160,17 +209,32 @@ void kos_levels(uint8_t *rom, char *dir) {
             }
         }
         
+        if (crop_kos(layout, &tilemap_size, &width, height)) {
+            continue;
+        }
+        
         uint8_t *att_data = malloc(tilemap_size/2);
+        
+        if (att_data == NULL) {
+            printf("Failed to allocate memory for layout data.\n");
+            continue;
+        }
+        
         gba_split(layout, att_data, tilemap_size/2); // Damn DKC
         
         uint8_t *rgb = malloc(768);
-        uint8_t *bitplane = malloc(1024*4096*4);
+        uint8_t *bitplane = malloc(width*height*64*4);
+        
+        if (rgb == NULL || bitplane == NULL) {
+            printf("Failed to allocate memory for output image data.\n");
+            continue;
+        }
         
         decode_palette(rgb, &rom[levels[i].palette] - 0x40, 256);
         
         // Convert tiles to rgba
         gba_tiles(bitplane, &rom[levels[i].tileset], layout, att_data, rgb, tilemap_size/2, 0, 0);
-        arrange_gbc(bitplane, 1024, (tilemap_counter/4)*256, dir, levels[i].name);
+        arrange_gbc(bitplane, width*8, height*8, dir, levels[i].name);
         
         free(layout);
         free(att_data);
