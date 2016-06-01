@@ -16,9 +16,11 @@ endif
 ifdef LIBPNG
 	LIBS += -llibpng16
 	CFLAGS +=-DLIBPNG
+	DFLAGS +=-DLIBPNG
 else ifndef BITMAP
 	LIBS += -llodepng 
 	CFLAGS += -DLODEPNG
+	DFLAGS += -DLODEPNG
 endif
 
 FILES = \
