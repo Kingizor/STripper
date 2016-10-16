@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
     printf("\nKingizor's multi-Kong Decompressor\n\n");
     
-    if (argc != 2 && argc != 3) {
+    if (argc < 2) {
         show_usage();
         return 0;
     }
@@ -189,23 +189,24 @@ int main(int argc, char *argv[]) {
             
     */
     
-    int i = 2;
     int special = 0;
     int priority = 0;
     int tileset = 0;
     
-    if (argc == 3) {
-             if (!strcmp(argv[i], "-f")) priority = 2; // Foreground (Priority set)
-        else if (!strcmp(argv[i], "-b")) priority = 3; // Background (Priority not set)
-        else if (!strcmp(argv[i], "-o")) priority = 1; // Opaque (Use palette zero)
-        else if (!strcmp(argv[i], "-a")) special |= 0x01;
-        else if (!strcmp(argv[i], "-c")) special |= 0x02;
-        else if (!strcmp(argv[i], "-e")) special |= 0x04;
-        else if (!strcmp(argv[i], "-s")) special |= 0x08;
-        else if (!strcmp(argv[i], "-d")) special |= 0x10;
-        else if (!strcmp(argv[i], "-h")) special |= 0x30;
-        else if (!strcmp(argv[i], "-g")) special |= 0x08; // GB
-        else if (!strcmp(argv[i], "-t")) tileset = 1;
+    if (argc > 3) {
+        for (int i = 2; i < argc; i++) {
+                 if (!strcmp(argv[i], "-f")) priority = 2; // Foreground (Priority set)
+            else if (!strcmp(argv[i], "-b")) priority = 3; // Background (Priority not set)
+            else if (!strcmp(argv[i], "-o")) priority = 1; // Opaque (Use palette zero)
+            else if (!strcmp(argv[i], "-a")) special |= 0x01;
+            else if (!strcmp(argv[i], "-c")) special |= 0x02;
+            else if (!strcmp(argv[i], "-e")) special |= 0x04;
+            else if (!strcmp(argv[i], "-s")) special |= 0x08;
+            else if (!strcmp(argv[i], "-d")) special |= 0x10;
+            else if (!strcmp(argv[i], "-h")) special |= 0x30;
+            else if (!strcmp(argv[i], "-g")) special |= 0x08; // GB
+            else if (!strcmp(argv[i], "-t")) tileset = 1;
+        }
     }
     
     /*
