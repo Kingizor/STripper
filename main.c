@@ -35,8 +35,8 @@ static void show_usage() {
     printf("\n\t-c Rip complete layouts.");
     printf("\n\t-s Rip special screens.");
     printf("\n\t-e Rip decompressed 8x8 tiles. (DKC2&DKC3 only)");
-    printf("\n\t-d Use destructable tiles. (DKC3 only)");
-    printf("\n\t-h Use destructable tiles and omit normal tiles. (DKC3 only)\n");
+    printf("\n\t-d Use destructible tiles. (DKC3 only)");
+    printf("\n\t-h Use destructible tiles and omit normal tiles. (DKC3 only)\n");
     
     printf("\nDKL 1-3 (GB)");
     printf("\n\t-g Use greyscale palette instead of SGB.");

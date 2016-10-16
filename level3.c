@@ -356,7 +356,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             memset(tilemap, 0, map_counter);
         }
         
-        // Destructable Tiles (-d)
+        // Destructible Tiles (-d)
         if (special & 16 && terrain_damage(tilemap, map_counter, levels[i].position)) {
             free(tileset);
             free(raw_map);
