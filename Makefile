@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -fopenmp -Os -Wall -Werror
+CFLAGS = -fopenmp -O3 -Wall -Werror
 DFLAGS = -fopenmp -O0 -g -Wall -Werror
 LDFLAGS = -flto -s -fopenmp
 DLDFLAGS = -fopenmp
@@ -18,7 +18,7 @@ ifdef LIBPNG
 	CFLAGS +=-DLIBPNG
 	DFLAGS +=-DLIBPNG
 else ifndef BITMAP
-	LIBS += -llodepng 
+	LIBS += -llodepng_6
 	CFLAGS += -DLODEPNG
 	DFLAGS += -DLODEPNG
 endif
