@@ -103,6 +103,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x50D340, 0x24405C, 0x0493E4, "Kremling Kamp 2"},
         {0x50D500, 0x24405C, 0x04AC14, "Kremling Kamp 3"},
         {0x50E140, 0x247EE0, 0x057D04, "Davy Bones Locker"},
+        
         {0x50E300, 0x247EE0, 0x058514, "Cold Cold Forest 1"},
         {0x50E4C0, 0x247EE0, 0x059D44, "Cold Cold Forest 2"},
         {0x50E680, 0x247EE0, 0x05BD64, "Cold Cold Forest 3"},
@@ -151,14 +152,23 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x5138C0, 0x259D34, 0x0B6E54, "Climbing Race 2"},
         {0x513A80, 0x259D34, 0x0B96A4, "Climbing Race 3"},
         {0x513C40, 0x259D34, 0x0BBEF4, "Climbing Race 4"},
+        {0x513E00, 0x259D34, 0x0BE744, "Climbing Race 5 (Unused)"},
         {0x513FC0, 0x259D34, 0x0C0F94, "Obstacle Race 1"},
         {0x514180, 0x259D34, 0x0C37E4, "Obstacle Race 2"},
         {0x514340, 0x259D34, 0x0C6034, "Obstacle Race 3"},
+        {0x514500, 0x259D34, 0x0C8884, "Obstacle Race 4 (Unused)"},
         {0x5146C0, 0x259D34, 0x0CB0D4, "Attack Battle 1"},
         {0x514880, 0x259D34, 0x0CC0F4, "Attack Battle 2"},
+        {0x514A40, 0x259D34, 0x0CD104, "Attack Battle 3 (Unused)"},
         {0x514C00, 0x259D34, 0x0CE114, "Barrel Blast 1"},
         {0x514DC0, 0x259D34, 0x0CF134, "Barrel Blast 2"},
         {0x514F80, 0x259D34, 0x0D1154, "Color Capture"},
+
+        {0x510980, 0x2536CC, 0x090234, "Unused 1"},
+        {0x510EC0, 0x2536CC, 0x09A2D4, "Unused 2"},
+        {0x511400, 0x2536CC, 0x09E324, "Unused 3"},
+        {0x511780, 0x2536CC, 0x0A8454, "Unused 4"},
+        {0x515140, 0x259D34, 0x0D1964, "Unused 5"},
     };
     
     uint32_t length = sizeof(levels) / sizeof(struct kos_levels);
@@ -178,7 +188,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         uint32_t tilemaps[tilemap_counter];
         
         // Load pointers
-        for (int j = 0; j < tilemap_counter; j++) {
+        for (uint32_t j = 0; j < tilemap_counter; j++) {
             tilemaps[j] = rom[index] + (rom[index+1] << 8) + (rom[index+2] << 16);
             index += 4;
         }
