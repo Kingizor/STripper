@@ -766,7 +766,7 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         // Assemble complete layout from lay and raw
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
         
-        if (sgb == 5) {
+        if (sgb) {
             decode_palette(rgb, &bw[0], 4);
         }
         else {
@@ -1091,7 +1091,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         // Decode layout (raw is stored uncompressed in ROM)
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
         
-        if (sgb == 5) {
+        if (sgb) {
             decode_palette(rgb, &bw[0], 4);
         }
         else {
@@ -1296,7 +1296,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
         
-        if (sgb == 5) {
+        if (sgb) {
             decode_palette(rgb, &bw[0], 4);
         }
         else {

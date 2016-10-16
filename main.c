@@ -90,36 +90,30 @@ int main(int argc, char *argv[]) {
     fclose(romfile);
     
     char intname[25];
-    memcpy(intname, &rom[0xFFC0], 21);
-    intname[21] = '\0';
     char gbcname[20];
-    memcpy(gbcname, &rom[0x0134], 16);
-    gbcname[16] = '\0';
     char gbaname[10];
-    memcpy(gbaname, &rom[0x0A0], 8);
-    gbaname[8] = '\0';
-    char dsname[5];
-    memcpy(dsname, rom, 4);
-    dsname[4] = '\0';
+    char  dsname[ 5];
+    memcpy(intname, &rom[0xFFC0], 21);
+    memcpy(gbcname, &rom[0x0134], 16);
+    memcpy(gbaname, &rom[0x0A0 ],  8);
+    memcpy(dsname,   rom,          4);
+    intname[21] = '\0';
+    gbcname[16] = '\0';
+    gbaname[ 8] = '\0';
+     dsname[ 4] = '\0';
     
     int game = 0;
     int region = 3;
     
-    if (!strcmp(intname, "DONKEY KONG COUNTRY 3")) {
-        game = 3;
-        region = rom[0xFFD9];
-    }
-    else if (!strcmp(intname, "SUPER DONKEY KONG 3  ")) {
+    if (!strcmp(intname, "DONKEY KONG COUNTRY 3") ||
+        !strcmp(intname, "SUPER DONKEY KONG 3  ")) {
         game = 3;
         region = rom[0xFFD9];
     } // JP
-    else if (!strcmp(intname, "SUPER DONKEY KONG 2  ")) {
+    else if (!strcmp(intname, "DIDDY'S KONG QUEST   ") ||
+             !strcmp(intname, "SUPER DONKEY KONG 2  ")) {
         game = 2;
         region = rom[0xFFD9];
-    } // JP
-    else if (!strcmp(intname, "DIDDY'S KONG QUEST   ")) {
-        game = 2;
-        region = rom[0xFFD9]; // 0 = JP, 1 = US, 2 = EU
     }
     else if (!strcmp(intname, "DONKEY KONG COUNTRY  ")) {
         if (rom[0xFFD9] != 1 || rom[0xFFDB] != 0) {
@@ -202,28 +196,26 @@ int main(int argc, char *argv[]) {
              if (!strcmp(argv[i], "-f")) priority = 2; // Foreground (Priority set)
         else if (!strcmp(argv[i], "-b")) priority = 3; // Background (Priority not set)
         else if (!strcmp(argv[i], "-o")) priority = 1; // Opaque (Use palette zero)
-        else if (!strcmp(argv[i], "-a")) special = 1;  // Animated (Experimental)
-        else if (!strcmp(argv[i], "-c")) special = 2;  // Complete layouts
-        else if (!strcmp(argv[i], "-s")) special = 3;  // Special Screens
-        else if (!strcmp(argv[i], "-e")) special = 4;  // Raw Bitplanes
-        else if (!strcmp(argv[i], "-g")) special = 5;  // Greyscale Palette
+        else if (!strcmp(argv[i], "-a")) special |= 0x01;
+        else if (!strcmp(argv[i], "-c")) special |= 0x02;
+        else if (!strcmp(argv[i], "-e")) special |= 0x04;
+        else if (!strcmp(argv[i], "-s")) special |= 0x08;
+        else if (!strcmp(argv[i], "-d")) special |= 0x10;
+        else if (!strcmp(argv[i], "-h")) special |= 0x30;
+        else if (!strcmp(argv[i], "-g")) special |= 0x08; // GB
         else if (!strcmp(argv[i], "-t")) tileset = 1;
     }
     
     /*
-    For each map we need to decompress 
+    The "special" variable causes different modes to be enabled under certain conditions.
     
-    1) Bitplane Data.
-    2) Tile Assembly Data. (8x8 -> 32x32)
-    3) Level Layout Data.  (32x32 -> Level)
-    
-    The data from steps one and two is then used to decode the bitplane data.
-    
-    The resulting bitplane data is stored row by row, tile by tile. The assemble_bitplane function can be called to 
-    
-    The new image data can then be passed to the assembler function along with the level palette and the magic dimension.
-    
-    No need for free/malloc since the data can just be overwritten each time. Should only need to reset each counter to zero.
+    01 - Layout Animation frames (DKC23)
+    02 - Layouts (DKC123)
+    04 - Raw tiles (DKC23)
+    08 - Special Screens (DKC123)
+    10 - Damaged Terrain (DKC3)
+    20 - Empty Level (DKC3)
+    any- Greyscale Mode (DKL123)
     
     */
     
@@ -238,41 +230,38 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    if (special == 1 && game == 2) {
-        anim2(rom, dir, priority, region);
-        game = 0;
-    } // Animated (DKC2)
-    
-    if (special == 1 && game == 3) {
-        anim3(rom, dir, priority, region);
-        game = 0;
-    } // Animated (DKC3)
-    
-    if (special == 3 && game == 1) {
+    if (game == 1 && special & 8) {
         spec1(rom, dir);
         game = 0;
     } // Special Screens (DKC)
-    
-    if (special == 3 && game == 2) {
-        spec2(rom, dir, region);
-        game = 0;
-    } // Special Screens (DKC2)
-    
-    if (special == 3 && game == 3) {
-        spec3(rom, dir, region);
-        game = 0;
-    } // Special Screens (DKC3)
-    
-    if (special == 4 && game == 2) {
-        raw_bitplane2(rom, dir);
-        game = 0;
-    } // Raw Bitplanes (DKC2)
-    
-    if (special == 4 && game == 3) {
-        raw_bitplane3(rom, dir);
-        game = 0;
-    } // Raw Bitplanes (DKC3)
-    
+    else if (game == 2) {
+        if (special & 1) {
+            anim2(rom, dir, priority, region);
+            game = 0;
+        } // Animated (DKC2)
+        else if (special & 8) {
+            spec2(rom, dir, region);
+            game = 0;
+        } // Special Screens (DKC2)
+        else if (special & 4) {
+            raw_bitplane2(rom, dir);
+            game = 0;
+        } // Raw Bitplanes (DKC2)
+    }
+    else if (game == 3) {
+        if (special & 1) {
+            anim3(rom, dir, priority, region);
+            game = 0;
+        } // Animated (DKC3)
+        else if (special & 8) {
+            spec3(rom, dir, region);
+            game = 0;
+        } // Special Screens (DKC3)
+        else if (special & 4) {
+            raw_bitplane3(rom, dir);
+            game = 0;
+        } // Raw Bitplanes (DKC3)
+    }
     
     switch (game) {
         case 1: {

@@ -32,6 +32,71 @@ static void jungle_rope_fix(uint8_t *rom, uint8_t *tileset, int region) {
     memcpy(&tileset[0x2A0], &rom[jungle_offsets[jungle_fix]], 0x80);
 }
 
+static int terrain_damage(uint8_t *data, int length, int pos) {
+    switch(pos) {
+        case 0x37B43A: case 0x37B44E: case 0x37B444: { // Boardwalk
+            data[0x0690] = 1;
+            data[0x3714] = 1;
+            data[0x44B6] = 1;
+            break;
+        }
+        case 0x37B49F: case 0x37B4BD: { // Tree
+            data[0x0244] = 1; data[0x0246] = 2;
+            data[0x0274] = 3; data[0x0276] = 4;
+            data[0x0BBC] = 1; data[0x0BBE] = 2;
+            data[0x0BEC] = 3; data[0x0BEE] = 4;
+            data[0x1D5C] = 1; data[0x1D5E] = 2;
+            data[0x1D8C] = 3; data[0x1D8E] = 4; // BSBU
+            data[0x68B0] = 5; data[0x68B2] = 6;
+            data[0x68E0] = 7; data[0x68E2] = 8;
+            data[0x658C] = 1; data[0x658E] = 2;
+            data[0x65BC] = 3; data[0x65BE] = 4; // SS
+            break;
+        }
+        case 0x37B08D: case 0x37B097: { // Cave
+            data[0x1144] = 1; data[0x1290] = 1;
+            data[0x2128] = 1; data[0x4358] = 1;
+            data[0x4408] = 1; data[0x5DE2] = 1;
+            data[0x800E] = 1;
+            break;
+        }
+        case 0x37B0DE: { // Tyrant
+            data[0x3AEC] = 1; data[0x5A72] = 1;
+            break;
+        }
+        case 0x37B24B: case 0x37B241: { // Jungle
+            data[0x114E] = 1; data[0x2BD4] = 1;
+            data[0x3AEE] = 1; data[0x4070] = 1;
+            break;
+        }
+        case 0x37B3C0: case 0x37B3B6: { // Riverside
+            data[0x4AB2] = 1; data[0x6232] = 1;
+            data[0x69EC] = 1; data[0x8D70] = 1;
+            break;
+        }
+        case 0x37B1B3: case 0x37B1BD: { // Cliff
+            data[0x2AB8] = 2; data[0x2AB9] = 0;
+            data[0x3418] = 2; data[0x3419] = 0;
+            data[0x0354] = 1; data[0x0355] = 0;
+            data[0x05E2] = 1; data[0x05E3] = 0;
+            data[0x249A] = 1; data[0x249B] = 0;
+            data[0x342C] = 1; data[0x342D] = 0;
+            break;
+        }
+        case 0x37B1E6: { // Rumpus
+            data[0x38EE] = 2; data[0x38EF] = 0;
+            data[0x38D4] = 3; data[0x38D5] = 0;
+            data[0x38D6] = 4; data[0x38D7] = 0;
+            data[0x3974] = 5; data[0x3976] = 6;
+            break;
+        }
+        default: {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets, int region) {
 
 
@@ -64,8 +129,8 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {8, 0x37B333, 0x3D61C1, 0, "Doorstop Dash Bonus 1"},
         {8, 0x37B33D, 0x3D61C1, 0, "Doorstop Dash Bonus 2"},
         {11, 0x37B44E, 0x3DBA99, 0, "Tidal Trouble"},
-        {11, 0x37B476, 0x3DBA99, 0, "Tidal Trouble Bonus 1"},
-        {11, 0x37B480, 0x3DBA99, 0, "Tidal Trouble Bonus 2"},
+        {11, 0x37B46C, 0x3DBA99, 0, "Tidal Trouble Bonus 1"},
+        {11, 0x37B476, 0x3DBA99, 0, "Tidal Trouble Bonus 2"},
         {10, 0x37B3D5, 0x3D5FC1, 0, "Skidda's Row"},
         {10, 0x37B3F3, 0x3D5FC1, 0, "Skidda's Row Bonus 1"},
         {10, 0x37B3FD, 0x3D5FC1, 0, "Skidda's Row Bonus 2"},
@@ -220,10 +285,10 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {4, 0x37B1D1, 0x3D96F9, 0, "Rocket Rush"},
         {4, 0x37B1D1, 0x3D92F9, 0, "Rocket Rush (Krematoa)"},
     };
-    
+
     int length;
     
-    if (special) {
+    if (special & 2) {
         length = sizeof(archetype) / sizeof(struct Arch);
     }
     else {
@@ -236,7 +301,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         int arch, palette, pfix, river_fix, position;
         char *name;
         
-        if (special) {
+        if (special & 2) {
             arch = i;
             palette = archetype[arch].palette;
             pfix = 0;
@@ -286,6 +351,19 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             continue;
         }
         
+        // Empty Canvas
+        if (special & 32) {
+            memset(tilemap, 0, map_counter);
+        }
+        
+        // Destructable Tiles (-d)
+        if (special & 16 && terrain_damage(tilemap, map_counter, levels[i].position)) {
+            free(tileset);
+            free(raw_map);
+            free(tilemap);
+            continue;
+        }
+        
         uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
         
         if (bitplane == NULL) {
@@ -301,7 +379,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             assemble_bitplane(bitplane, 512, raw_counter, dir, levels[i].name);
         }
         else {
-            if (special) {
+            if (special & 2) {
                 position = 0;
                 river_fix = 0;
                 name = archetype[i].name;

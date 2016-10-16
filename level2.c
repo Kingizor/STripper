@@ -225,7 +225,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
     
     int length;
     
-    if (special) {
+    if (special & 2) {
         length = sizeof(archetype) / sizeof(struct Arch);
     }
     else {
@@ -238,7 +238,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         int arch, palette, pfix, position;
         char *name;
         
-        if (special) {
+        if (special & 2) {
             arch = i;
             palette = archetype[arch].palette;
             pfix = 0;
@@ -328,7 +328,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             assemble_bitplane(bitplane, 512, raw_counter, dir, levels[i].name);
         }
         else {
-            if (special) {
+            if (special & 2) {
                 position = 0;
                 name = archetype[i].name;
             }
