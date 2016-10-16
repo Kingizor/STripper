@@ -18,7 +18,7 @@ ifdef LIBPNG
 	CFLAGS +=-DLIBPNG
 	DFLAGS +=-DLIBPNG
 else ifndef BITMAP
-	LIBS += -llodepng_6
+	LIBS += -llodepng
 	CFLAGS += -DLODEPNG
 	DFLAGS += -DLODEPNG
 endif
