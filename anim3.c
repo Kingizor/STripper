@@ -6,7 +6,7 @@
 #include "decomp.h"
 
 void anim3(uint8_t *rom, char dir[255], int priority, int region) {
-
+    region = region; // Unused
     uint8_t  *bp_data = malloc(65535);
     uint8_t *raw_data = malloc(65535);
     uint8_t *lay_data_a = malloc(65535);
@@ -20,7 +20,6 @@ void anim3(uint8_t *rom, char dir[255], int priority, int region) {
     char name[255];
     #define bp_width 512
 
-    int i;
     
      bp_counter = 0;
     raw_counter = 0;
@@ -30,39 +29,20 @@ void anim3(uint8_t *rom, char dir[255], int priority, int region) {
     decomp(lay_data_a, rom, &lay_counter, 0x22849B);
     
     int jungle_tiles[] = {
-        0x2BC052, 0x2BC052, 0x2BC052,
-        0x2BC2D2, 0x2BC412, 0x2BC412,
-        0x2BC552, 0x2BC7D2, 0x2BC7D2,
-        0x2BC7D2, 0x2BC192, 0x2BC192,
-        0x2BC052, 0x2BC552, 0x2BC552,
-        0x2BC2D2, 0x2BC912, 0x2BC912,
-        0x2BC552, 0x2BC2D2, 0x2BC2D2,
-        0x2BC7D2, 0x2BC692, 0x2BC692
-    }; // 8*3
+        // 0x2BC2D2, 0x2BC552, 0x2BC7D2, 0x2BC052
+        0x2BC412, 0x2BC7D2, 0x2BC192, 0x2BC552, 0x2BC912, 0x2BC2D2, 0x2BC692, 0x2BC052
+    };
+    memset(bp_data, 0, 0xFFFF);
     
-    for (i = 0; i < 9; i++) {
+    for (size_t i = 0; i < sizeof(jungle_tiles) / sizeof(int); i++) {
         
-        if (i > 0) {
-            memcpy(&bp_data[0x020], &rom[jungle_tiles[((i-1)*3)  ]], 0x140);
-            memcpy(&bp_data[0x160], &rom[jungle_tiles[((i-1)*3)+1]], 0x140);
-            memcpy(&bp_data[0x2A0], &rom[jungle_tiles[((i-1)*3)+2]], 0x080);
-        }
+        // memcpy(&bp_data[0x020], &rom[jungle_tiles[i]], 0x140);
+        // memcpy(&bp_data[0x160], &rom[jungle_tiles[i]], 0x140);
+        memcpy(&bp_data[0x2A0], &rom[jungle_tiles[i]], 0x080);
         
-        if (region == 0) {
-            decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D9C39 - 77, raw_counter, bp_counter, 1, 0, priority);
-        }
-        else {
-            decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D9C39, raw_counter, bp_counter, 1, 0, priority);
-        }
-        sprintf(name, "Konveyor Rope Klash Tiles-%02d.png", i);
+        decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D9C39, raw_counter, bp_counter, 1, 0, priority);
+        sprintf(name, "KRK-%02zd", i);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
-        sprintf(name, "Konveyor Rope Klash-%02d.png", i);
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B24B, 0, 16, 0, dir, name);
-        sprintf(name, "Konveyor Rope Klash Bonus 1-%02d.png", i);
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B273, 0, 16, 0, dir, name);
-        sprintf(name, "Konveyor Rope Klash Bonus 2-%02d.png", i);
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B27D, 0, 16, 0, dir, name);
-        
     } // Jungle
     
     /*
@@ -81,40 +61,34 @@ void anim3(uint8_t *rom, char dir[255], int priority, int region) {
     lay_counter = 0;
     decomp( bp_data, rom, &bp_counter, 0x238D56);
     decomp(raw_data, rom, &raw_counter, 0x237402);
-    decomp(&lay_data_a, rom, &lay_counter, 0x233DD3);
+    decomp(lay_data_a, rom, &lay_counter, 0x233DD3);
     
     int factory_tiles[] = {
-        // ?
-    }
+        // 0x345600, 0x345720, 0x345840, 0x345960, 0x345A80, 0x345BA0 // Wheel
+        // 0x343380, 0x343540, 0x343700, 0x3438C0, 0x343A80, 0x343C40, 0x343000 // Lava1
+        // 0x344000, 0x344100, 0x344200, 0x344300, 0x344400, 0x344500, 0x343E00 // Lava2
+        0x344A00, 0x344C00, 0x344E00, 0x345000, 0x345200, 0x345400, 0x344600 // Lava3
+    };
     
-    for (i = 0; i < 0; i++) {
+    int len = sizeof(factory_tiles) / sizeof(int);
     
-        if (i > 0) {
-            memcpy(&bp_data[0x020], &rom[factory_tiles[((i-1)*3)  ]], 0x140);
-            memcpy(&bp_data[0x160], &rom[factory_tiles[((i-1)*3)+1]], 0x140);
-            memcpy(&bp_data[0x2A0], &rom[factory_tiles[((i-1)*3)+2]], 0x080);
-        }
-        decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D9E39, raw_counter, bp_counter, 1, 0, priority);
-        assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Fire-Ball Frenzy Tiles.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2A6, 1, 80, 0, dir, "Fire-Ball Frenzy.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2CE, 1, 80, 0, dir, "Fire-Ball Frenzy Bonus 1.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2D8, 1, 80, 0, dir, "Fire-Ball Frenzy Bonus 2.png");
+    for (int i = 0; i < len; i++) {
+        
+        memset(bp_data, 0, 0xFFFF);
+        
+        // memcpy(&bp_data[0x4E0], &rom[factory_tiles[i]], 0x120); // Wheel
+        // memcpy(&bp_data[0x020], &rom[factory_tiles[i]], 0x1C0); // Lava1
+        // memcpy(&bp_data[0x1E0], &rom[factory_tiles[i]], 0x100); // Lava2
+        memcpy(&bp_data[0x2E0], &rom[factory_tiles[i]], 0x200); // Lava3
         
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3DA039, raw_counter, bp_counter, 1, 0, priority);
-        assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Blazing Bazukas Tiles.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2B0, 1, 80, 0, dir, "Blazing Bazukas.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2C4, 1, 80, 0, dir, "Blazing Bazukas Bonus 1.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2EC, 1, 80, 0, dir, "Blazing Bazukas Bonus 2.png");
+        sprintf(name, "bb-%02d", i);
+        assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
         
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D9F39, raw_counter, bp_counter, 1, 0, priority);
-        assemble_bitplane(bitplane, bp_width, raw_counter, dir, "Krack Shot Kroc Tiles.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2BA, 1, 80, 0, dir, "Krack Shot Kroc.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2D8, 1, 80, 0, dir, "Krack Shot Kroc Bonus 1.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2E2, 1, 80, 0, dir, "Krack Shot Kroc Bonus 2.png");
+        sprintf(name, "ks-%02d", i);
+        assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
         
-        decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3DA139, raw_counter, bp_counter, 1, 0, priority);
-        assemble_bitplane(bitplane, bp_width, raw_counter, dir, "KAOS Karnage Tiles.png");
-        assemble_level(bitplane, rom, lay_data_a, lay_counter, 0x37B2F6, 1, 80, 0, dir, "KAOS Karnage.png");
     }
     */
 

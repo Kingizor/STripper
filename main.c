@@ -36,7 +36,8 @@ static void show_usage() {
     printf("\n\t-s Rip special screens.");
     printf("\n\t-e Rip decompressed 8x8 tiles. (DKC2&DKC3 only)");
     printf("\n\t-d Use destructible tiles. (DKC3 only)");
-    printf("\n\t-h Use destructible tiles and omit normal tiles. (DKC3 only)\n");
+    printf("\n\t-h Show destructible tiles only. (DKC3 only)");
+    printf("\n\t-n Show non-destructible tiles only. (DKC3 only)\n");
     
     printf("\nDKL 1-3 (GB)");
     printf("\n\t-g Use greyscale palette instead of SGB.");
@@ -193,20 +194,19 @@ int main(int argc, char *argv[]) {
     int priority = 0;
     int tileset = 0;
     
-    if (argc > 3) {
-        for (int i = 2; i < argc; i++) {
-                 if (!strcmp(argv[i], "-f")) priority = 2; // Foreground (Priority set)
-            else if (!strcmp(argv[i], "-b")) priority = 3; // Background (Priority not set)
-            else if (!strcmp(argv[i], "-o")) priority = 1; // Opaque (Use palette zero)
-            else if (!strcmp(argv[i], "-a")) special |= 0x01;
-            else if (!strcmp(argv[i], "-c")) special |= 0x02;
-            else if (!strcmp(argv[i], "-e")) special |= 0x04;
-            else if (!strcmp(argv[i], "-s")) special |= 0x08;
-            else if (!strcmp(argv[i], "-d")) special |= 0x10;
-            else if (!strcmp(argv[i], "-h")) special |= 0x30;
-            else if (!strcmp(argv[i], "-g")) special |= 0x08; // GB
-            else if (!strcmp(argv[i], "-t")) tileset = 1;
-        }
+    for (int i = 2; i < argc; i++) {
+             if (!strcmp(argv[i], "-f")) priority = 2; // Foreground (Priority set)
+        else if (!strcmp(argv[i], "-b")) priority = 3; // Background (Priority not set)
+        else if (!strcmp(argv[i], "-o")) priority = 1; // Opaque (Use palette zero)
+        else if (!strcmp(argv[i], "-a")) special |= 0x01;
+        else if (!strcmp(argv[i], "-c")) special |= 0x02;
+        else if (!strcmp(argv[i], "-e")) special |= 0x04;
+        else if (!strcmp(argv[i], "-s")) special |= 0x08;
+        else if (!strcmp(argv[i], "-d")) special |= 0x10;
+        else if (!strcmp(argv[i], "-h")) special |= 0x30;
+        else if (!strcmp(argv[i], "-n")) special |= 0x40;
+        else if (!strcmp(argv[i], "-g")) special |= 0x08; // GB
+        else if (!strcmp(argv[i], "-t")) tileset = 1;
     }
     
     /*
@@ -218,6 +218,7 @@ int main(int argc, char *argv[]) {
     08 - Special Screens (DKC123)
     10 - Damaged Terrain (DKC3)
     20 - Empty Level (DKC3)
+    40 - Non-damaged terrain (DKC3)
     any- Greyscale Mode (DKL123)
     
     */

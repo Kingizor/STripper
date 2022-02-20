@@ -6,7 +6,7 @@
 #include "decomp.h"
 
 void anim2(uint8_t *rom, char dir[255], int priority, int region) {
-
+    region = region; // Unused
     uint8_t  *bp_data = malloc(65535);
     uint8_t *raw_data = malloc(65535);
     uint8_t *lay_data_a = malloc(65535);
@@ -22,7 +22,6 @@ void anim2(uint8_t *rom, char dir[255], int priority, int region) {
     #define bp_width 512
     
     int i;
-    
     
     bp_counter = 0;
     raw_counter = 0;

@@ -14,8 +14,8 @@ void spec3(uint8_t *rom, char dir[255], int region) {
     int raw_counter;
     
     uint8_t *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
-    
     int i;
+    
     
     bp_counter = 0x520;
     raw_counter = 0x800;
@@ -1167,6 +1167,18 @@ void spec3(uint8_t *rom, char dir[255], int region) {
         decomp(bp_data, rom, &bp_counter, 0x294561);
         decode(rom, raw_data, &raw_counter, 0xDC4, 0x290000);
     }
+    i = 0;
+    uint8_t *data = malloc(0xFFFF);
+    decomp(data, rom, &i, 0x370000);
+    memcpy(&bp_data[0x5140], data, i);
+    bp_counter += i;
+    free(data);
+    memmove(&raw_data[0x1C0], raw_data, raw_counter);
+    for (i = 0; i < 0x200; i+=2) {
+        raw_data[i]   = rom[0x3625CB+(i ^ 0x20)];
+        raw_data[i+1] = rom[0x3625CB+(i ^ 0x20)+1] + 2;
+    }
+    raw_counter += 0x200;
     decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7801, raw_counter, bp_counter, 2, 0, 0);
     assemble_screen(bitplane, raw_counter, 32, dir, "Bleak BG2");
     

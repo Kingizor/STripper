@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -fopenmp -O3 -Wall -Werror
-DFLAGS = -fopenmp -O0 -g -Wall -Werror
+CFLAGS = -fopenmp -O3 -Wall -Werror -Wextra
+DFLAGS = -fopenmp -O0 -g -Wall -Werror -Wextra
 LDFLAGS = -flto -s -fopenmp
 DLDFLAGS = -fopenmp
 LIBS = -L.

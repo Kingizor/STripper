@@ -32,7 +32,7 @@ static void jungle_rope_fix(uint8_t *rom, uint8_t *tileset, int region) {
     memcpy(&tileset[0x2A0], &rom[jungle_offsets[jungle_fix]], 0x80);
 }
 
-static int terrain_damage(uint8_t *data, int length, int pos) {
+static int terrain_damage(uint8_t *data, int pos) {
     switch(pos) {
         case 0x37B43A: case 0x37B44E: case 0x37B444: { // Boardwalk
             data[0x0690] = 1;
@@ -96,6 +96,50 @@ static int terrain_damage(uint8_t *data, int length, int pos) {
     }
     return 0;
 }
+
+static int terrain_damage2(uint8_t *data, int pos) {
+    int index = 0;
+    uint8_t *copy = calloc(0xFFFF, 1);
+    uint8_t count[8] = {3, 20, 7, 2, 4, 4, 12, 8};
+    uint16_t values[8][20] = {
+        {0x0690, 0x3714, 0x44B6},
+        {0x0244, 0x0246, 0x0274, 0x0276, 0x0BBC, 0x0BBE, 0x0BEC, 0x0BEE, 0x1D5C, 0x1D5E, 0x1D8C, 0x1D8E, 0x68B0, 0x68B2, 0x68E0, 0x68E2, 0x658C, 0x658E, 0x65BC, 0x65BE},
+        {0x1144, 0x1290, 0x2128, 0x4358, 0x4408, 0x5DE2, 0x800E},
+        {0x3AEC, 0x5A72},
+        {0x114E, 0x2BD4, 0x3AEE, 0x4070},
+        {0x4AB2, 0x6232, 0x69EC, 0x8D70},
+        {0x2AB8, 0x2AB9, 0x3418, 0x3419, 0x0354, 0x0355, 0x05E2, 0x05E3, 0x249A, 0x249B, 0x342C, 0x342D},
+        {0x38EE, 0x38EF, 0x38D4, 0x38D5, 0x38D6, 0x38D7, 0x3974, 0x3976}
+    };
+    
+    switch(pos) {
+        case 0x37B43A:
+        case 0x37B44E:
+        case 0x37B444: index = 0; break; // Boardwalk
+        case 0x37B49F:
+        case 0x37B4BD: index = 1; break; // Tree
+        case 0x37B08D:
+        case 0x37B097: index = 2; break; // Cave
+        case 0x37B0DE: index = 3; break; // Tyrant
+        case 0x37B24B:
+        case 0x37B241: index = 4; break; // Jungle
+        case 0x37B3C0:
+        case 0x37B3B6: index = 5; break; // Riverside
+        case 0x37B1B3:
+        case 0x37B1BD: index = 6; break; // Cliff
+        case 0x37B1E6: index = 7; break; // Rumpus
+        default: free(copy); return 1;
+    }
+    int len = count[index];
+    for (int i = 0; i < len; i++) {
+        uint16_t addr = values[index][i];
+        copy[addr] = data[addr];
+    }
+    memcpy(data, copy, 0xFFFF);
+    free(copy);
+    return 0;
+}
+
 
 void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets, int region) {
 
@@ -283,7 +327,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {12, 0x37B50D, 0x3D5DE1, 0, "Swoopy Salvo Bonus 2 (Krematoa)"},
         {12, 0x37B517, 0x3D5DE1, 0, "Swoopy Salvo Bonus 3 (Krematoa)"},
         {4, 0x37B1D1, 0x3D96F9, 0, "Rocket Rush"},
-        {4, 0x37B1D1, 0x3D92F9, 0, "Rocket Rush (Krematoa)"},
+        {4, 0x37B1D1, 0x3D92F9, 0, "Rocket Rush (Krematoa)"}
     };
 
     int length;
@@ -352,12 +396,18 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         }
         
         // Empty Canvas
-        if (special & 32) {
+        if (special & 0x20) {
             memset(tilemap, 0, map_counter);
         }
         
         // Destructible Tiles (-d)
-        if (special & 16 && terrain_damage(tilemap, map_counter, levels[i].position)) {
+        if ((special & 0x10) && terrain_damage(tilemap, levels[i].position)) {
+            free(tileset);
+            free(raw_map);
+            free(tilemap);
+            continue;
+        }
+        if ((special & 0x40) && terrain_damage2(tilemap, levels[i].position)) {
             free(tileset);
             free(raw_map);
             free(tilemap);
@@ -373,6 +423,8 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         
         if (region == 0) palette -= 77; // JP Palette Offsetting
         
+        if (arch == 6) jungle_rope_fix(rom, tileset, region); // Jungle Rope
+                
         decode_bitplane(rom, tileset, raw_map, bitplane, palette, raw_counter, set_counter, 1, pfix, priority);
         
         if (tilesets) {
@@ -387,7 +439,6 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             else {
                 position = levels[i].position;
                 river_fix = (arch == 9) ? 1 : 0; // Riverside Garbage
-                if (arch == 6) jungle_rope_fix(rom, tileset, region); // Jungle Rope
                 name = levels[i].name;
             }
             
