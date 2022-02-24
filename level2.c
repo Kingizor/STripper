@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <bd_comp.h>
 #include "bitplane.h"
-#include "decomp.h"
 
 struct Arch {
     int tileset; // Bitplane
@@ -24,8 +24,15 @@ struct Level {
 };
 
 
-void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets, int region) {
-    
+void level2 (
+    unsigned char *rom,
+    size_t rom_size,
+    char *dir,
+    int priority,
+    int special,
+    int tilesets,
+    int region
+) {
     struct Arch archetype[] = {
         {0x1F8116, 0x25C627, 0x23E006, 0, 16, 0x3D0CD0, "Ship Deck"},
         {0x1FD537, 0x25E0C8, 0x23F9B2, 1, 32, 0x3D1610, "Ship Mast"},
@@ -47,7 +54,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {0x229E5F, 0x26A896, 0x254351, 1, 16, 0x3D398E, "Ice 2"},
         {0x22E556, 0x26C9FF, 0x254E8A, 0, 16, 0x3D430E, "Jungle"}
     };
-    
+
     struct Level levels[] = {
         {0, 0x35BE29, 0x3D0CD0, 0, "Pirate Panic"},
         {0, 0x35BE5B, 0x3D0CD0, 0, "Pirate Panic Bonus 1"},
@@ -72,7 +79,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {1, 0x35BEF7, 0x3D14F0, 0, "Topsail Trouble Bonus 2"},
         {1, 0x35BEC5, 0x3D14F0, 0, "Topsail Trouble Warp Room"},
         {1, 0x35BE93, 0x3D1610, 0, "Krow's Nest"},
-        
+
         {8, 0x35BF49, 0x3D0DF0, 0, "Hot Head Hop"},
         {8, 0x35BF8F, 0x3D0DF0, 0, "Hot Head Hop Bonus 1"},
         {8, 0x35BF67, 0x3D0DF0, 0, "Hot Head Hop Bonus 2 & Warp Room"},
@@ -101,7 +108,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {9, 0x35C009, 0x3D238E, 97, "Squawks's Shaft Bonus 3 (Fixed)"},
         {9, 0x35BFF5, 0x3D238E, 97, "Squawks's Shaft Warp Room (Fixed)"},
         {8, 0x35BF7B, 0x3D0DF0, 0, "Kleever's Kiln"},
-        
+
         {10, 0x35C041, 0x3D27EE, 0, "Barrel Bayou"},
         {10, 0x35C073, 0x3D27EE, 0, "Barrel Bayou Bonus 1"},
         {10, 0x35C07D, 0x3D27EE, 0, "Barrel Bayou Bonus 2"},
@@ -130,7 +137,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {12, 0x35C279, 0x3D28EE, 0, "Bramble Blast Bonus 1"},
         {12, 0x35C23D, 0x3D28EE, 0, "Bramble Blast Bonus 2"},
         {10, 0x35C0AF, 0x3D27EE, 0, "Kudgel's Kontest"},
-        
+
         {4, 0x35BDD3, 0x3D0A10, 0, "Hornet Hole"},
         {4, 0x35BDF1, 0x3D0A10, 0, "Hornet Hole Bonus 1"},
         {5, 0x35BFC7, 0x3D0A10, 0, "Hornet Hole Bonus 2"},
@@ -153,7 +160,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {4, 0x35BE19, 0x3D0A10, 0, "Rambi Rumble Bonus 2"},
         {4, 0x35BDDD, 0x3D0A10, 0, "Rambi Rumble Rambi Room"},
         {5, 0x35BFBD, 0x3D0A10, 0, "King Zing Sting"},
-        
+
         {3, 0x35BD1D, 0x3D06F0, 0, "Ghostly Grove"},
         {3, 0x35BD3B, 0x3D06F0, 0, "Ghostly Grove Bonus 1"},
         {3, 0x35BD59, 0x3D06F0, 0, "Ghostly Grove Bonus 2"},
@@ -174,7 +181,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {3, 0x35BD63, 0x3D3A4E, 0, "Web Woods Bonus 2"},
         {3, 0x35BD31, 0x3D3A4E, 0, "Web Woods - Squitter Room"},
         {1, 0x35BEBB, 0x3D14F0, 0, "Kreepy Krow"},
-        
+
         {16, 0x35C177, 0x3D398E, 0, "Arctic Abyss"},
         {16, 0x35C1A9, 0x3D398E, 0, "Arctic Abyss Bonus 1"},
         {16, 0x35C1BD, 0x3D398E, 0, "Arctic Abyss Bonus 2"},
@@ -194,11 +201,11 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {13, 0x35C115, 0x3D2DEE, 56, "Toxic Tower (Underwater)"},
         {12, 0x35C26F, 0x3D28EE, 0, "Toxic Tower Bonus 1"},
         {13, 0x35C147, 0x3D2DEE, 0, "Stronghold Showdown"},
-        
+
         {11, 0x35C0D3, 0x3D29EE, 0, "Screech's Sprint"},
         {12, 0x35C283, 0x3D29EE, 0, "Screech's Sprint Bonus"},
         {15, 0x35C167, 0x3D314E, 0, "K.Rool Duel"},
-        
+
         {18, 0x35C1FF, 0x3D440E, 0, "Jungle Jinx"},
         {18, 0x35C1F5, 0x3D430E, 0, "Jungle Jinx Bonus"},
         {8, 0x35BF5D, 0x3D0EF0, 0, "Fiery Furnace"},
@@ -214,7 +221,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {18, 0x35C213, 0x3D3B6E, 0, "Animal Antics - Rattly"},
         {11, 0x35C0DD, 0x3D28EE, 0, "Animal Antics Bonus"},
         {14, 0x35C157, 0x3D2CEE, 0, "Krocodile Kore"},
-        
+
         {3, 0x35BD6D, 0x3D3A4E, 0, "Forest Unused Area"},
         {10, 0x35C069, 0x3D460E, 0, "Swamp Unused Area 1"},
         {10, 0x35C0A5, 0x3D460E, 0, "Swamp Unused Area 2"},
@@ -222,22 +229,22 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {13, 0x35C101, 0x3D2DEE, 0, "Castle BG"},
         {18, 0x35C1D7, 0x3D3B6E, 0, "Jungle BG"}
     };
-    
+
     int length;
-    
+
     if (special & 2) {
         length = sizeof(archetype) / sizeof(struct Arch);
     }
     else {
         length = sizeof(levels) / sizeof(struct Level);
     }
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
-        
+
         int arch, palette, pfix, position;
         char *name;
-        
+
         if (special & 2) {
             arch = i;
             palette = archetype[arch].palette;
@@ -248,7 +255,7 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             palette = levels[i].palette;
             pfix = levels[i].palette_fix;
         }
-        
+
         if (tilesets) {
             int duplicate = 0;
             for (int j = 0; j < i; j++) {
@@ -261,19 +268,15 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
                 continue;
             }
         }
-        
-        uint8_t *tileset = calloc(0xFFFF, 1);
-        uint8_t *raw_map = calloc(0xFFFF, 1);
-        uint8_t *tilemap = calloc(0xFFFF, 1);
-        int set_counter = 0;
-        int raw_counter = 0;
-        int map_counter = 0;
-        
-        if ((tileset == NULL) || (raw_map == NULL) || (tilemap == NULL)) {
-            printf("Failed to allocate memory for decompression.\n");
-            continue;
-        }
-        
+
+        unsigned char *tileset  = NULL;
+        unsigned char *raw_map  = NULL;
+        unsigned char *tilemap  = NULL;
+        unsigned char *bitplane = NULL;
+        size_t set_counter = 0;
+        size_t raw_counter = 0;
+        size_t map_counter = 0;
+
         // Data offsets for different regions
         if (region != 1) {
             archetype[arch].raw_map += 25;
@@ -283,26 +286,28 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
                 archetype[arch].tileset += 25;
             }
         }
-        
+
         // Decompression
-        if (decomp(tileset, rom, &set_counter, archetype[arch].tileset)) {
-            printf("Error: Tileset decompression failed.\n");
+        //
+        if (bd_decompress_mem_to_mem(&tileset, &set_counter, &rom[archetype[arch].tileset], rom_size)) {
+            fprintf(stderr, "Tileset decompression failed. (%d)\n", i);
             continue;
         }
-        if (decomp(raw_map, rom, &raw_counter, archetype[arch].raw_map)) {
-            printf("Error: Raw map decompression failed.\n");
-            continue;
+        if (bd_decompress_mem_to_mem(&raw_map, &raw_counter, &rom[archetype[arch].raw_map], rom_size)) {
+            fprintf(stderr, "Raw map decompression failed. (%d)\n", i);
+            goto cleanup;
         }
-        
+
+
         if (arch == 15) { // K.Rool Duel
             memcpy(tilemap, &rom[archetype[arch].tilemap], 0x100);
             map_counter = 0x100;
         }
-        else if (decomp(tilemap, rom, &map_counter, archetype[arch].tilemap)) {
-            printf("Error: Tilemap decompression failed.\n");
-            continue;
+        else if (bd_decompress_mem_to_mem(&tilemap, &map_counter, &rom[archetype[arch].tilemap], rom_size)) {
+            fprintf(stderr, "Tilemap decompression failed. (%d)\n", i);
+            goto cleanup;
         }
-        
+
         if (arch == 8) { // Lava Numbers
             memcpy(&tileset[0x340], &rom[0x3B4FC0], 0x1A0);
             memcpy(&tileset[0x020], &rom[0x351047], 0x180);
@@ -314,16 +319,16 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             memcpy(&tileset[0x4840], &rom[0x21BF3E], 0x37C0);
             set_counter = 0x8000;
         }
-        
-        uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
-        
+
+        bitplane = malloc((map_counter / 2) * 1024 * 4);
+
         if (bitplane == NULL) {
             printf("Failed to allocate memory for image data.\n");
-            continue;
+            goto cleanup;
         }
-        
+
         decode_bitplane(rom, tileset, raw_map, bitplane, palette, raw_counter, set_counter, 1, pfix, priority);
-        
+
         if (tilesets) {
             assemble_bitplane(bitplane, 512, raw_counter, dir, levels[i].name);
         }
@@ -336,16 +341,15 @@ void level2(uint8_t *rom, char dir[255], int priority, int special, int tilesets
                 position = levels[i].position;
                 name = levels[i].name;
             }
-            
             assemble_level(bitplane, rom, tilemap, map_counter, position, archetype[arch].vert, archetype[arch].map_size, 0, dir, name);
         }
-        
+
+cleanup:
         free(tileset);
         free(raw_map);
         free(tilemap);
         free(bitplane);
-        
     }
-    
+
     return;
 }

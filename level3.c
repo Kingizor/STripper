@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <bd_comp.h>
 #include "bitplane.h"
-#include "decomp.h"
 #include "misc.h"
 
 struct Arch {
@@ -111,7 +111,7 @@ static int terrain_damage2(uint8_t *data, int pos) {
         {0x2AB8, 0x2AB9, 0x3418, 0x3419, 0x0354, 0x0355, 0x05E2, 0x05E3, 0x249A, 0x249B, 0x342C, 0x342D},
         {0x38EE, 0x38EF, 0x38D4, 0x38D5, 0x38D6, 0x38D7, 0x3974, 0x3976}
     };
-    
+
     switch(pos) {
         case 0x37B43A:
         case 0x37B44E:
@@ -141,9 +141,15 @@ static int terrain_damage2(uint8_t *data, int pos) {
 }
 
 
-void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets, int region) {
-
-
+void level3 (
+    unsigned char *rom,
+    size_t rom_size,
+    char *dir,
+    int priority,
+    int special,
+    int tilesets,
+    int region
+) {
     struct Arch archetype[] = {
         {0x208E80, 0x2077C6, 0x205BC3, 1, 96, 0x3DA439, "Caves 1"},
         {0x208E80, 0x2077C6, 0x20F035, 0, 32, 0x3DA439, "Caves 2"},
@@ -164,7 +170,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {0x27F2F2, 0x27D66A, 0x27CBA4, 1, 28, 0x3D5701, "Waterfall 1"},
         {0x27F2F2, 0x27D66A, 0x284EF1, 1, 80, 0x3D5701, "Waterfall 2"}
     };
-    
+
     struct Level levels[] = {
         {11, 0x37B43A, 0x3D5601, 0, "Lakeside Limbo"},
         {11, 0x37B458, 0x3D5601, 0, "Lakeside Limbo Bonus 1"},
@@ -182,7 +188,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {8, 0x37B351, 0x3D6901, 0, "Murky Mill Bonus 1"},
         {8, 0x37B35B, 0x3D6901, 0, "Murky Mill Bonus 2"},
         {8, 0x37B329, 0x3D6301, 0, "Belcha's Barn"},
-        
+
         {12, 0x37B49F, 0x3D5D01, 0, "Barrel Shield Bust-Up"},
         {12, 0x37B4C7, 0x3D5D01, 0, "Barrel Shield Bust-Up Bonus 1"},
         {12, 0x37B4D1, 0x3D5D01, 0, "Barrel Shield Bust-Up Bonus 2"},
@@ -197,7 +203,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {9, 0x37B3C0, 0x3D7B21, 0, "Bobbing Barrel Brawl"},
         {9, 0x37B3A2, 0x3D7B21, 0, "Bobbing Barrel Brawl Bonuses 1&2"},
         {12, 0x37B4B3, 0x3D5EC1, 0, "Arich's Ambush"},
-        
+
         {3, 0x37B158, 0x3D8161, 0, "Bazza's Blockade (Natural)"},
         {3, 0x37B162, 0x3D8161, 0, "Bazza's Blockade Bonus 1 (Natural)"},
         {3, 0x37B16C, 0x3D8161, 0, "Bazza's Blockade Bonus 2 (Natural)"},
@@ -222,7 +228,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {3, 0x37B180, 0x3DB899, 52, "Fish Food Frenzy Bonus 2 (Fixed)"},
         {1, 0x37B0B6, 0x3DA439, 0, "Fish Food Frenzy Cave"},
         {17, 0x37B602, 0x3D5A01, 0, "Squirt's Showdown"},
-        
+
         {7, 0x37B2A6, 0x3D9E39, 0, "Fire-Ball Frenzy"},
         {7, 0x37B2CE, 0x3D9E39, 0, "Fire-Ball Frenzy Bonus 1"},
         {7, 0x37B2D8, 0x3D9E39, 0, "Fire-Ball Frenzy Bonus 2"},
@@ -239,7 +245,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {13, 0x37B540, 0x3D7F61, 0, "Low-G Labyrinth Bonus 1"},
         {13, 0x37B54A, 0x3D7F61, 0, "Low-G Labyrinth Bonus 2"},
         {7, 0x37B2F6, 0x3DA139, 0, "KAOS Karnage"},
-        
+
         {4, 0x37B1B3, 0x3D94F9, 0, "Krevice Kreepers"},
         {5, 0x37B1F0, 0x3D94F9, 0, "Krevice Kreepers Bonus 1"},
         {5, 0x37B1FA, 0x3D94F9, 0, "Krevice Kreepers Bonus 2"},
@@ -255,7 +261,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {10, 0x37B3DF, 0x3DBB99, 0, "Lemguin Lunge"},
         {10, 0x37B407, 0x3DBB99, 0, "Lemguin Lunge Bonus 1"},
         {10, 0x37B411, 0x3DBB99, 0, "Lemguin Lunge Bonus 2"},
-        
+
         {0, 0x37B08D, 0x3DA439, 0, "Buzzer Barrage"},
         {1, 0x37B0CA, 0x3DA439, 0, "Buzzer Barrage Bonus 1"},
         {1, 0x37B0FC, 0x3DA439, 0, "Buzzer Barrage Bonus 2"},
@@ -278,7 +284,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {5, 0x37B20E, 0x3D93F9, 0, "Ropey Rumpus Bonus 1"},
         {5, 0x37B218, 0x3D93F9, 0, "Ropey Rumpus Bonus 2"},
         {2, 0x37B139, 0x3DB799, 0, "Barbos' Barrier"},
-        
+
         {6, 0x37B24B, 0x3D9C39, 0, "Konveyor Rope Klash"},
         {6, 0x37B273, 0x3D9C39, 0, "Konveyor Rope Klash Bonus 1"},
         {6, 0x37B27D, 0x3D9C39, 0, "Konveyor Rope Klash Bonus 2"},
@@ -297,7 +303,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
         {14, 0x37B59C, 0x3D8061, 0, "Poisonous Pipeline"},
         {13, 0x37B554, 0x3D8061, 0, "Poisonous Pipeline Bonus 1"},
         {13, 0x37B55E, 0x3D8061, 0, "Poisonous Pipeline Bonus 2"},
-        
+
         {6, 0x37B255, 0x3D9A39, 0, "Stampede Sprint"},
         {6, 0x37B287, 0x3D9A39, 0, "Stampede Sprint Bonuses 1&3"},
         {6, 0x37B291, 0x3D9A39, 0, "Stampede Sprint Bonus 2"},
@@ -331,20 +337,20 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
     };
 
     int length;
-    
+
     if (special & 2) {
         length = sizeof(archetype) / sizeof(struct Arch);
     }
     else {
         length = sizeof(levels) / sizeof(struct Level);
     }
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
-        
+
         int arch, palette, pfix, river_fix, position;
         char *name;
-        
+
         if (special & 2) {
             arch = i;
             palette = archetype[arch].palette;
@@ -355,7 +361,7 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
             palette = levels[i].palette;
             pfix = levels[i].palette_fix;
         }
-        
+
         if (tilesets) {
             int duplicate = 0;
             for (int j = 0; j < i; j++) {
@@ -368,65 +374,57 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
                 continue;
             }
         }
-        
-        uint8_t *tileset = calloc(0xFFFF, 1);
-        uint8_t *raw_map = calloc(0xFFFF, 1);
-        uint8_t *tilemap = calloc(0xFFFF, 1);
-        int set_counter = 0;
-        int raw_counter = 0;
-        int map_counter = 0;
-        
-        if ((tileset == NULL) || (raw_map == NULL) || (tilemap == NULL)) {
-            printf("Failed to allocate memory for decompression.\n");
-            continue;
-        }
-        
+
+        unsigned char *tileset  = NULL;
+        unsigned char *raw_map  = NULL;
+        unsigned char *tilemap  = NULL;
+        unsigned char *bitplane = NULL;
+        size_t set_counter = 0;
+        size_t raw_counter = 0;
+        size_t map_counter = 0;
+
         // Decompression
-        if (decomp(tileset, rom, &set_counter, archetype[arch].tileset)) {
-            printf("Error: Tileset decompression failed.\n");
+        if (bd_decompress_mem_to_mem(&tileset, &set_counter, &rom[archetype[arch].tileset], rom_size)) {
+            fprintf(stderr, "Tileset decompression failed. (%d)\n", i);
             continue;
         }
-        if (decomp(raw_map, rom, &raw_counter, archetype[arch].raw_map)) {
-            printf("Error: Raw map decompression failed.\n");
-            continue;
+        if (bd_decompress_mem_to_mem(&raw_map, &raw_counter, &rom[archetype[arch].raw_map], rom_size)) {
+            fprintf(stderr, "Raw map decompression failed. (%d)\n", i);
+            goto cleanup;
         }
-        if (decomp(tilemap, rom, &map_counter, archetype[arch].tilemap)) {
-            printf("Error: Tilemap decompression failed.\n");
-            continue;
+        if (bd_decompress_mem_to_mem(&tilemap, &map_counter, &rom[archetype[arch].tilemap], rom_size)) {
+            fprintf(stderr, "Tilemap decompression failed. (%d)\n", i);
+            goto cleanup;
         }
-        
+
         // Empty Canvas
         if (special & 0x20) {
             memset(tilemap, 0, map_counter);
         }
-        
+
         // Destructible Tiles (-d)
         if ((special & 0x10) && terrain_damage(tilemap, levels[i].position)) {
-            free(tileset);
-            free(raw_map);
-            free(tilemap);
-            continue;
+            goto cleanup;
         }
         if ((special & 0x40) && terrain_damage2(tilemap, levels[i].position)) {
-            free(tileset);
-            free(raw_map);
-            free(tilemap);
-            continue;
+            goto cleanup;
         }
-        
-        uint8_t *bitplane = malloc((map_counter / 2) * 1024 * 4);
-        
+
+        bitplane = malloc((map_counter / 2) * 1024 * 4);
+
         if (bitplane == NULL) {
             printf("Failed to allocate memory for image data.\n");
-            continue;
+            goto cleanup;
         }
-        
-        if (region == 0) palette -= 77; // JP Palette Offsetting
-        
-        if (arch == 6) jungle_rope_fix(rom, tileset, region); // Jungle Rope
-                
+
+        if (region == 0) // JP Palette Offsetting
+            palette -= 77;
+
+        if (arch == 6) // Jungle Rope
+            jungle_rope_fix(rom, tileset, region);
+
         decode_bitplane(rom, tileset, raw_map, bitplane, palette, raw_counter, set_counter, 1, pfix, priority);
-        
+
         if (tilesets) {
             assemble_bitplane(bitplane, 512, raw_counter, dir, levels[i].name);
         }
@@ -441,16 +439,13 @@ void level3(uint8_t *rom, char dir[255], int priority, int special, int tilesets
                 river_fix = (arch == 9) ? 1 : 0; // Riverside Garbage
                 name = levels[i].name;
             }
-            
             assemble_level(bitplane, rom, tilemap, map_counter, position, archetype[arch].vert, archetype[arch].map_size, river_fix, dir, name);
-            
         }
-        
+
+cleanup:
         free(tileset);
         free(raw_map);
         free(tilemap);
         free(bitplane);
     }
-    
-    return;
 }

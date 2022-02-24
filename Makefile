@@ -1,72 +1,44 @@
-CC = gcc
-CFLAGS = -fopenmp -O3 -Wall -Werror -Wextra
-DFLAGS = -fopenmp -O0 -g -Wall -Werror -Wextra
-LDFLAGS = -flto -s -fopenmp
-DLDFLAGS = -fopenmp
-LIBS = -L.
-WINDRES = windres
-TARGET  := stripper
-DTARGET := stripper_d
+CFLAGS += -Wall -Wextra -Werror -Wno-unknown-pragmas
+CFLAGS += -Og -g
+CFLAGS += -fsanitize=address
+CFLAGS += -fsanitize=leak
+CFLAGS += -fsanitize=undefined
+CFLAGS += -fstack-protector-all
+CFLAGS += -fopenmp
+CFLAGS += -DLODEPNG
+# LDFLAGS = -flto -s -fopenmp
+LDFLAGS = -lxxhash -lbd_comp -lsd_comp -llodepng
+TARGET = stripper
 
-ifeq ($(OS),Windows_NT)
-	TARGET = stripper.exe
-	DTARGET = stripper_d.exe
-endif
-
-ifdef LIBPNG
-	LIBS += -llibpng16
-	CFLAGS +=-DLIBPNG
-	DFLAGS +=-DLIBPNG
-else ifndef BITMAP
-	LIBS += -llodepng
-	CFLAGS += -DLODEPNG
-	DFLAGS += -DLODEPNG
-endif
-
-FILES = \
-	main.o \
-	decomp.o \
-	decode.o \
-	misc.o \
-	bitplane.o \
-	spec1.o \
-	spec2.o \
-	spec3.o \
-	level1.o \
-	level2.o \
-	level3.o \
-	raw_bit2.o \
-	raw_bit3.o \
-	anim2.o \
-	anim3.o \
-	dkc_gbc.o \
-	dkc_gba.o \
-	gba_misc.o \
-	dkc2_decomp.o \
+OBJ = main.o \
+	misc.o bitplane.o \
+	spec1.o spec2.o spec3.o \
+	level1.o level2.o level3.o \
+	raw_bit2.o raw_bit3.o \
+	dkc_gbc.o dkl.o \
+	dkc_gba.o dkc2_decomp.o \
 	dkc2_gba.o \
-	dkl.o \
-	kos.o \
-	jc.o \
+	gba_misc.o \
+	kos.o jc.o \
     png.o
+#   anim2.o anim3.o
 
-ODIR=obj
-OBJECTS = $(patsubst %,$(ODIR)/%,$(FILES))
-
-stripper: $(OBJECTS)
-	$(CC) $^ -o $(TARGET) $(LIBS) $(LDFLAGS)
+stripper: $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(TARGET)
 	
-$(ODIR)/%.o: %.c
-	$(CC) $< -o $@ -c $(CFLAGS)
-	
-$(ODIR)/%.res: %.rc
-	$(WINDRES) $< -O coff -o $@
-
-debug: CFLAGS = $(DFLAGS)
-debug: LDFLAGS = $(DLDFLAGS)
-debug: TARGET = $(DTARGET)
-debug: stripper
-
-.PHONY: clean
+# deps
+main.c: 								 main.h
+level1.c level3.c spec3.c: 				 misc.h
+dkc_gba.c dkc2_gba.c kos.c jc.c: 		 gba_misc.h
+dkc2_gba.c gba_misc.c: 					 dkc2_decomp.h
+level2.c level3.c raw_bit2.c raw_bit3.c: decomp.h
+spec2.c spec3.c: 						 decomp.h
+anim2.c anim3.c: 						 decomp.h
+level1.c level2.c level3.c:              bitplane.h
+raw_bit2.c raw_bit3.c:                   bitplane.h
+spec1.c spec2.c spec3.c:                 bitplane.h
+anim2.c anim3.c: 		                 bitplane.h
+bitplane.c misc.c gba_misc.c jc.c kos.c: bitplane.h
 
 clean:
-	@rm -rf $(OBJECTS) $(TARGET) $(DTARGET)
+	rm $(OBJ) $(TARGET)

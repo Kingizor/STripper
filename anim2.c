@@ -5,18 +5,18 @@
 #include "bitplane.h"
 #include "decomp.h"
 
-void anim2(uint8_t *rom, char dir[255], int priority, int region) {
+void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int region) {
     region = region; // Unused
-    uint8_t  *bp_data = malloc(65535);
-    uint8_t *raw_data = malloc(65535);
-    uint8_t *lay_data_a = malloc(65535);
-    uint8_t *lay_data_b = malloc(65535);
+    unsigned char  *bp_data = malloc(65535);
+    unsigned char *raw_data = malloc(65535);
+    unsigned char *lay_data_a = malloc(65535);
+    unsigned char *lay_data_b = malloc(65535);
     int  bp_counter;
     int raw_counter;
     int lay_counter_a;
     // int lay_counter_b;
     
-    uint8_t *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
+    unsigned char *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
     
     char name[255];
     #define bp_width 512
@@ -52,7 +52,7 @@ void anim2(uint8_t *rom, char dir[255], int priority, int region) {
         // 0x3B6340, 0x351647, 0x3B0AE0, 0x3B3420 // 3
     // };
     
-    // uint8_t fake_layout[] = {
+    // unsigned char fake_layout[] = {
         // 0x73, 0x00, 0x7C, 0x00, 0xA2, 0x00, 0xAD, 0x00,
         // 0xBE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         // 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

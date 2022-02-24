@@ -1,1839 +1,698 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
+#include <bd_comp.h>
+#include <sd_comp.h>
 #include "bitplane.h"
-#include "decomp.h"
 #include "misc.h"
 
-void spec3(uint8_t *rom, char dir[255], int region) {
+enum COMP_TYPE {
+    RAW = 0,
+    COMP_BD,
+    COMP_SD,
+    SPEC
+};
 
-    uint8_t  *bp_data = malloc(65535);
-    uint8_t *raw_data = malloc(65535);
-    int bp_counter;
-    int raw_counter;
-    
-    uint8_t *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
-    int i;
-    
-    
-    bp_counter = 0x520;
-    raw_counter = 0x800;
-    memset(raw_data, 0, 0x800);
-    if (region == 1) {
-        memcpy(bp_data, &rom[0x298030], 0x520);
-        memcpy(&raw_data[0x340], &rom[0x297FB0], 0x80);
-    }
-    else if (region == 2) {
-        memcpy(bp_data, &rom[0x298030 - 1], 0x520);
-        memcpy(&raw_data[0x340], &rom[0x297FB0 - 1], 0x80);
-    }
-    else {
-        memcpy(bp_data, &rom[0x298030 - 700], 0x520);
-        memcpy(&raw_data[0x340], &rom[0x297FB0 - 700], 0x80);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7901, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Nintendo 1996");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x330200);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xD74, 0x330000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xDC1, 0x330000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7681, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Nintendo Presents 1");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x360B11);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xD89, 0x360000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xDD6, 0x360000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7681, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Nintendo Presents 2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x0CFE3D);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xD98, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xDE5, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7701, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Title Screen");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x29342E);
-        decode(rom, raw_data, &raw_counter, 0xDF3, 0x290000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x29342E - 1);
-        decode(rom, raw_data, &raw_counter, 0xDF3, 0x290000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x293400);
-        decode(rom, raw_data, &raw_counter, 0xDA6, 0x290000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7701, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Title Screen Text");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x13FE2A);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x5F5, 0x2A0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x63B, 0x2A0000);
-    }
-    raw_counter = 0x700;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8641, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "File Screen");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A077B);
-        decode(rom, raw_data, &raw_counter, 0x649, 0x2A0000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A077B - 1);
-        decode(rom, raw_data, &raw_counter, 0x649, 0x2A0000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A04B3);
-        decode(rom, raw_data, &raw_counter, 0x603, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8641, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "File Screen VHS");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2AC294);
-        decode(rom, raw_data, &raw_counter, 0xC9E, 0x2A0000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2AC294 - 1);
-        decode(rom, raw_data, &raw_counter, 0xC9E, 0x2A0000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2ABFCC);
-        decode(rom, raw_data, &raw_counter, 0xC51, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8841, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bonus Screen");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2AA8DC);
-        decode(rom, raw_data, &raw_counter, 0xC63, 0x2A0000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2AA8DC - 1);
-        decode(rom, raw_data, &raw_counter, 0xC63, 0x2A0000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2AA614);
-        decode(rom, raw_data, &raw_counter, 0xC16, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8A01, raw_counter, bp_counter, 2, 14, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Grab 15 Bananas");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8A01, raw_counter, bp_counter, 2, 51, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Grab 15 Bananas 2P");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A9DCC);
-        decode(rom, raw_data, &raw_counter, 0xA77, 0x2A0000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A9DCC - 1);
-        decode(rom, raw_data, &raw_counter, 0xA77, 0x2A0000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A9B04);
-        decode(rom, raw_data, &raw_counter, 0xA2A, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8841, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Collect the Stars");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8841, raw_counter, bp_counter, 2, 50, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Collect the Stars 2P");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2AB4DE);
-        decode(rom, raw_data, &raw_counter, 0xC79, 0x2A0000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2AB4DE - 1);
-        decode(rom, raw_data, &raw_counter, 0xC79, 0x2A0000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2AB216);
-        decode(rom, raw_data, &raw_counter, 0xC2C, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8AE1, raw_counter, bp_counter, 2, 14, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Find the Coin");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8AE1, raw_counter, bp_counter, 2, 51, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Find the Coin 2P");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A8675);
-        decode(rom, raw_data, &raw_counter, 0xC8F, 0x2A0000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A8675 - 1);
-        decode(rom, raw_data, &raw_counter, 0xC8F, 0x2A0000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A83AD);
-        decode(rom, raw_data, &raw_counter, 0xC42, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8A01, raw_counter, bp_counter, 2, 14, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bash the Baddies");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8A01, raw_counter, bp_counter, 2, 51, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bash the Baddies 2P");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x0BFE6D);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x977, 0x1F0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x9C4, 0x1F0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7521, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Game Over Screen");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x0EFD21);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x557, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x58F, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8461, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swanky's Sideshow (Default)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8461, raw_counter, bp_counter, 2, 45, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swanky's Sideshow (1)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8461, raw_counter, bp_counter, 2, 46, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swanky's Sideshow (2)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8461, raw_counter, bp_counter, 2, 47, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swanky's Sideshow (3)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x08FE75);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x3C6, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x3F0, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5B01, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cranky's Sideshow");
-    
-    // BG Scroll
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x0A0000);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x3CD, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x3F7, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5B01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cranky's Sideshow Border");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x0DFED2);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x49D, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x4C7, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8561, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Funky's Rentals");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x07FD8A);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x793, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x7E0, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6401, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Wrinkly's Save Cave (1)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6501, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Wrinkly's Save Cave (2)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6601, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Wrinkly's Save Cave (3)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6701, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Wrinkly's Save Cave (4)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x382E96);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xA06, 0x2A0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xA53, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 16, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - K's Kache");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 17, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Hill-Top Hoard");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 18, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Undercover Cove");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 19, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Kong Cave");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 20, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Bounty Beach");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 21, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Belcha's Burrow");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 22, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Smuggler's Cove");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 23, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Arich's Hoard");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 24, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Bounty Bay");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 25, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Sky-High Secret");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 26, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Glacial Grotto");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 27, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Clifftop Cache");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 28, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Sewer Stockpile");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2B04B0);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2B04B0 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2B01E8);
-    }
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xA0D, 0x2B0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xA5A, 0x2B0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 16, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - K's Kache Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 17, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Hill-Top Hoard Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 18, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Undercover Cove Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 19, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Kong Cave Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 20, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Bounty Beach Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 21, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Belcha's Burrow Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 22, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Smuggler's Cove Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 23, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Arich's Hoard Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 24, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Bounty Bay Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 25, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Sky-High Secret Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 26, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Glacial Grotto Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 27, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Clifftop Cache Ice");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8741, raw_counter, bp_counter, 2, 28, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "BBC - Sewer Stockpile Ice");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x331DED);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xC92, 0x330000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xCDF, 0x330000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA239, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Banana Queen BG");
-    
-    bp_counter = 0; // Uses deductive 
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2B8538);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2B8538 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2B8270);
-    }
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xCA0, 0x2B0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xCED, 0x2B0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA239, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Banana Queen Block & Sunlight");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x334FAD);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xCB6, 0x330000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xD03, 0x330000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA839, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Dixie's Photo Album BG");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 0) {
-        decomp(bp_data, rom, &bp_counter, 0x293400);
-        decode(rom, raw_data, &raw_counter, 0xCC4, 0x290000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x29342E); // ?
-        decode(rom, raw_data, &raw_counter, 0xD11, 0x290000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA839, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Dixie's Photo Album Text");
-    
-    bp_counter = 0; // Palette?
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x334FAD);
-    decomp(raw_data, rom, &raw_counter, 0x334C21);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA839, raw_counter, bp_counter, 2, 40, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph Category BG");
-    
-    uint8_t *temp_data = malloc(65535);
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 0) {
-        decode(rom, temp_data, &raw_counter, 0xD15, 0x2B0000);
-    }
-    else {
-        decode(rom, temp_data, &raw_counter, 0xD62, 0x2B0000);
-    }
-    boss_photo_layout(raw_data, temp_data, 0);
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2B1BC4);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2B1BC4 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2B18FC);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB139, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Belcha");
-    boss_photo_layout(raw_data, temp_data, 1);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB239, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Arich");
-    boss_photo_layout(raw_data, temp_data, 2);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB339, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Squirt");
-    boss_photo_layout(raw_data, temp_data, 3);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB439, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - KAOS");
-    boss_photo_layout(raw_data, temp_data, 4);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB539, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Bleak");
-    boss_photo_layout(raw_data, temp_data, 5);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB639, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Barbos");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x380000);
-    if (region == 0) {
-        decode(rom, temp_data, &raw_counter, 0xCF0, 0x2B0000);
-    }
-    else {
-        decode(rom, temp_data, &raw_counter, 0xD3D, 0x2B0000);
-    }
-    raw_counter = 0x800;
-    bear_photo_layout(raw_data, temp_data, 0);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA999, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Bazaar & Barnacle");
-    bear_photo_layout(raw_data, temp_data, 1);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DAC99, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Brash & Blunder");
-    bear_photo_layout(raw_data, temp_data, 2);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DAB99, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Blue & Bazooka");
-    bear_photo_layout(raw_data, temp_data, 3);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DAA99, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Blizzard & Bramble");
-    bear_photo_layout(raw_data, temp_data, 4);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DAD99, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Benny, Bjorn & Barter");
-    bear_photo_layout(raw_data, temp_data, 5);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA899, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Photograph - Baffle & Boomer");
-    
-    free(temp_data);
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x25968A);
-    decode(rom, raw_data, &raw_counter, 0x1DD, 0x250000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5601, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lakeside Limbo BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBA99, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tidal Trouble BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB999, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kreeping Klasps BG1");
-    
-    raw_counter = 0;
-    decomp(raw_data, rom, &raw_counter, 0x2594A2);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5601, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Boardwalk BG1-3");
-    
-    raw_counter = 0;
-    decomp(raw_data, rom, &raw_counter, 0x259533);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5601, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lakeside Limbo BG1-2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBA99, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tidal Trouble BG1-2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB999, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kreeping Klasps BG1-2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x1CFF76);
-    memcpy(&bp_data[0x1220], bp_data, bp_counter);
-    bp_counter += 0x1220;
-    decode(rom, raw_data, &raw_counter, 0x1F9, 0x1C0000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5601, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lakeside Limbo BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBA99, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tidal Trouble BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB999, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kreeping Klasps BG2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2BAB57);
-        decode(rom, raw_data, &raw_counter, 0xD63, 0x2B0000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2BAB57 - 1);
-        decode(rom, raw_data, &raw_counter, 0xD63, 0x2B0000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2BA88F);
-        decode(rom, raw_data, &raw_counter, 0xD16, 0x2B0000);
-    }
-    memcpy(&raw_data[0x100], raw_data, raw_counter);
-    memset(raw_data, 0, 0x100);
-    raw_counter = 0x800;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5601, raw_counter, bp_counter, 2, 42, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "K.Rool in Hovercraft");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x1DFE8F);
-    memcpy(&bp_data[0x14A0], bp_data, bp_counter);
-    bp_counter += 0x14A0;
-    decomp(raw_data, rom, &raw_counter, 0x1DF873);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D61C1, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Doorstop Dash BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D60C1, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Squeals on Wheels BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Murky Mill BG1");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    memcpy(&bp_data[0x1720], &rom[0x1F04D4], 0x8D0);
-    bp_counter = 0x8D0;
-    bp_counter += 0x1720;
-    memcpy(raw_data, &rom[0x1EFF14], 0x5C0);
-    raw_counter = 0x5C0;
-    lights_layout(raw_data, raw_counter);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6901, raw_counter, bp_counter, 3, 39, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Murky Mill Lights");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x370000);
-    memcpy(&bp_data[0x1140], bp_data, bp_counter);
-    bp_counter += 0x1140;
-    memcpy(raw_data, &rom[0x36254B], 0x700);
-    raw_counter = 0x700;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5FC1, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Skidda's Row BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBC99, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tearaway Toboggan BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBB99, raw_counter, bp_counter, 2, 29, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lemguin Lunge BG");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x299BFB);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x299BFB - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x299BFB - 700);
-    }
-    memcpy(&bp_data[0x1E40], bp_data, bp_counter);
-    bp_counter += 0x1E40;
-    decode(rom, raw_data, &raw_counter, 0x22C, 0x290000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6301, raw_counter, bp_counter, 2, 15, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Belcha");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x29B6C0);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x29B6C0 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x29B6C0 - 700);
-    }
-    memcpy(&bp_data[0x11C0], bp_data, bp_counter);
-    bp_counter += 0x11C0;
-    decode(rom, raw_data, &raw_counter, 0x23A, 0x290000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6301, raw_counter, bp_counter, 3, 15, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Belcha's Barn BG2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x2717A6);
-    memcpy(&bp_data[0xBE0], bp_data, bp_counter);
-    bp_counter += 0xBE0;
-    decode(rom, raw_data, &raw_counter, 0x21D, 0x270000);
-    memcpy(raw_data, &raw_data[0xC0], raw_counter-0xC0);
-    raw_counter -= 0xC0; // THIS AWE
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5D01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Shield Bust-Up BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBD99, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Springin' Spiders BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBE79, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ripsaw Rage BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBF79, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swoopy Salvo BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5DE1, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swoopy Salvo BG1 (AK)");
-    // decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5EC1, raw_counter, bp_counter, 2, 0, 0);
-    // assemble_screen(bitplane, raw_counter, 32, dir, "Arich's Ambush BG1"); // Not used in game.
+struct DATA {
+    unsigned addr;
+    unsigned size; /* for memcpy */
+      signed move; /* for amalgams */
+    enum COMP_TYPE type;
+};
 
-    decode(rom, raw_data, &raw_counter, 0x21D, 0x270000);
-    raw_counter = 0xC0;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBE79, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ripsaw Rage Saw");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBE79, raw_counter, bp_counter, 2, 64, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ripsaw Rage Saw (Alt)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x2703F1);
-    decomp(raw_data, rom, &raw_counter, 0x26FCEA);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5D01, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Shield Bust-Up BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBD99, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Springin' Spiders BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBE79, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ripsaw Rage BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DBF79, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swoopy Salvo BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5DE1, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Swoopy Salvo BG2 (AK)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5EC1, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Arich's Ambush BG2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    memset(bp_data, 0, 0x2000);
-    memset(raw_data, 0, 0x800);
-    if (region == 1) {
-        memcpy( &bp_data[0xBE0], &rom[0x298D12], 0xDA2);
-        memcpy(&raw_data[0x21C], &rom[0x298550], 0x8A);
-        memcpy(&raw_data[0x2D8], &rom[0x2985DA], 0x1CE);
-    }
-    else if (region == 2) {
-        memcpy( &bp_data[0xBE0], &rom[0x298D12 - 1], 0xDA2);
-        memcpy(&raw_data[0x21C], &rom[0x298550 - 1], 0x8A);
-        memcpy(&raw_data[0x2D8], &rom[0x2985DA - 1], 0x1CE);
-    }
-    else {
-        memcpy( &bp_data[0xBE0], &rom[0x298D12 - 700], 0xDA2);
-        memcpy(&raw_data[0x21C], &rom[0x298550 - 700], 0x8A);
-        memcpy(&raw_data[0x2D8], &rom[0x2985DA - 700], 0x1CE);
-    }
-    bp_counter = 0xDA2 + 0xBE0;
-    raw_counter = 0x800;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5EC1, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Arich");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x28861B);
-    memcpy(&bp_data[0x6080], bp_data, bp_counter);
-    bp_counter += 0x6080;
-    decode(rom, raw_data, &raw_counter, 0x18E, 0x280000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7921, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Riverside Race BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7B21, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bobbing Barrel Brawl BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning Look-Out BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7C21, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning Look-Out BG1 (Bright)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x28A874);
-    memcpy(&bp_data[0xEA0], bp_data, bp_counter);
-    bp_counter += 0xEA0;
-    memcpy(raw_data, &rom[0x28A634], 0x240);
-    raw_counter = 0x240;
-    surface_layout(raw_data, raw_counter);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7921, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Riverside Race BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7B21, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bobbing Barrel Brawl BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning Look-Out & Pothole Panic BG2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x28A874);
-    memcpy(&bp_data[0x1EA0], bp_data, bp_counter);
-    bp_counter += 0x1EA0;
-    decomp(raw_data, rom, &raw_counter, 0x28A412);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 30, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 31, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 32, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-3");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 33, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-4");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 34, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-5");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 35, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-6");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 36, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-7");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 37, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-8");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7A21, raw_counter, bp_counter, 3, 38, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lightning-9");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        memcpy(&bp_data[0x1E00], &rom[0x2A160B], 0x1900);
-    }
-    else if (region == 2) {
-        memcpy(&bp_data[0x1E00], &rom[0x2A160B - 1], 0x1900);
-    }
-    else {
-        memcpy(&bp_data[0x1E00], &rom[0x2A1343], 0x1900);
-    }
-    bp_counter = 0x1900 + 0x1E00;
-    decode(rom, raw_data, &raw_counter, 0x2F5, 0x2A0000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5701, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Rocket Barrel Ride BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tracker Barrel Trek BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5801, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Barrel Drop Bounce BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5A01, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Squirt's Showdown BG1");
-    
-    bp_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A1349);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A1349 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A1081);
-    }
-    memcpy(&raw_data[0x200], bp_data, 0x300);
-    if (region == 1) {
-        memcpy(&bp_data[0x1E00], &rom[0x2A160B], 0x1900);
-    }
-    else if (region == 2) {
-        memcpy(&bp_data[0x1E00], &rom[0x2A160B - 1], 0x1900);
-    }
-    else {
-        memcpy(&bp_data[0x1E00], &rom[0x2A1343], 0x1900);
-    }
-    bp_counter = 0x1900 + 0x1E00;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5A01, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Squirt's Showdown BG2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A21AB);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A21AB - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A1EE3);
-    }
-    memcpy(&bp_data[0x1520], bp_data, bp_counter);
-    bp_counter += 0x1520;
-    raw_counter = 0x800;
-    
-    waterfall_layout(rom, raw_data, 0);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall SS (128)");
-    
-    waterfall_layout(rom, raw_data, 1);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5701, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall RBR (192)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5801, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall BDB (192)");
-    
-    waterfall_layout(rom, raw_data, 2);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (256L)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5801, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall BDB (256L)");
-    
-    waterfall_layout(rom, raw_data, 3);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (256R)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5801, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall BDB (256R)");
-    
-    waterfall_layout(rom, raw_data, 4);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (320L)");
-    
-    waterfall_layout(rom, raw_data, 5);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (320R)");
-    
-    waterfall_layout(rom, raw_data, 6);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (384L)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5801, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall BDB (384L)");
-    
-    waterfall_layout(rom, raw_data, 7);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (384R)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5801, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall BDB (384R)");
-    
-    waterfall_layout(rom, raw_data, 8);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (448&576L)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5701, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall RBR (576L)");
-    
-    waterfall_layout(rom, raw_data, 9);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (448&576M)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5701, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall RBR (576M)");
-    
-    waterfall_layout(rom, raw_data, 10);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (448R)");
-    
-    waterfall_layout(rom, raw_data, 11);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5901, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall TBT (576R)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D5701, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Waterfall RBR (576R)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2B14E2);
-        decode(rom, raw_data, &raw_counter, 0xE3C, 0x2B0000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2B14E2 - 1);
-        decode(rom, raw_data, &raw_counter, 0xE3C, 0x2B0000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2B121A);
-        decode(rom, raw_data, &raw_counter, 0xDEF, 0x2B0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8261, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Gleamin' Bream Underlay");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    bp_counter = 0xC70;
-    if (region == 1) {
-        memcpy(bp_data, &rom[0x29F818], 0xC70);
-        decomp(raw_data, rom, &raw_counter, 0x29F346);
-    }
-    else if (region == 2) {
-        memcpy(bp_data, &rom[0x29F818 - 1], 0xC70);
-        decomp(raw_data, rom, &raw_counter, 0x29F346 - 1);
-    }
-    else {
-        memcpy(bp_data, &rom[0x29F55C], 0xC70);
-        decomp(raw_data, rom, &raw_counter, 0x29F08A);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8161, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bazza's Blockade BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB899, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Fish Food Frenzy BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8261, raw_counter, bp_counter, 3, 9, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Floodlit Fish Dark BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8261, raw_counter, bp_counter, 3, 10, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Floodlit Fish Light BG");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB799, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Barbos' Barrier BG");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x29BFBC);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x29BFBC - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x29BD00);
-    }
-    decode(rom, raw_data, &raw_counter, 0x250, 0x290000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DB799, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Barbos");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    bp_counter = 0x1F60;
-    raw_counter = 0x800;
-    if (region == 1) {
-        memcpy(bp_data, &rom[0x2C576C], 0x1F60);
-        memcpy(raw_data, &rom[0x2C4F6C], 0x800);
-    }
-    else if (region == 2) {
-        memcpy(bp_data, &rom[0x2C576C - 1], 0x1F60);
-        memcpy(raw_data, &rom[0x2C4F6C - 1], 0x800);
-    }
-    else {
-        memcpy(bp_data, &rom[0x2C54A4], 0x1F60);
-        memcpy(raw_data, &rom[0x2C4CA4], 0x800);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9E39, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Fire-Ball Frenzy BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA039, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Blazing Bazukas BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9F39, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krack-Shot Kroc BG1");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x29B6C0);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x29B6C0 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x29B404);
-    }
-    memcpy(&bp_data[0x11C0], bp_data, bp_counter);
-    bp_counter += 0x11C0;
-    decode(rom, raw_data, &raw_counter, 0x154, 0x290000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9E39, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Factory BG2");
+struct DKC3_SCREEN {
+    struct DATA set;
+    struct DATA map;
+    unsigned palette;
+    unsigned char spec; /* special layout */
+    unsigned char mode;
+    unsigned char fix;
+    unsigned char bg;
+    char *name;
+};
 
-    bp_counter = 0;
-    raw_counter = 0;
-    bp_counter = 0x1200;
-    raw_counter = 0x3E0;
-    if (region == 1) {
-        memcpy(bp_data, &rom[0x29E146], 0x1200);
-        memcpy(raw_data, &rom[0x29DD86], 0x3E0);
-    }
-    else if (region == 2) {
-        memcpy(bp_data, &rom[0x29E146 - 1], 0x1200);
-        memcpy(raw_data, &rom[0x29DD86 - 1], 0x3E0);
-    }
-    else {
-        memcpy(bp_data, &rom[0x29DE8A], 0x1200);
-        memcpy(raw_data, &rom[0x29DACA], 0x3E0);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA139, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "KAOS");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A68F2);
-        memcpy(raw_data, &rom[0x2A7D8A], 0x800);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A68F2 - 1);
-        memcpy(raw_data, &rom[0x2A7D8A - 1], 0x800);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A662A);
-        memcpy(raw_data, &rom[0x2A7AC2], 0x800);
-    }
-    raw_counter = 0x800;
-    pipe_layout(raw_data, raw_counter);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7F61, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Low-G Labyrinth Smoke");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8061, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Poisonous Pipeline Smoke");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A6712);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A6712 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A644A);
-    }
-    memcpy(&bp_data[0x1D80], bp_data, bp_counter);
-    bp_counter += 0x1D80;
-    decode(rom, raw_data, &raw_counter, 0x2DF, 0x2A0000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8061, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Poisonous Pipeline BG2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A426A);
-        decomp(raw_data, rom, &raw_counter, 0x2A5F1C);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A426A - 1);
-        decomp(raw_data, rom, &raw_counter, 0x2A5F1C - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A3FA2);
-        decomp(raw_data, rom, &raw_counter, 0x2A5C54);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D94F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krevice Kreepers BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D91F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kong-Fused Cliffs BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D93F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ropey Rumpus BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D95F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Criss Kross Cliffs BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D96F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Rocket Rush BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D92F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cliffs BG1 (AK)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2A3387);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2A3387 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2A30BF);
-    }
-    decode(rom, raw_data, &raw_counter, 0x105, 0x2A0000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D94F9, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krevice Kreepers BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D91F9, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kong-Fused Cliffs BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D93F9, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Ropey Rumpus BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D95F9, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Criss Kross Cliffs BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D96F9, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Rocket Rush BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D92F9, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cliffs BG2 (AK)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x32587C);
-    decode(rom, raw_data, &raw_counter, 0x0C4, 0x320000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA439, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Buzzer Barrage BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA639, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Creepy Caverns BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA539, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Pot Hole Panic BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA339, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tyrant Twin Tussle BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3DA739, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Tyrant Twin Tussle BG1 (AK)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x32275C);
-    decomp(raw_data, rom, &raw_counter, 0x324170);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9C39, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Konveyor Rope Klash BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9B39, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Koindozer Klamber BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9A39, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Stampede Sprint BG1");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9D39, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Stampede Sprint BG1 (AK)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x32470A);
-    decode(rom, raw_data, &raw_counter, 0x130, 0x320000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9C39, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Konveyor Rope Klash BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9B39, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Koindozer Klamber BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9A39, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Stampede Sprint BG2");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9D39, raw_counter, bp_counter, 3, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Stampede Sprint BG2 (AK)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x29481D);
-        decode(rom, raw_data, &raw_counter, 0xE0A, 0x290000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x29481D - 1);
-        decode(rom, raw_data, &raw_counter, 0xE0A, 0x290000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x294561);
-        decode(rom, raw_data, &raw_counter, 0xDBD, 0x290000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7801, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bleak BG1");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x29481D);
-        decode(rom, raw_data, &raw_counter, 0xE11, 0x290000);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x29481D - 1);
-        decode(rom, raw_data, &raw_counter, 0xE11, 0x290000);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x294561);
-        decode(rom, raw_data, &raw_counter, 0xDC4, 0x290000);
-    }
-    i = 0;
-    uint8_t *data = malloc(0xFFFF);
-    decomp(data, rom, &i, 0x370000);
-    memcpy(&bp_data[0x5140], data, i);
-    bp_counter += i;
-    free(data);
-    memmove(&raw_data[0x1C0], raw_data, raw_counter);
-    for (i = 0; i < 0x200; i+=2) {
-        raw_data[i]   = rom[0x3625CB+(i ^ 0x20)];
-        raw_data[i+1] = rom[0x3625CB+(i ^ 0x20)+1] + 2;
-    }
-    raw_counter += 0x200;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7801, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bleak BG2");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x3B0000);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Generic)");
-    // The cabins of Blunder, Bazooka and Baffle have transparent spots where the next layer can be seen.
-    // It's definitely not a bug here, that's just how the game does it.
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x3B0000);
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x0F, 0xFAC7, 0x350000);
-    bear_layout(raw_data, rom, 0x10, 0xFACA, 0x350000);
-    bear_layout(raw_data, rom, 0x07, 0xFACD, 0x350000);
-    bear_layout(raw_data, rom, 0x01, 0xFAD0, 0x350000);
-    bear_layout(raw_data, rom, 0x04, 0xFAD3, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Bazaar)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    flip_bear_layout(raw_data);
-    bear_layout(raw_data, rom, 0x91, 0xFB35, 0x350000);
-    bear_layout(raw_data, rom, 0x92, 0xFB38, 0x350000);
-    bear_layout(raw_data, rom, 0x04, 0xFB3B, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6F01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Barnacle)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x13, 0xFB4F, 0x350000);
-    bear_layout(raw_data, rom, 0x14, 0xFB52, 0x350000);
-    bear_layout(raw_data, rom, 0x15, 0xFB55, 0x350000);
-    bear_layout(raw_data, rom, 0x02, 0xFB58, 0x350000);
-    bear_layout(raw_data, rom, 0x25, 0xFB5B, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7001, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Brash)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x16, 0xFAEA, 0x350000);
-    bear_layout(raw_data, rom, 0x17, 0xFAED, 0x350000);
-    bear_layout(raw_data, rom, 0x02, 0xFAF0, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6D01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Blunder)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x18, 0xFB6C, 0x350000);
-    bear_layout(raw_data, rom, 0x19, 0xFB6F, 0x350000);
-    bear_layout(raw_data, rom, 0x04, 0xFB72, 0x350000);
-    bear_layout(raw_data, rom, 0x00, 0xFB75, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7101, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Blue)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x82, 0xFB80, 0x350000);
-    bear_layout(raw_data, rom, 0x1D, 0xFB83, 0x350000);
-    bear_layout(raw_data, rom, 0x1E, 0xFB86, 0x350000);
-    bear_layout(raw_data, rom, 0x00, 0xFB89, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Bazooka)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    flip_bear_layout(raw_data);
-    bear_layout(raw_data, rom, 0x80, 0xFB04, 0x350000);
-    bear_layout(raw_data, rom, 0x23, 0xFB07, 0x350000);
-    bear_layout(raw_data, rom, 0x04, 0xFB0A, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6E01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Bramble)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x1A, 0xFB9D, 0x350000);
-    bear_layout(raw_data, rom, 0x1B, 0xFBA0, 0x350000);
-    bear_layout(raw_data, rom, 0x04, 0xFBA3, 0x350000);
-    bear_layout(raw_data, rom, 0x07, 0xFBA6, 0x350000);
-    bear_layout(raw_data, rom, 0x01, 0xFBA9, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6C01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Blizzard)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x1C, 0xFB1B, 0x350000);
-    bear_layout(raw_data, rom, 0x00, 0xFB1E, 0x350000);
-    bear_layout(raw_data, rom, 0x03, 0xFB21, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Barter)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    flip_bear_layout(raw_data);
-    bear_layout(raw_data, rom, 0xA2, 0xFBC3, 0x350000);
-    bear_layout(raw_data, rom, 0x03, 0xFBC6, 0x350000);
-    bear_layout(raw_data, rom, 0x03, 0xFBC9, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7201, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Benny)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x22, 0xFBDD, 0x350000);
-    bear_layout(raw_data, rom, 0x02, 0xFBE0, 0x350000);
-    bear_layout(raw_data, rom, 0x04, 0xFBE3, 0x350000);
-    bear_layout(raw_data, rom, 0x00, 0xFBE6, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7201, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Bjorn)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    bear_layout(raw_data, rom, 0x1F, 0xFBFA, 0x350000);
-    bear_layout(raw_data, rom, 0x06, 0xFBFD, 0x350000);
-    bear_layout(raw_data, rom, 0x24, 0xFC00, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Baffle)");
-    
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x6D5, 0x290000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x722, 0x290000);
-    }
-    flip_bear_layout(raw_data);
-    bear_layout(raw_data, rom, 0x02, 0xFC14, 0x350000);
-    bear_layout(raw_data, rom, 0x20, 0xFC17, 0x350000);
-    bear_layout(raw_data, rom, 0x21, 0xFC1A, 0x350000);
-    bear_layout(raw_data, rom, 0x26, 0xFC1D, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6E01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Boomer)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7301, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin (Boomer) (AK)");
-    
-    bp_counter = 0;
-    raw_counter = 0x800;
-    decomp(bp_data, rom, &bp_counter, 0x3B6897);
-    memcpy(&bp_data[0x1000], bp_data, bp_counter);
-    bp_counter += 0x1000;
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0x49, 0xFAD6, 0x350000);
-    bear_layout(raw_data, rom, 0x4D, 0xFAD9, 0x350000);
-    bear_layout(raw_data, rom, 0x4A, 0xFADC, 0x350000);
-    bear_layout(raw_data, rom, 0x4B, 0xFADF, 0x350000);
-    bear_layout(raw_data, rom, 0x4C, 0xFAE2, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFAE5, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Bazaar)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0xCD, 0xFB3E, 0x350000);
-    bear_layout(raw_data, rom, 0xCA, 0xFB41, 0x350000);
-    bear_layout(raw_data, rom, 0x48, 0xFB44, 0x350000);
-    bear_layout(raw_data, rom, 0x49, 0xFB47, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFB4A, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6F01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Barnacle)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0x4D, 0xFB5E, 0x350000);
-    bear_layout(raw_data, rom, 0xCB, 0xFB61, 0x350000);
-    bear_layout(raw_data, rom, 0x4B, 0xFB64, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFB67, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7001, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Brash)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0x4D, 0xFAF3, 0x350000);
-    bear_layout(raw_data, rom, 0xCC, 0xFAF6, 0x350000);
-    bear_layout(raw_data, rom, 0xCB, 0xFAF9, 0x350000);
-    bear_layout(raw_data, rom, 0x4A, 0xFAFC, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFAFF, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6D01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Blunder)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0x4D, 0xFB78, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFB7B, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7101, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Blue)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0x48, 0xFB8C, 0x350000);
-    bear_layout(raw_data, rom, 0x49, 0xFB8F, 0x350000);
-    bear_layout(raw_data, rom, 0x4B, 0xFB92, 0x350000);
-    bear_layout(raw_data, rom, 0x4B, 0xFB95, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFB98, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Bazooka)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0x4B, 0xFB0D, 0x350000);
-    bear_layout(raw_data, rom, 0x4D, 0xFB10, 0x350000);
-    bear_layout(raw_data, rom, 0xC9, 0xFB13, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFB16, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6E01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Bramble)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0xCB, 0xFBAC, 0x350000);
-    bear_layout(raw_data, rom, 0x4D, 0xFBAF, 0x350000);
-    bear_layout(raw_data, rom, 0x4B, 0xFBB2, 0x350000);
-    bear_layout(raw_data, rom, 0x4C, 0xFBB5, 0x350000);
-    bear_layout(raw_data, rom, 0xCC, 0xFBB8, 0x350000);
-    bear_layout(raw_data, rom, 0xCB, 0xFBBB, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFBBE, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6C01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Blizzard)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0x49, 0xFB24, 0x350000);
-    bear_layout(raw_data, rom, 0x4A, 0xFB27, 0x350000);
-    bear_layout(raw_data, rom, 0xCD, 0xFB2A, 0x350000);
-    bear_layout(raw_data, rom, 0x4B, 0xFB2D, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFB30, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Barter)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0xC9, 0xFBCC, 0x350000);
-    bear_layout(raw_data, rom, 0xC8, 0xFBCF, 0x350000);
-    bear_layout(raw_data, rom, 0x4A, 0xFBD2, 0x350000);
-    bear_layout(raw_data, rom, 0x4B, 0xFBD5, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFBD8, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7201, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Benny)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0xCB, 0xFBE9, 0x350000);
-    bear_layout(raw_data, rom, 0x4A, 0xFBEC, 0x350000);
-    bear_layout(raw_data, rom, 0x4D, 0xFBEF, 0x350000);
-    bear_layout(raw_data, rom, 0x4B, 0xFBF2, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFBF5, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7201, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Bjorn)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0x4A, 0xFC03, 0x350000);
-    bear_layout(raw_data, rom, 0xCD, 0xFC06, 0x350000);
-    bear_layout(raw_data, rom, 0xC9, 0xFC09, 0x350000);
-    bear_layout(raw_data, rom, 0xC8, 0xFC0C, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFC0F, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6A01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Baffle)");
-    
-    memset(raw_data, 0, 0x800);
-    bear_layout(raw_data, rom, 0xCC, 0xFC20, 0x350000);
-    bear_layout(raw_data, rom, 0xCB, 0xFC23, 0x350000);
-    bear_layout(raw_data, rom, 0x0E, 0xFC26, 0x350000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6E01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Boomer)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7301, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Bear Cabin BG (Boomer) (AK)");
-    
-    // Overworld uses different slightly different palettes depending on what's on the screen.
-    // The normal palette causes the northwestern clouds to appear orange.
-    // Alternate colours are used to make the clouds white.
-    // However, this causes Funky's Rentals and possibly other areas to appear white.
-    
-    uint8_t *alt_bitplane = malloc(512*2000*4);
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x350000);
-    decomp(raw_data, rom, &raw_counter, 0x320000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7421, raw_counter, bp_counter, 2, 0, 0);
-    decode_bitplane_3(region, rom, bp_data, raw_data, alt_bitplane, 0x3D7421, raw_counter, bp_counter, 2, 13, 0); // Overlapping palette
-    memcpy(bitplane, alt_bitplane, 90*4*256); // 90 rows * 4 bytes per pixel * 256 pixels wide
-    assemble_screen(bitplane, raw_counter, 32, dir, "Overworld");
-    free(alt_bitplane);
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x321DA4);
-    decomp(raw_data, rom, &raw_counter, 0x3215A9);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7421, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Overworld (Water)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x0FFF7E);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x99B, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x9E8, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7D41, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lake Orangatanga");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x10FE01);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x9A9, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x9F6, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D7D41, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Lake Orangatanga (Water)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x0AFDB5);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x7EC, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x839, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6801, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kremwood Forest");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x11FF7D);
-    decomp(raw_data, rom, &raw_counter, 0x28734F);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6801, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kremwood Forest (Water)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x04F05F);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xA47, 0x2A0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xA94, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8BE1, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cotton-Top Cove");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x36688A);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xA39, 0x360000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xA86, 0x360000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8BE1, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Cotton-Top Cove (Water)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x14FFD7);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xB20, 0x2A0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xB6D, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8CE1, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Mekanos");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x367029);
-    decomp(raw_data, rom, &raw_counter, 0x366EE1);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8CE1, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Mekanos (Water)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x06FEFE);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0x704, 0x280000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0x751, 0x280000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D6B01, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "K3");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x37266A);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xB79, 0x370000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xBC6, 0x370000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8DE1, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Razor Ridge");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x3673D5);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xB6B, 0x360000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xBB8, 0x360000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8DE1, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Razor Ridge (Water)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x01FC3C);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xB9D, 0x2A0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xBEA, 0x2B0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8EE1, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "KAOS Kore");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x367816);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xBAB, 0x360000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xBF8, 0x360000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8EE1, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "KAOS Kore (Water)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x1BFE0E);
-    if (region == 0) {
-        decode(rom, raw_data, &raw_counter, 0xBEB, 0x2A0000);
-    }
-    else {
-        decode(rom, raw_data, &raw_counter, 0xC38, 0x2A0000);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8FF9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krematoa");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D90F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krematoa (AK)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp(bp_data, rom, &bp_counter, 0x367B9A);
-    decomp(raw_data, rom, &raw_counter, 0x367A94);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8FF9, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krematoa (Water)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D90F9, raw_counter, bp_counter, 3, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Krematoa (Water)(AK)");
-    
-    // This one uses HDMA to achieve the rippling effect and deductive transparency.
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2B0B39);
-        decomp(raw_data, rom, &raw_counter, 0x2B081C);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2B0B39 - 1);
-        decomp(raw_data, rom, &raw_counter, 0x2B081C - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2B0871);
-        decomp(raw_data, rom, &raw_counter, 0x2B0554);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D8FF9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Water");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    decomp( bp_data, rom, &bp_counter, 0x28BDEC);
-    decode(rom, raw_data, &raw_counter, 0x289, 0x280000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D97F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kastle KAOS (Left)");
+struct BEAR_DATA { /* kill me */
+    unsigned char n;
+    unsigned char  a1;
+    unsigned short a2;
+};
 
-    raw_counter = 0;
-    decode(rom, raw_data, &raw_counter, 0x290, 0x280000);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D97F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kastle KAOS (Right)(1)");
-    
-    for (i = 0; i < 10; i++) {
-        memcpy(&raw_data[0x098 + (i*0x40)], &rom[0x28B2EC + (i*0x0C)], 0x0C);
+// 28:8052 - TV Screen (stats and music screens)
+// 28:B052 - High Score Screen
+// 33:15C6 - Intro Jingle screen (?)
+
+static const struct DKC3_SCREEN dkc3[] = {
+    { { 0x298030, 0x520,0, 0 }, { 0x297FB0, 0x80,0, 0 }, 0x3D7901, 0,2, 0,1, "Nintendo 1996" },
+    { { 0x330200, 0,0, 1 }, { 0x330000, 0,0, 2 }, 0x3D7681,  0,2, 0,0, "Nintendo Presents 1" },
+    { { 0x360B11, 0,0, 1 }, { 0x3621E6, 0,0, 2 }, 0x3D7681,  0,2, 0,0, "Nintendo Presents 2" },
+    { { 0x0CFE3D, 0,0, 1 }, { 0x287581, 0,0, 2 }, 0x3D7701,  0,2, 0,1, "Title Screen" },
+    { { 0x29342E, 0,0, 1 }, { 0x29339E, 0,0, 2 }, 0x3D7701,  0,2, 0,0, "Title Screen Text" },
+    { { 0x13FE2A, 0,0, 1 }, { 0x2A0488, 0,0, 2 }, 0x3D8641,  0,2, 0,0, "File Screen" },
+    { { 0x2A077B, 0,0, 1 }, { 0x2A0730, 0,0, 2 }, 0x3D8641,  0,2, 0,0, "File Screen VHS" },
+    { { 0x2AC294, 0,0, 1 }, { 0x2AC190, 0,0, 2 }, 0x3D8841,  0,2, 0,0, "Bonus Screen" },
+    { { 0x2AA8DC, 0,0, 1 }, { 0x2AA818, 0,0, 2 }, 0x3D8A01,  0,2,14,0, "Grab 15 Bananas" },
+    { { 0x2AA8DC, 0,0, 1 }, { 0x2AA818, 0,0, 2 }, 0x3D8A01,  0,2,51,0, "Grab 15 Bananas 2P" },
+    { { 0x2A9DCC, 0,0, 1 }, { 0x2A9CD8, 0,0, 2 }, 0x3D8841,  0,2, 0,0, "Collect the Stars" },
+    { { 0x2A9DCC, 0,0, 1 }, { 0x2A9CD8, 0,0, 2 }, 0x3D8841,  0,2,50,0, "Collect the Stars 2P" },
+    { { 0x2AB4DE, 0,0, 1 }, { 0x2AB3E9, 0,0, 2 }, 0x3D8AE1,  0,2,14,0, "Find the Coin" },
+    { { 0x2AB4DE, 0,0, 1 }, { 0x2AB3E9, 0,0, 2 }, 0x3D8AE1,  0,2,51,0, "Find the Coin 2P" },
+    { { 0x2A8675, 0,0, 1 }, { 0x2A858A, 0,0, 2 }, 0x3D8A01,  0,2,14,0, "Bash the Baddies" },
+    { { 0x2A8675, 0,0, 1 }, { 0x2A858A, 0,0, 2 }, 0x3D8A01,  0,2,51,0, "Bash the Baddies 2P" },
+    { { 0x0BFE6D, 0,0, 1 }, { 0x1FFE80, 0,0, 2 }, 0x3D7521,  0,2, 0,1, "Game Over" },
+    { { 0x0EFD21, 0,0, 1 }, { 0x287D26, 0,0, 2 }, 0x3D8461,  0,2, 0,1, "Swanky's Sideshow (0)" },
+    { { 0x0EFD21, 0,0, 1 }, { 0x287D26, 0,0, 2 }, 0x3D8461,  0,2,45,1, "Swanky's Sideshow (1)" },
+    { { 0x0EFD21, 0,0, 1 }, { 0x287D26, 0,0, 2 }, 0x3D8461,  0,2,46,1, "Swanky's Sideshow (2)" },
+    { { 0x0EFD21, 0,0, 1 }, { 0x287D26, 0,0, 2 }, 0x3D8461,  0,2,47,1, "Swanky's Sideshow (3)" },
+    { { 0x08FE75, 0,0, 1 }, { 0x28640C, 0,0, 2 }, 0x3D5B01,  0,2, 0,1, "Cranky's Sideshow" },
+    { { 0x0A0000, 0,0, 1 }, { 0x2866E0, 0,0, 2 }, 0x3D5B01,  0,2, 0,0, "Cranky's Sideshow Border" },
+    { { 0x0DFED2, 0,0, 1 }, { 0x287AA3, 0,0, 2 }, 0x3D8561,  0,2, 0,0, "Funky's Rentals" },
+    { { 0x07FD8A, 0,0, 1 }, { 0x2877CC, 0,0, 2 }, 0x3D6401,  0,2, 0,1, "Wrinkly's Save Cave (1)" },
+    { { 0x07FD8A, 0,0, 1 }, { 0x2877CC, 0,0, 2 }, 0x3D6501,  0,2, 0,1, "Wrinkly's Save Cave (2)" },
+    { { 0x07FD8A, 0,0, 1 }, { 0x2877CC, 0,0, 2 }, 0x3D6601,  0,2, 0,1, "Wrinkly's Save Cave (3)" },
+    { { 0x07FD8A, 0,0, 1 }, { 0x2877CC, 0,0, 2 }, 0x3D6701,  0,2, 0,1, "Wrinkly's Save Cave (4)" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,16,1, "BBC - K's Kache" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,17,1, "BBC - Hill-Top Hoard" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,18,1, "BBC - Undercover Cove" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,19,1, "BBC - Kong Cave" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,20,1, "BBC - Bounty Beach" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,21,1, "BBC - Belcha's Burrow" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,22,1, "BBC - Smuggler's Cove" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,23,1, "BBC - Arich's Hoard" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,24,1, "BBC - Bounty Bay" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,25,1, "BBC - Sky-High Secret" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,26,1, "BBC - Glacial Grotto" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,27,1, "BBC - Clifftop Cache" },
+    { { 0x382E96, 0,0, 1 }, { 0x2A9AD9, 0,0, 2 }, 0x3D8741,  0,2,28,1, "BBC - Sewer Stockpile" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,16,1, "BBC - K's Kache Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,17,1, "BBC - Hill-Top Hoard Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,18,1, "BBC - Undercover Cove Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,19,1, "BBC - Kong Cave Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,20,1, "BBC - Bounty Beach Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,21,1, "BBC - Belcha's Burrow Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,22,1, "BBC - Smuggler's Cove Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,23,1, "BBC - Arich's Hoard Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,24,1, "BBC - Bounty Bay Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,25,1, "BBC - Sky-High Secret Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,26,1, "BBC - Glacial Grotto Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,27,1, "BBC - Clifftop Cache Ice" },
+    { { 0x2B04B0, 0,0, 1 }, { 0x2B0486, 0,0, 2 }, 0x3D8741,  0,2,28,1, "BBC - Sewer Stockpile Ice" },
+    { { 0x331DED, 0,0, 1 }, { 0x331B38, 0,0, 2 }, 0x3DA239,  0,2, 0,0, "Banana Queen BG" },
+    { { 0x2B8538, 0,0, 1 }, { 0x2B81FF, 0,0, 2 }, 0x3DA239,  0,2, 0,0, "Banana Queen Block & Sunlight" },
+    { { 0x334FAD, 0,0, 1 }, { 0x33480A, 0,0, 2 }, 0x3DA839,  0,2, 0,0, "Dixie's Photo Album BG" },
+    { { 0x29342E, 0,0, 1 }, { 0x29339E, 0,0, 2 }, 0x3DA839,  0,2, 0,0, "Dixie's Photo Album Text" },
+    { { 0x334FAD, 0,0, 1 }, { 0x334C21, 0,0, 1 }, 0x3DA839,  0,2,40,0, "Photograph Category BG" },
+    { { 0x2B1BC4, 0,0, 1 }, { 0x2B19BB, 0,0, 2 }, 0x3DB139,  1,2, 0,0, "Photograph - Belcha" },
+    { { 0x2B1BC4, 0,0, 1 }, { 0x2B19BB, 0,0, 2 }, 0x3DB239,  2,2, 0,0, "Photograph - Arich" },
+    { { 0x2B1BC4, 0,0, 1 }, { 0x2B19BB, 0,0, 2 }, 0x3DB339,  3,2, 0,0, "Photograph - Squirt" },
+    { { 0x2B1BC4, 0,0, 1 }, { 0x2B19BB, 0,0, 2 }, 0x3DB439,  4,2, 0,0, "Photograph - KAOS" },
+    { { 0x2B1BC4, 0,0, 1 }, { 0x2B19BB, 0,0, 2 }, 0x3DB539,  5,2, 0,0, "Photograph - Bleak" },
+    { { 0x2B1BC4, 0,0, 1 }, { 0x2B19BB, 0,0, 2 }, 0x3DB639,  6,2, 0,0, "Photograph - Barbos" },
+    { { 0x380000, 0,0, 1 }, { 0x2B12E2, 0,0, 2 }, 0x3DA999,  7,2, 0,0, "Photograph - Bazaar & Barnacle" },
+    { { 0x380000, 0,0, 1 }, { 0x2B12E2, 0,0, 2 }, 0x3DAC99,  8,2, 0,0, "Photograph - Brash & Blunder" },
+    { { 0x380000, 0,0, 1 }, { 0x2B12E2, 0,0, 2 }, 0x3DAB99,  9,2, 0,0, "Photograph - Blue & Bazooka" },
+    { { 0x380000, 0,0, 1 }, { 0x2B12E2, 0,0, 2 }, 0x3DAA99, 10,2, 0,0, "Photograph - Blizzard & Bramble" },
+    { { 0x380000, 0,0, 1 }, { 0x2B12E2, 0,0, 2 }, 0x3DAD99, 11,2, 0,0, "Photograph - Bennry, Bjorn & Barter" },
+    { { 0x380000, 0,0, 1 }, { 0x2B12E2, 0,0, 2 }, 0x3DA899, 12,2, 0,0, "Photograph - Baffle & Boomer" },
+
+    { { 0x25968A, 0,0,      1 }, { 0x2591C9, 0,0, 2 }, 0x3D5601, 0,2, 0,0, "Lakeside Limbo BG1" },
+    { { 0x25968A, 0,0,      1 }, { 0x2591C9, 0,0, 2 }, 0x3DBA99, 0,2, 0,0, "Tidal Trouble BG1" },
+    { { 0x25968A, 0,0,      1 }, { 0x2591C9, 0,0, 2 }, 0x3DB999, 0,2, 0,0, "Kreeping Klasps BG1" },
+    { { 0x25968A, 0,0,      1 }, { 0x2594A2, 0,0, 1 }, 0x3D5601, 0,2, 0,0, "Boardwalk BG1-3" },
+    { { 0x25968A, 0,0,      1 }, { 0x259533, 0,0, 1 }, 0x3D5601, 0,2, 0,0, "Lakeside Limbo BG1-2" },
+    { { 0x25968A, 0,0,      1 }, { 0x259533, 0,0, 1 }, 0x3DBA99, 0,2, 0,0, "Tidal Trouble BG1-2" },
+    { { 0x25968A, 0,0,      1 }, { 0x259533, 0,0, 1 }, 0x3DB999, 0,2, 0,0, "Kreeping Klasps BG1-2" },
+    { { 0x1CFF76, 0,0x1220, 1 }, { 0x1CFECD, 0,0, 2 }, 0x3D5601, 0,3, 0,0, "Lakeside Limbo BG2" },
+    { { 0x1CFF76, 0,0x1220, 1 }, { 0x1CFECD, 0,0, 2 }, 0x3DBA99, 0,3, 0,0, "Tidal Trouble BG2" },
+    { { 0x1CFF76, 0,0x1220, 1 }, { 0x1CFECD, 0,0, 2 }, 0x3DB999, 0,3, 0,0, "Kreeping Klasps BG2" },
+
+    { { 0x2BAB57, 0,0,      1 }, { 0x2BAABA, 0,0,     2 }, 0x3D5601, 0,2,42,0, "K.Rool in Hovercraft" },
+    { { 0x1DFE8F, 0,0x14A0, 1 }, { 0x1DF873, 0,0,     1 }, 0x3D61C1, 0,2, 0,0, "Doorstop Dash BG1" },
+    { { 0x1DFE8F, 0,0x14A0, 1 }, { 0x1DF873, 0,0,     1 }, 0x3D60C1, 0,2, 0,0, "Squeals on Wheels BG1" },
+    { { 0x1DFE8F, 0,0x14A0, 1 }, { 0x1DF873, 0,0,     1 }, 0x3D6901, 0,2, 0,0, "Murky Mill BG1" },
+    { { 0x1F04D4,0x8D0,0x1720, 0 }, { 0x1EFF14, 0x5C0,0, 0 }, 0x3D6901,61,3,39,1, "Murky Mill Lights" },
+    { { 0x370000, 0,0x1140, 1 }, { 0x36254B, 0x700,0, 0 }, 0x3D5FC1, 0,2, 0,1, "Skidda's Row BG" },
+    { { 0x370000, 0,0x1140, 1 }, { 0x36254B, 0x700,0, 0 }, 0x3DBC99, 0,2, 0,1, "Tearaway Toboggan BG" },
+    { { 0x370000, 0,0x1140, 1 }, { 0x36254B, 0x700,0, 0 }, 0x3DBB99, 0,2,29,1, "Lemguin Lunge BG" },
+
+    { { 0x299BFB, 0,0x1E40, 1 }, { 0x299AB2, 0,0,     2 }, 0x3D6301, 0,2,15,0, "Belcha" },
+    { { 0x29B6C0, 0,0x11C0, 1 }, { 0x29B0BD, 0,0,     2 }, 0x3D6301, 0,3,15,0, "Belcha's Barn BG2" },
+
+    { { 0x2717A6, 0,0xBE0,  1 }, { 0x2712B8, 0,-0xC0, 2 }, 0x3D5D01,62,2, 0,0, "Barrel Shield Bust-Up BG1" },
+    { { 0x2717A6, 0,0xBE0,  1 }, { 0x2712B8, 0,-0xC0, 2 }, 0x3DBD99,62,2, 0,0, "Springin' Spiders BG1" },
+    { { 0x2717A6, 0,0xBE0,  1 }, { 0x2712B8, 0,-0xC0, 2 }, 0x3DBE79,62,2, 0,0, "Ripsaw Rage BG1" },
+    { { 0x2717A6, 0,0xBE0,  1 }, { 0x2712B8, 0,-0xC0, 2 }, 0x3DBF79,62,2, 0,0, "Swoopy Salvo BG1" },
+    { { 0x2717A6, 0,0xBE0,  1 }, { 0x2712B8, 0,-0xC0, 2 }, 0x3D5DE1,62,2, 0,0, "Swoopy Salvo BG1 (AK)" },
+    { { 0x2717A6, 0,0xBE0,  1 }, { 0x2712B8, 0,-0xC0, 2 }, 0x3D5EC1,62,2, 0,0, "Arich's Ambush BG1 (Alt)" },
+    { { 0x2717A6, 0,0xBE0,  1 }, { 0x2712B8, 0,0,     2 }, 0x3DBE79,63,2, 0,0, "Ripsaw Rage Saw" },
+    { { 0x2717A6, 0,0xBE0,  1 }, { 0x2712B8, 0,0,     2 }, 0x3DBE79,63,2,64,0, "Ripsaw Rage Saw (Alt)" },
+    { { 0x2703F1, 0,0,      1 }, { 0x26FCEA, 0,0,     1 }, 0x3D5D01, 0,3, 0,1, "Barrel Shield Bust-Up BG2" },
+    { { 0x2703F1, 0,0,      1 }, { 0x26FCEA, 0,0,     1 }, 0x3DBD99, 0,3, 0,1, "Springin' Spiders BG2" },
+    { { 0x2703F1, 0,0,      1 }, { 0x26FCEA, 0,0,     1 }, 0x3DBE79, 0,3, 0,1, "Ripsaw Rage BG2" },
+    { { 0x2703F1, 0,0,      1 }, { 0x26FCEA, 0,0,     1 }, 0x3DBF79, 0,3, 0,1, "Swoopy Salvo BG2" },
+    { { 0x2703F1, 0,0,      1 }, { 0x26FCEA, 0,0,     1 }, 0x3D5DE1, 0,3, 0,1, "Swoopy Salvo BG2 (AK)" },
+    { { 0x2703F1, 0,0,      1 }, { 0x26FCEA, 0,0,     1 }, 0x3D5EC1, 0,3, 0,1, "Arich's Ambush BG2" },
+    { { 0x298D12, 0x1982,0xBE0, 0 }, { 0x298550, 0x800,0, 3 }, 0x3D5EC1,13,2, 0,0, "Arich" },
+
+    { { 0x28861B, 0,0x6080, 1 }, { 0x288388, 0,0, 2 }, 0x3D7921, 0,2, 0,0, "Riverside Race BG1" },
+    { { 0x28861B, 0,0x6080, 1 }, { 0x288388, 0,0, 2 }, 0x3D7B21, 0,2, 0,0, "Bobbing Barrel Brawl BG1" },
+    { { 0x28861B, 0,0x6080, 1 }, { 0x288388, 0,0, 2 }, 0x3D7A21, 0,2, 0,0, "Lightning Look-Out BG1" },
+    { { 0x28861B, 0,0x6080, 1 }, { 0x288388, 0,0, 2 }, 0x3D7C21, 0,2, 0,0, "Lightning Look-Out BG1 (Bright)" },
+
+    { { 0x28A874, 0,0xEA0, 1 }, { 0x28A634, 0x240,0, 0}, 0x3D7921, 14,3, 0,1, "Riverside Race BG2" },
+    { { 0x28A874, 0,0xEA0, 1 }, { 0x28A634, 0x240,0, 0}, 0x3D7B21, 14,3, 0,1, "Bobbing Barrel Brawl BG2" },
+    { { 0x28A874, 0,0xEA0, 1 }, { 0x28A634, 0x240,0, 0}, 0x3D7A21, 14,3, 0,1, "Lightning Look-Out & Pot Hole Panic BG2" },
+    { { 0x28A874, 0,0xEA0, 1 }, { 0x28A634, 0x240,0, 0}, 0x3D7C21, 14,3, 0,1, "Lightning Look-Out BG2 (Bright)" }, /* check */
+
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,30,0, "Lightning-1" },
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,31,0, "Lightning-2" },
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,32,0, "Lightning-3" },
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,33,0, "Lightning-4" },
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,34,0, "Lightning-5" },
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,35,0, "Lightning-6" },
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,36,0, "Lightning-7" },
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,37,0, "Lightning-8" },
+    { { 0x28A874, 0,0x1EA0, 1 }, { 0x28A412, 0,0, 1 }, 0x3D7A21, 0,3,38,0, "Lightning-9" },
+
+    { { 0x2A160B, 0x1900,0x1E00, 0 }, { 0x2A0C0C, 0,0, 2 }, 0x3D5701, 0,3, 0,1, "Rocket Barrel Ride BG" },
+    { { 0x2A160B, 0x1900,0x1E00, 0 }, { 0x2A0C0C, 0,0, 2 }, 0x3D5901, 0,3, 0,1, "Tracker Barrel Trek BG" },
+    { { 0x2A160B, 0x1900,0x1E00, 0 }, { 0x2A0C0C, 0,0, 2 }, 0x3D5801, 0,3, 0,1, "Barrel Drop Bounce BG" },
+    { { 0x2A160B, 0x1900,0x1E00, 0 }, { 0x2A0C0C, 0,0, 2 }, 0x3D5A01, 0,3, 0,1, "Squirt's Showdown BG" },
+    { { 0x2A1349, 0x1900,0x1E00, 1 }, { 0x2A0C0C, 0,0, 2 }, 0x3D5A01,65,3, 0,1, "Squirt's Showdown BG2" },
+
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5A01, 15,2, 0,0, "Waterfall SS (128)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5701, 16,2, 0,0, "Waterfall RBR (192)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5801, 16,2, 0,0, "Waterfall BDB (192)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 17,2, 0,0, "Waterfall TBT (256L)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5801, 17,2, 0,0, "Waterfall BDB (256L)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 18,2, 0,0, "Waterfall TBT (256R)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5801, 18,2, 0,0, "Waterfall BDB (256R)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 19,2, 0,0, "Waterfall TBT (320L)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 20,2, 0,0, "Waterfall TBT (320R)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 21,2, 0,0, "Waterfall TBT (384L)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5801, 21,2, 0,0, "Waterfall BDB (384L)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 22,2, 0,0, "Waterfall TBT (384R)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5801, 22,2, 0,0, "Waterfall BDB (384R)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 23,2, 0,0, "Waterfall TBT (448&576L)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5701, 23,2, 0,0, "Waterfall RBR (576L)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 24,2, 0,0, "Waterfall TBT (448&576M)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5701, 24,2, 0,0, "Waterfall RBR (576M)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5901, 25,2, 0,0, "Waterfall TBT (448&576R)" },
+    { { 0x2A21AB, 0,0x1520, 1 }, { 0, 0,0,3 }, 0x3D5701, 25,2, 0,0, "Waterfall RBR (576R)" },
+
+    { { 0x2B14E2, 0,0,  1 }, { 0x2B13B3, 0,0, 2 }, 0x3D8261, 0,2, 0,1, "Gleamin' Bream Underlay" },
+    { { 0x29F818, 0xC70,0, 0 }, { 0x29F346, 0,0, 1 }, 0x3D8161, 0,3, 0,0, "Bazza's Blockade BG" },
+    { { 0x29F818, 0xC70,0, 0 }, { 0x29F346, 0,0, 1 }, 0x3DB899, 0,3, 0,0, "Fish Food Frenzy BG" },
+    { { 0x29F818, 0xC70,0, 0 }, { 0x29F346, 0,0, 1 }, 0x3D8261, 0,3, 9,0, "Floodlit Fish Dark BG" },
+    { { 0x29F818, 0xC70,0, 0 }, { 0x29F346, 0,0, 1 }, 0x3D8261, 0,3,10,0, "Floodlit Fish Light BG" },
+    { { 0x29F818, 0xC70,0, 0 }, { 0x29F346, 0,0, 1 }, 0x3DB799, 0,3, 0,0, "Barbos' Barrier BG" },
+    { { 0x29BFBC, 0,0, 1 }, { 0x29BEAE, 0,0, 2 }, 0x3DB799, 0,2, 0,0, "Barbos" },
+
+    { { 0x2C576C, 0x1F60,0, 0 }, { 0x2C4F6C, 0x800,0, 0 }, 0x3D9E39, 0,2, 0,0, "Fire-Ball Frenzy BG1" },
+    { { 0x2C576C, 0x1F60,0, 0 }, { 0x2C4F6C, 0x800,0, 0 }, 0x3DA039, 0,2, 0,0, "Blazing Bazukas BG1" },
+    { { 0x2C576C, 0x1F60,0, 0 }, { 0x2C4F6C, 0x800,0, 0 }, 0x3D9F39, 0,2, 0,0, "Krack-Shot Kroc BG1" },
+    { { 0x29B6C0, 0,0x11C0, 1 }, { 0x29B0BD, 0,0,     2 }, 0x3D9E39, 0,3, 0,0, "Factory BG2" },
+    { { 0x29E146, 0x1200,0, 0 }, { 0x29DD86, 0x3E0,0, 0 }, 0x3DA139, 0,2, 0,0, "KAOS" },
+
+    { { 0x2A68F2, 0,0,      1 }, { 0x2A7D8A, 0x800,0, 0 }, 0x3D7F61,64,2, 0,0, "Low-G Labyrinth Smoke" }, /* smoke needs pipe_layout(); */
+    { { 0x2A68F2, 0,0,      1 }, { 0x2A7D8A, 0x800,0, 0 }, 0x3D8061,64,2, 0,0, "Poisonous Pipeline Smoke" },
+    { { 0x2A6712, 0,0x1D80, 1 }, { 0x2A68CB, 0,0,     2 }, 0x3D8061, 0,3, 0,0, "Poisonous Pipeline BG2" },
+
+    { { 0x2A426A, 0,0, 1 }, { 0x2A5F1C, 0,0, 1 }, 0x3D94F9, 0,2, 0,0, "Krevice Kreepers BG1" },
+    { { 0x2A426A, 0,0, 1 }, { 0x2A5F1C, 0,0, 1 }, 0x3D91F9, 0,2, 0,0, "Kong-Fused Cliffs BG1" },
+    { { 0x2A426A, 0,0, 1 }, { 0x2A5F1C, 0,0, 1 }, 0x3D93F9, 0,2, 0,0, "Ropey Rumpus BG1" },
+    { { 0x2A426A, 0,0, 1 }, { 0x2A5F1C, 0,0, 1 }, 0x3D95F9, 0,2, 0,0, "Criss Kross Cliffs BG1" },
+    { { 0x2A426A, 0,0, 1 }, { 0x2A5F1C, 0,0, 1 }, 0x3D96F9, 0,2, 0,0, "Rocket Rush BG1" },
+    { { 0x2A426A, 0,0, 1 }, { 0x2A5F1C, 0,0, 1 }, 0x3D92F9, 0,2, 0,0, "Cliffs BG1 (AK)" },
+    { { 0x2A3387, 0,0, 1 }, { 0x2A5B53, 0,0, 2 }, 0x3D94F9, 0,3, 0,0, "Krevice Kreepers BG2" },
+    { { 0x2A3387, 0,0, 1 }, { 0x2A5B53, 0,0, 2 }, 0x3D91F9, 0,3, 0,0, "Kong-Fused Cliffs BG2" },
+    { { 0x2A3387, 0,0, 1 }, { 0x2A5B53, 0,0, 2 }, 0x3D93F9, 0,3, 0,0, "Ropey Rumpus BG2" },
+    { { 0x2A3387, 0,0, 1 }, { 0x2A5B53, 0,0, 2 }, 0x3D95F9, 0,3, 0,0, "Criss Kross Cliffs BG2" },
+    { { 0x2A3387, 0,0, 1 }, { 0x2A5B53, 0,0, 2 }, 0x3D96F9, 0,3, 0,0, "Rocket Rush BG2" },
+    { { 0x2A3387, 0,0, 1 }, { 0x2A5B53, 0,0, 2 }, 0x3D92F9, 0,3, 0,0, "Cliffs BG2 (AK)" },
+
+    { { 0x32587C, 0,0, 1 }, { 0x3275D5, 0,0, 2 }, 0x3DA439, 0,2, 0,0, "Buzzer Barrage BG1" },
+    { { 0x32587C, 0,0, 1 }, { 0x3275D5, 0,0, 2 }, 0x3DA639, 0,2, 0,0, "Creepy Caverns BG1" },
+    { { 0x32587C, 0,0, 1 }, { 0x3275D5, 0,0, 2 }, 0x3DA539, 0,2, 0,0, "Pot Hole Panic BG1" },
+    { { 0x32587C, 0,0, 1 }, { 0x3275D5, 0,0, 2 }, 0x3DA339, 0,2, 0,0, "Tyrant Twin Tussle BG1" },
+    { { 0x32587C, 0,0, 1 }, { 0x3275D5, 0,0, 2 }, 0x3DA739, 0,2, 0,0, "Tyrant Twin Tussle BG1 (AK)" },
+
+    { { 0x32275C, 0,0, 1 }, { 0x324170, 0,0, 1 }, 0x3D9C39, 0,2, 0,0, "Konveyor Rope Klash BG2" },
+    { { 0x32275C, 0,0, 1 }, { 0x324170, 0,0, 1 }, 0x3D9B39, 0,2, 0,0, "Koindozer Klamber BG2" },
+    { { 0x32275C, 0,0, 1 }, { 0x324170, 0,0, 1 }, 0x3D9A39, 0,2, 0,0, "Stampede Sprint BG2" },
+    { { 0x32275C, 0,0, 1 }, { 0x324170, 0,0, 1 }, 0x3D9D39, 0,2, 0,0, "Stampede Sprint BG2 (AK)" },
+    { { 0x32470A, 0,0, 1 }, { 0x325437, 0,0, 2 }, 0x3D9C39, 0,3, 0,1, "Konveyor Rope Klash BG2" },
+    { { 0x32470A, 0,0, 1 }, { 0x325437, 0,0, 2 }, 0x3D9B39, 0,3, 0,1, "Koindozer Klamber BG2" },
+    { { 0x32470A, 0,0, 1 }, { 0x325437, 0,0, 2 }, 0x3D9A39, 0,3, 0,1, "Stampede Sprint BG2" },
+    { { 0x32470A, 0,0, 1 }, { 0x325437, 0,0, 2 }, 0x3D9D39, 0,3, 0,1, "Stampede Sprint BG2 (AK)" },
+
+    { { 0x29481D, 0,0, 1 }, { 0x2945BC, 0,0, 2}, 0x3D7801,  0,2, 0,0, "Bleak BG1" },
+    { { 0x29481D, 0,0, 1 }, { 0x294782, 0,0, 2}, 0x3D7801, 26,2, 0,0, "Bleak BG2" },
+
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6A01,  0,2, 0,0, "Bear Cabin (Generic)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6A01, 27,2, 0,0, "Bear Cabin (Bazaar)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6F01, 28,2, 0,0, "Bear Cabin (Barnacle)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D7001, 29,2, 0,0, "Bear Cabin (Brash)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6D01, 30,2, 0,0, "Bear Cabin (Blunder)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D7101, 31,2, 0,0, "Bear Cabin (Blue)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6A01, 32,2, 0,0, "Bear Cabin (Bazooka)" }, // <-- Problem
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6E01, 33,2, 0,0, "Bear Cabin (Bramble)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6C01, 34,2, 0,0, "Bear Cabin (Blizzard)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6A01, 35,2, 0,0, "Bear Cabin (Barter)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D7201, 36,2, 0,0, "Bear Cabin (Benny)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D7201, 37,2, 0,0, "Bear Cabin (Bjorn)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6A01, 38,2, 0,0, "Bear Cabin (Baffle)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6E01, 39,2, 0,0, "Bear Cabin (Boomer)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D7301, 40,2, 0,0, "Bear Cabin (Boomer) (AK)" },
+
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6A01, 41,2, 0,0, "Bear Cabin BG (Bazaar)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6F01, 42,2, 0,0, "Bear Cabin BG (Barnacle)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D7001, 43,2, 0,0, "Bear Cabin BG (Brash)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6D01, 44,2, 0,0, "Bear Cabin BG (Blunder)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D7101, 45,2, 0,0, "Bear Cabin BG (Blue)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6A01, 46,2, 0,0, "Bear Cabin BG (Bazooka)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6E01, 47,2, 0,0, "Bear Cabin BG (Bramble)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6C01, 48,2, 0,0, "Bear Cabin BG (Blizzard)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6A01, 49,2, 0,0, "Bear Cabin BG (Barter)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D7201, 50,2, 0,0, "Bear Cabin BG (Benny)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D7201, 51,2, 0,0, "Bear Cabin BG (Bjorn)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6A01, 52,2, 0,0, "Bear Cabin BG (Baffle)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6E01, 53,2, 0,0, "Bear Cabin BG (Boomer)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D7301, 54,2, 0,0, "Bear Cabin BG (Boomer) (AK)" },
+
+    { { 0x350000, 0,0, 1 }, { 0x320000, 0,0, 1}, 0x3D7421, 55,2, 0,0, "Overworld" },
+    { { 0x321DA4, 0,0, 1 }, { 0x3215A9, 0,0, 1}, 0x3D7421,  0,3, 0,0, "Overworld (Water)" },
+    { { 0x0FFF7E, 0,0, 1 }, { 0x286F2B, 0,0, 2}, 0x3D7D41,  0,2, 0,0, "Lake Orangatanga" },
+    { { 0x10FE01, 0,0, 1 }, { 0x2871D7, 0,0, 2}, 0x3D7D41,  0,3, 0,0, "Lake Orangatanga (Water)" },
+    { { 0x0AFDB5, 0,0, 1 }, { 0x286B7F, 0,0, 2}, 0x3D6801,  0,2, 0,0, "Kremwood Forest" },
+    { { 0x11FF7D, 0,0, 1 }, { 0x28734F, 0,0, 1}, 0x3D6801,  0,3, 0,0, "Kremwood Forest (Water)" },
+    { { 0x04F05F, 0,0, 1 }, { 0x2AFEAB, 0,0, 2}, 0x3D8BE1,  0,2, 0,0, "Cotton-Top Cove" },
+    { { 0x36688A, 0,0, 1 }, { 0x3666BB, 0,0, 2}, 0x3D8BE1,  0,3, 0,0, "Cotton-Top Cove (Water)" },
+    { { 0x14FFD7, 0,0, 1 }, { 0x2A93BD, 0,0, 2}, 0x3D8CE1,  0,2, 0,0, "Mekanos" },
+    { { 0x367029, 0,0, 1 }, { 0x366EE1, 0,0, 1}, 0x3D8CE1,  0,3, 0,0, "Mekanos (Water)" },
+    { { 0x06FEFE, 0,0, 1 }, { 0x2867D8, 0,0, 2}, 0x3D6B01,  0,2, 0,0, "K3" },
+    { { 0x37266A, 0,0, 1 }, { 0x372353, 0,0, 2}, 0x3D8DE1,  0,2, 0,0, "Razor Ridge" },
+    { { 0x3673D5, 0,0, 1 }, { 0x3672D8, 0,0, 2}, 0x3D8DE1,  0,3, 0,0, "Razor Ridge (Water)" },
+    { { 0x01FC3C, 0,0, 1 }, { 0x2B017D, 0,0, 2}, 0x3D8EE1,  0,2, 0,0, "KAOS Kore" },
+    { { 0x367816, 0,0, 1 }, { 0x3676E3, 0,0, 2}, 0x3D8EE1,  0,3, 0,0, "KAOS Kore (Water)" },
+    { { 0x1BFE0E, 0,0, 1 }, { 0x2A9638, 0,0, 2}, 0x3D8FF9,  0,2, 0,0, "Krematoa" },
+    { { 0x367B9A, 0,0, 1 }, { 0x367A94, 0,0, 1}, 0x3D8FF9,  0,3, 0,0, "Krematoa (Water)" },
+    { { 0x1BFE0E, 0,0, 1 }, { 0x2A9638, 0,0, 2}, 0x3D90F9,  0,2, 0,0, "Krematoa (AK)" },
+    { { 0x367B9A, 0,0, 1 }, { 0x367A94, 0,0, 1}, 0x3D90F9,  0,3, 0,0, "Krematoa (Water) (AK)" },
+    { { 0x2B0B39, 0,0, 1 }, { 0x2B081C, 0,0, 1 }, 0x3D8FF9, 0,2, 0,0, "Water" },
+
+    { { 0x28BDEC, 0,0, 1 }, { 0x28B5AE, 0,0, 2 }, 0x3D97F9, 0,2, 0,0, "Kastle KAOS (Left)" },
+    { { 0x28BDEC, 0,0, 1 }, { 0x28B989, 0,0, 2 }, 0x3D97F9, 0,2, 0,0, "Kastle KAOS (Right)" },
+    { { 0x28BDEC, 0,0, 1 }, { 0x28B989, 0,0, 2 }, 0x3D97F9,56,2, 0,0, "Kastle KAOS (Right)(2)" },
+
+    { { 0x29E146, 0x8A0,0, 3 }, { 0x2C451C, 0x240,0x200, 3 }, 0x3D97F9,57,3,48,1, "Kastle KAOS BG3 (1)" },
+    { { 0x29E146, 0x8A0,0, 3 }, { 0x2C451C, 0x240,0x200, 3 }, 0x3D97F9,57,3,49,1, "Kastle KAOS BG3 (2)" },
+
+    { { 0x2BDC2A, 0,0,  1 }, { 0x2C3EB2, 0,0,  1 }, 0x3D9939, 0,2, 0,0, "Knautilus (Left)" },
+    { { 0x2BDC2A, 0,0,  1 }, { 0x2C3825, 0,0,  1 }, 0x3D9939, 0,2, 0,0, "Knautilus (Right)" },
+
+    { { 0x345F40, 0x1800,0, 0 }, { 0x345CC0, 0,0, 3 }, 0x3D9939, 58,2, 0,1, "Knautilus BG1" },
+
+    { { 0x2BD1D2, 0,0, 1 }, { 0x2BCD52, 0,0, 3 }, 0x3D9939, 59,3,41,0, "Knautilus BG (Left)" },
+    { { 0x2BD1D2, 0,0, 1 }, { 0x2BCA52, 0,0, 3 }, 0x3D9939, 60,3,41,0, "Knautilus BG (Right)" }
+
+};
+static const int screen_count = sizeof(dkc3) / sizeof(struct DKC3_SCREEN);
+
+
+static int extend (unsigned char **data, size_t *size, size_t add) {
+    unsigned char *z = realloc(*data, *size + add);
+    if (z == NULL)
+        return 1;
+    *data = z;
+    *size += add;
+    return 0;
+}
+
+static int decomp (unsigned char **data, size_t *size, unsigned char *src, size_t src_size, const struct DATA *d) {
+    switch (d->type) {
+        case 0: { /* raw */
+            if (d->size > src_size
+            ||  d->size <= 0) {
+                fprintf(stderr, "Invalid size for memcpy. ");
+                return 1;
+            }
+
+            unsigned char *z = calloc(d->size, 1);
+            if (z == NULL)
+                return 1;
+            *data = z;
+            memcpy(*data, src, d->size);
+            *size = d->size;
+            break;
+        }
+        case 1: { /* big data */
+            if (bd_decompress_mem_to_mem(data, size, src, src_size))
+                return 1;
+            break;
+        }
+        case 2: { /* small data */
+            if (sd_decompress_mem_to_mem(data, size, src, src_size))
+                return 1;
+            break;
+        }
+        case 3:  { return 0; }
+        default: { return 1; }
     }
-    for (i = 0; i < 11; i++) {
-        memcpy(&raw_data[0x318 + (i*0x40)], &rom[0x28B364 + (i*0x14)], 0x14);
+
+    /* offset */
+    if (d->move > 0) {
+        if (extend(data, size, d->move)) {
+            fprintf(stderr, "Failed to reallocate a buffer.\n");
+            return 1;
+        }
+        memmove(*data + d->move, *data, *size - d->move);
+        *size = *size + d->move;
     }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D97F9, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kastle KAOS (Right)(2)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    bp_counter = 0x1760 + 0x8A0;
-    memset(raw_data, 0, 0x800);
-    if (region == 1) {
-        memcpy(bp_data, &rom[0x29E146], 0x1200);
-        memcpy(&bp_data[0x1760], &rom[0x2C475C], 0x8A0);
-        memcpy(&raw_data[0x200], &rom[0x2C451C], 0x240);
+    else if (d->move < 0) { /* dangerous */
+        memmove(*data, *data - d->move, *size + d->move);
+        *size = *size - d->move;
     }
-    else if (region == 2) {
-        memcpy(bp_data, &rom[0x29E146 - 1], 0x1200);
-        memcpy(&bp_data[0x1760], &rom[0x2C475C - 1], 0x8A0);
-        memcpy(&raw_data[0x200], &rom[0x2C451C - 1], 0x240);
+
+    return 0;
+}
+
+void spec3 (unsigned char *rom, size_t rom_size, char *dir, int region) {
+
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < screen_count; i++) {
+
+        const struct DKC3_SCREEN *d = &dkc3[i];
+        unsigned char *set_data = NULL;
+        unsigned char *map_data = NULL;
+
+        size_t set_size = 0;
+        size_t map_size = 0;
+
+        /* region */
+        unsigned char *set = rom + d->set.addr;
+        unsigned char *map = rom + d->map.addr;
+
+        if (decomp(&set_data, &set_size, set, rom_size - (set-rom), &d->set))
+            goto error;
+        if (decomp(&map_data, &map_size, map, rom_size - (map-rom), &d->map))
+            goto error;
+
+
+        /* layout fixes */
+        switch (d->spec) {
+            case 0: { break; }
+
+            case  1: case  2: case  3:
+            case  4: case  5: case  6: { /* boss photos */
+                unsigned char *temp = calloc(map_size, 1);
+                if (temp == NULL)
+                    goto error;
+                for (int j = 0; j < 14; j++)
+                    memcpy(&temp[0x214 + (j*0x40)], &map_data[(d->spec-1)*0x150 + (j*24)], 24);
+                free(map_data);
+                map_data = temp;
+                break;
+            }
+            case  7: case  8: case  9:
+            case 10: case 11: case 12: { /* bear photos */
+                map_size = 0x700;
+                unsigned char *temp = calloc(map_size, 1);
+                if (temp == NULL)
+                    goto error;
+                for (int j = 0; j < 7; j++) {
+                    memcpy(&temp[0x28C + j*0x40], &map_data[(d->spec-7)*0x8C + (j*10)],        10);
+                    memcpy(&temp[0x2AA + j*0x40], &map_data[(d->spec-7)*0x8C + (j*10) + 0x46], 10);
+                }
+                free(map_data);
+                map_data = temp;
+                break;
+            }
+            case 13: { /* arich */
+                map_size = 0x800;
+                map_data = calloc(map_size, 1);
+                if (map_data == NULL)
+                    goto error;
+                memcpy(&map_data[0x21C], map, 0x8A);
+                memcpy(&map_data[0x2D8], map+ 0x8A, 0x1CE);
+                break;
+            }
+            case 14: { /* riverside BG */
+                int m = map_size;
+                for (int j = 1; j < m; j+=2)
+                    map_data[j] -= 1;
+                break;
+            }
+
+            case 15: case 16: case 17: case 18:
+            case 19: case 20: case 21: case 22:
+            case 23: case 24: case 25: { /* waterfalls */
+                map_size = 0x800;
+                map_data = calloc(map_size, 1);
+                if (map_data == NULL)
+                    goto error;
+                waterfall_layout(rom, map_data, d->spec - 15);
+                break;
+            }
+
+            case 26: { /* bleak */
+                unsigned char *t;
+                size_t ts;
+                if (bd_decompress_mem_to_mem(&t, &ts, rom+0x370000, rom_size-0x370000))
+                    goto error;
+                if (extend(&set_data, &set_size, 0x5140 + ts)
+                ||  extend(&map_data, &map_size, 0x200)) {
+                    free(t);
+                    goto error;
+                }
+                memcpy(&set_data[0x5140], t, ts);
+                free(t);
+                memmove(&map_data[0x200], map_data, map_size - 0x200);
+                map = rom + 0x3625CB;
+                for (int j = 0; j < 0x200; j+=2) {
+                    map_data[j]   = map[(j^0x20)  ];
+                    map_data[j+1] = map[(j^0x20)+1] + 2;
+                }
+                break;
+            }
+
+            case 27: case 28: case 29: case 30:
+            case 31: case 32: case 33: case 34:
+            case 35: case 36: case 37: case 38:
+            case 39: case 40: {
+                static const struct BEAR_DATA bears[] = {
+                    {  0, 0x0F, 0xFAC7 }, {  0, 0x10, 0xFACA }, {  0, 0x07, 0xFACD },
+                    {  0, 0x01, 0xFAD0 }, {  0, 0x04, 0xFAD3 },
+                    {  1, 0x91, 0xFB35 }, {  1, 0x92, 0xFB38 }, {  1, 0x04, 0xFB3B },
+                    {  2, 0x13, 0xFB4F }, {  2, 0x14, 0xFB52 }, {  2, 0x15, 0xFB55 },
+                    {  2, 0x02, 0xFB58 }, {  2, 0x25, 0xFB5B },
+                    {  3, 0x16, 0xFAEA }, {  3, 0x17, 0xFAED }, {  3, 0x02, 0xFAF0 },
+                    {  4, 0x18, 0xFB6C }, {  4, 0x19, 0xFB6F }, {  4, 0x04, 0xFB72 },
+                    {  4, 0x00, 0xFB75 },
+                    {  5, 0x82, 0xFB80 }, {  5, 0x1D, 0xFB83 }, {  5, 0x1E, 0xFB86 },
+                    {  5, 0x00, 0xFB89 },
+                    {  6, 0x80, 0xFB04 }, {  6, 0x23, 0xFB07 }, {  6, 0x04, 0xFB0A },
+                    {  7, 0x1A, 0xFB9D }, {  7, 0x1B, 0xFBA0 }, {  7, 0x04, 0xFBA3 },
+                    {  7, 0x07, 0xFBA6 }, {  7, 0x01, 0xFBA9 },
+                    {  8, 0x1C, 0xFB1B }, {  8, 0x00, 0xFB1E }, {  8, 0x03, 0xFB21 },
+                    {  9, 0xA2, 0xFBC3 }, {  9, 0x03, 0xFBC6 }, {  9, 0x03, 0xFBC9 },
+                    { 10, 0x22, 0xFBDD }, { 10, 0x02, 0xFBE0 }, { 10, 0x04, 0xFBE3 },
+                    { 10, 0x00, 0xFBE6 },
+                    { 11, 0x1F, 0xFBFA }, { 11, 0x06, 0xFBFD }, { 11, 0x24, 0xFC00 },
+                    { 12, 0x02, 0xFC14 }, { 12, 0x20, 0xFC17 }, { 12, 0x21, 0xFC1A },
+                    { 12, 0x26, 0xFC1D }
+                };
+                static const int bear_count = sizeof(bears) / sizeof(struct BEAR_DATA);
+                int n = d->spec - 27;
+
+                if (n ==  1
+                ||  n ==  6
+                ||  n ==  9
+                ||  n == 12)
+                    flip_bear_layout(map_data);
+
+                for (int j = 0; j < bear_count; j++) {
+                    const struct BEAR_DATA *bear = &bears[j];
+                    if (bear->n != n)
+                        continue;
+                    bear_layout(map_data, rom, bear->a1, bear->a2, 0x350000);
+                }
+                break;
+            }
+            case 41: case 42: case 43: case 44:
+            case 45: case 46: case 47: case 48:
+            case 49: case 50: case 51: case 52:
+            case 53: case 54: { /* bear cabin backgrounds */
+                static const struct BEAR_DATA bears[] = {
+                    {  0, 0x49, 0xFAD6 }, {  0, 0x4D, 0xFAD9 }, {  0, 0x4A, 0xFADC },
+                    {  0, 0x4B, 0xFADF }, {  0, 0x4C, 0xFAE2 }, {  0, 0x0E, 0xFAE5 },
+                    {  1, 0xCD, 0xFB3E }, {  1, 0xCA, 0xFB41 }, {  1, 0x48, 0xFB44 },
+                    {  1, 0x49, 0xFB47 }, {  1, 0x0E, 0xFB4A },
+                    {  2, 0x4D, 0xFB5E }, {  2, 0xCB, 0xFB61 }, {  2, 0x4B, 0xFB64 },
+                    {  2, 0x0E, 0xFB67 },
+                    {  3, 0x4D, 0xFAF3 }, {  3, 0xCC, 0xFAF6 }, {  3, 0xCB, 0xFAF9 },
+                    {  3, 0x4A, 0xFAFC }, {  3, 0x0E, 0xFAFF },
+                    {  4, 0x4D, 0xFB78 }, {  4, 0x0E, 0xFB7B },
+                    {  5, 0x48, 0xFB8C }, {  5, 0x49, 0xFB8F }, {  5, 0x4B, 0xFB92 },
+                    {  5, 0x4B, 0xFB95 }, {  5, 0x0E, 0xFB98 },
+                    {  6, 0x4B, 0xFB0D }, {  6, 0x4D, 0xFB10 }, {  6, 0xC9, 0xFB13 },
+                    {  6, 0x0E, 0xFB16 },
+                    {  7, 0xCB, 0xFBAC }, {  7, 0x4D, 0xFBAF }, {  7, 0x4B, 0xFBB2 },
+                    {  7, 0x4C, 0xFBB5 }, {  7, 0xCC, 0xFBB8 }, {  7, 0xCB, 0xFBBB },
+                    {  7, 0x0E, 0xFBBE },
+                    {  8, 0x49, 0xFB24 }, {  8, 0x4A, 0xFB27 }, {  8, 0xCD, 0xFB2A },
+                    {  8, 0x4B, 0xFB2D }, {  8, 0x0E, 0xFB30 },
+                    {  9, 0xC9, 0xFBCC }, {  9, 0xC8, 0xFBCF }, {  9, 0x4A, 0xFBD2 },
+                    {  9, 0x4B, 0xFBD5 }, {  9, 0x0E, 0xFBD8 },
+                    { 10, 0xCB, 0xFBE9 }, { 10, 0x4A, 0xFBEC }, { 10, 0x4D, 0xFBEF },
+                    { 10, 0x4B, 0xFBF2 }, { 10, 0x0E, 0xFBF5 },
+                    { 11, 0x4A, 0xFC03 }, { 11, 0xCD, 0xFC06 }, { 11, 0xC9, 0xFC09 },
+                    { 11, 0xC8, 0xFC0C }, { 11, 0x0E, 0xFC0F },
+                    { 12, 0xCC, 0xFC20 }, { 12, 0xCB, 0xFC23 }, { 12, 0x0E, 0xFC26 }
+                };
+                static const int bear_count = sizeof(bears) / sizeof(struct BEAR_DATA);
+                int n = d->spec - 41;
+
+                map_size = 0x800;
+                map_data = calloc(map_size, 1);
+                if (map_data == NULL)
+                    goto error;
+
+                for (int j = 0; j < bear_count; j++) {
+                    const struct BEAR_DATA *bear = &bears[j];
+                    if (bear->n != n)
+                        continue;
+                    bear_layout(map_data, rom, bear->a1, bear->a2, 0x350000);
+                }
+                break;
+            }
+
+            case 55: { /* overworld */
+                size_t bp_size = map_size*8*8*4; /* probably wrong */
+                unsigned char *bp[] = { malloc(bp_size), malloc(bp_size) };
+                if (bp[0] == NULL || bp[1] == NULL) {
+                    free(bp[0]); free(bp[1]);
+                    goto error;
+                }
+                decode_bitplane(rom, set_data, map_data, bp[0], d->palette, map_size, set_size, d->mode,  0, d->bg);
+                decode_bitplane(rom, set_data, map_data, bp[1], d->palette, map_size, set_size, d->mode, 13, d->bg);
+                memcpy(bp[0], bp[1], 90*4*256);
+                assemble_screen(bp[0], map_size, 32, dir, d->name);
+                free(set_data);
+                free(map_data);
+                free(bp[0]);
+                free(bp[1]);
+                continue;
+            }
+            case 56: { /* Kastle KAOS (R2) */
+                int j;
+                for (j = 0; j < 10; j++)
+                    memcpy(&map_data[0x098 + j*64], &rom[0x28B2EC+j*12], 12);
+                for (j = 0; j < 11; j++)
+                    memcpy(&map_data[0x318 + j*64], &rom[0x28B364+j*20], 20);
+                break;
+            }
+            case 57: { /* Kastle KAOS BG3 (L/R) */
+                set_size = 0x1760 + 0x8A0;
+                set_data = calloc(set_size, 1);
+                if (set_data == NULL)
+                    goto error;
+                memcpy(set_data, set, 0x1200);
+                switch (region) {
+                    case 0: { set = &rom[0x2C4494]; break; }
+                    case 1: { set = &rom[0x2C475C]; break; }
+                    case 2: { set = &rom[0x2C475B]; break; }
+                }
+                memcpy(&set_data[0x1760], set, 0x8A0);
+
+                map_size = 0x800;
+                map_data = calloc(map_size, 1);
+                if (map_data == NULL)
+                    goto error;
+                memcpy(&map_data[0x200], map, 0x240);
+                break;
+            }
+            case 58: { /* Knautilus BG1 */
+                map_size = 0x800;
+                map_data = calloc(map_size, 1);
+                if (map_data == NULL)
+                    goto error;
+                memcpy(&map_data[0x2C0], map, 0x1C0);
+                memcpy(&map_data[0x440], map, 0x1C0);
+                break;
+            }
+            case 59: { /* Knautilus (Left)*/
+                if (extend(&set_data, &set_size, 0x13D0))
+                    goto error;
+                memmove(&set_data[0x13D0], set_data, set_size-0x13D0);
+                memcpy(set_data, &set_data[0x130], 0x10);
+                set_size += 0x13D0;
+
+                map_size = 0x800;
+                map_data = calloc(map_size, 1);
+                if (map_data == NULL)
+                    goto error;
+                memcpy(&map_data[0x180], map, 0x300);
+                memcpy(&map_data[0x5D0], map+0x310, 0xB0);
+                break;
+            }
+            case 60: { /* Knautilus (Right) */
+                if (extend(&set_data, &set_size, 0x13D0))
+                    goto error;
+                memmove(&set_data[0x13D0], set_data, set_size-0x13D0);
+                memcpy(set_data, &set_data[0x130], 0x10);
+                set_size += 0x13D0;
+
+                map_size = 0x800;
+                map_data = calloc(map_size, 1);
+                if (map_data == NULL)
+                    goto error;
+                memcpy(&map_data[0x180], map, 0x300);
+                memcpy(&map_data[0x5C0], map+0x6C0, 0xC0);
+                break;
+            }
+            case 61: { /* Murky Mill Lights */
+                int m = map_size;
+                for (int j = 0; j < m; j+=2) {
+                    if (map_data[j] > 0x8D)
+                        map_data[j+1] += 1;
+                    map_data[j]   += 0x72;
+                    map_data[j+1] += 1;
+                }
+                break;
+            }
+            case 62: { map_size -= 0x180; break; }
+            case 63: { map_size  = 0xC0; break; }
+            case 64: {
+                for (int j = 1; j < (int)map_size; j+=2)
+                    map_data[j] |= 0x20;
+                break;
+            }
+            case 65: {
+                memcpy(&map_data[0x200], set_data, 0x300);
+                if (extend(&set_data, &set_size, 0x3700))
+                    goto error;
+                memcpy(&set_data[0x1E00], &rom[0x2A160B], 0x1900);
+                break;
+            }
+        }
+
+        size_t bp_size = map_size*8*8*4; /* probably wrong */
+        unsigned char *bp = malloc(bp_size);
+        if (bp == NULL)
+            goto error;
+
+        decode_bitplane(rom, set_data, map_data, bp, d->palette, map_size, set_size, d->mode, d->fix, d->bg);
+        assemble_screen(bp, map_size, 32, dir, d->name);
+
+        free(set_data);
+        free(map_data);
+        free(bp);
+        continue;
+error:
+        fprintf(stderr, "Failed %d (%s).\n", i, d->name);
+        free(set_data);
+        free(map_data);
     }
-    else {
-        memcpy(bp_data, &rom[0x29DE8A], 0x1200);
-        memcpy(&bp_data[0x1760], &rom[0x2C4494], 0x8A0);
-        memcpy(&raw_data[0x200], &rom[0x2C4254], 0x240);
-    }
-    // memcpy(raw_data[0x480], rom[0x345CC0], 0x280);
-    raw_counter = 0x800;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D97F9, raw_counter, bp_counter, 3, 48, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kastle KAOS BG3 (1)");
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D97F9, raw_counter, bp_counter, 3, 49, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Kastle KAOS BG3 (2)");
-    
-    bp_counter = 0;
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2BDC2A);
-        decomp(raw_data, rom, &raw_counter, 0x2C3EB2);
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2BDC2A - 1);
-        decomp(raw_data, rom, &raw_counter, 0x2C3EB2 - 1);
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2BD962);
-        decomp(raw_data, rom, &raw_counter, 0x2C3BEA);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9939, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Knautilus (Left)");
-    
-    raw_counter = 0;
-    if (region == 1) {
-        decomp(raw_data, rom, &raw_counter, 0x2C3825);
-    }
-    else if (region == 2) {
-        decomp(raw_data, rom, &raw_counter, 0x2C3825 - 1);
-    }
-    else {
-        decomp(raw_data, rom, &raw_counter, 0x2C355D);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9939, raw_counter, bp_counter, 2, 0, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Knautilus (Right)");
-    
-    bp_counter = 0x1800;
-    raw_counter = 0x800;
-    memcpy(bp_data, &rom[0x345F40], 0x1800);
-    memset(raw_data, 0, 0x800);
-    memcpy(&raw_data[0x2C0], &rom[0x345CC0], 0x1C0);
-    memcpy(&raw_data[0x440], &rom[0x345CC0], 0x1C0);
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9939, raw_counter, bp_counter, 2, 0, 1);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Knautilus BG1");
-    
-    bp_counter = 0;
-    raw_counter = 0x800;
-    memset(bp_data, 0, 0x1800);
-    memset(raw_data, 0, 0x800);
-    if (region == 1) {
-        decomp(bp_data, rom, &bp_counter, 0x2BD1D2);
-        memcpy(&raw_data[0x180], &rom[0x2BCD52], 0x300); // BG3
-        memcpy(&raw_data[0x5D0], &rom[0x2BD062], 0xB0);  // Conveyor
-    }
-    else if (region == 2) {
-        decomp(bp_data, rom, &bp_counter, 0x2BD1D2 - 1);
-        memcpy(&raw_data[0x180], &rom[0x2BCD52 - 1], 0x300); // BG3
-        memcpy(&raw_data[0x5D0], &rom[0x2BD062 - 1], 0xB0);  // Conveyor
-    }
-    else {
-        decomp(bp_data, rom, &bp_counter, 0x2BCF0A);
-        memcpy(&raw_data[0x180], &rom[0x2BCA8A], 0x300); // BG3
-        memcpy(&raw_data[0x5D0], &rom[0x2BCD9A], 0xB0);  // Conveyor
-    }
-    memcpy(&bp_data[0x13D0], bp_data, bp_counter);
-    memcpy(bp_data, &bp_data[0x130], 0x10);
-    bp_counter += 0x13D0;
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9939, raw_counter, bp_counter, 3, 41, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Knautilus BG (Left)");
-    
-    // HDMA is required to maintain the palette.
-    raw_counter = 0x800;
-    if (region == 1) {
-        memcpy(&raw_data[0x180], &rom[0x2BCA52], 0x300);
-        memcpy(&raw_data[0x5C0], &rom[0x2BD112], 0xC0);
-    }
-    else if (region == 2) {
-        memcpy(&raw_data[0x180], &rom[0x2BCA52 - 1], 0x300);
-        memcpy(&raw_data[0x5C0], &rom[0x2BD112 - 1], 0xC0);
-    }
-    else {
-        memcpy(&raw_data[0x180], &rom[0x2BC78A], 0x300);
-        memcpy(&raw_data[0x5C0], &rom[0x2BCE4A], 0xC0);
-    }
-    decode_bitplane_3(region, rom, bp_data, raw_data, bitplane, 0x3D9939, raw_counter, bp_counter, 3, 41, 0);
-    assemble_screen(bitplane, raw_counter, 32, dir, "Knautilus BG (Right)");
-    
-    free( bp_data);
-    free(raw_data);
-    free(bitplane);
-    
-} // Special Screens (DKC3)
+
+}
+

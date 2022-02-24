@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "bitplane.h"
 
-void decode_bitplane_3(int region, uint8_t *rom, uint8_t *bp_data, uint8_t *raw_data, uint8_t *bitplane, int pal_addr, unsigned int raw_len, unsigned int bp_len, int mode, int fix, int bg) {
+void decode_bitplane_3(int region, unsigned char *rom, unsigned char *bp_data, unsigned char *raw_data, unsigned char *bitplane, int pal_addr, unsigned int raw_len, unsigned int bp_len, int mode, int fix, int bg) {
 
     // Japanese version(s) of DKC3 has all palettes shifted by -77 (-0x4D).
 
@@ -16,7 +16,7 @@ void decode_bitplane_3(int region, uint8_t *rom, uint8_t *bp_data, uint8_t *raw_
 
 } // decode_bitplane_3();
 
-void pipe_layout(uint8_t *raw_data, unsigned int raw_counter) {
+void pipe_layout(unsigned char *raw_data, unsigned int raw_counter) {
     
     // Smoke effect in Low-G Labyrinth & Poisonous Pipeline.
     
@@ -31,7 +31,7 @@ void pipe_layout(uint8_t *raw_data, unsigned int raw_counter) {
 } // pipe_layout();
 
 
-void surface_layout(uint8_t *raw_data, unsigned int raw_counter) {
+void surface_layout(unsigned char *raw_data, unsigned int raw_counter) {
 
     // Water surface in Pot-Hole Panic & Riverside Levels.
     unsigned int i;
@@ -50,7 +50,7 @@ void surface_layout(uint8_t *raw_data, unsigned int raw_counter) {
 } // surface_layout();
 
 
-void lights_layout(uint8_t *raw_data, unsigned int raw_counter) {
+void lights_layout(unsigned char *raw_data, unsigned int raw_counter) {
 
     // Lights in Murky Mill
     
@@ -67,7 +67,7 @@ void lights_layout(uint8_t *raw_data, unsigned int raw_counter) {
 } // lights_layout();
 
 
-void waterfall_layout(uint8_t *rom, uint8_t *raw_data, int type) {
+void waterfall_layout(unsigned char *rom, unsigned char *raw_data, int type) {
 
     // WATERFALLS
     
@@ -100,7 +100,7 @@ void waterfall_layout(uint8_t *rom, uint8_t *raw_data, int type) {
 } // waterfall_layout();
 
 
-void boss_photo_layout(uint8_t *raw_data, uint8_t *temp_data, int offset) {
+void boss_photo_layout(unsigned char *raw_data, unsigned char *temp_data, int offset) {
 
     int pos = offset * 0x150;
     int i;
@@ -113,7 +113,7 @@ void boss_photo_layout(uint8_t *raw_data, uint8_t *temp_data, int offset) {
 } // boss_photo_layout();
 
 
-void bear_photo_layout(uint8_t *raw_data, uint8_t *temp_data, int offset) {
+void bear_photo_layout(unsigned char *raw_data, unsigned char *temp_data, int offset) {
 
     int pos = offset * 0x8C;
     int i;
@@ -127,14 +127,14 @@ void bear_photo_layout(uint8_t *raw_data, uint8_t *temp_data, int offset) {
 } // bear_photo_layout();
 
 /*
-void rareware_layout(uint8_t **raw_data) {
+void rareware_layout(unsigned char **raw_data) {
 
     // Reserved for Rareware logo. (Mode 7)
     
 } // rareware_layout();
 */
 
-void bear_layout(uint8_t *raw_data, uint8_t *rom, uint8_t a, int x, int bank) {
+void bear_layout(unsigned char *raw_data, unsigned char *rom, unsigned char a, int x, int bank) {
 
     /*
         For Bear Cabins
@@ -161,7 +161,7 @@ void bear_layout(uint8_t *raw_data, uint8_t *rom, uint8_t a, int x, int bank) {
     }
     if (rom[0xFFD9] == 2) x += 188;
 
-    uint8_t offset, b, wA, wB, t1C, t1D, t1E, t1F, t20, t21, t22, t23, t26, t27, t28, t29;
+    unsigned char offset, b, wA, wB, t1C, t1D, t1E, t1F, t20, t21, t22, t23, t26, t27, t28, t29;
     int y;
     int jmp;
     char run = 1;
@@ -313,7 +313,7 @@ void bear_layout(uint8_t *raw_data, uint8_t *rom, uint8_t a, int x, int bank) {
 } // bear_layout();
 
 
-void flip_bear_layout(uint8_t *raw_data) {
+void flip_bear_layout(unsigned char *raw_data) {
 
     /*
     Some bear cabins are flipped horizontally.
@@ -376,9 +376,9 @@ void flip_bear_layout(uint8_t *raw_data) {
 } // flip_bear_layout();
 
 /*
-void dkc_bg_layout(uint8_t **raw_data, uint8_t **rom) {
+void dkc_bg_layout(unsigned char **raw_data, unsigned char **rom) {
 
-    uint8_t a, b;
+    unsigned char a, b;
     unsigned int x, y, c, jmp;
     
     a = t0A75; //

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <bd_comp.h>
 #include "bitplane.h"
 #include "decomp.h"
 
@@ -8,9 +9,9 @@ struct Bitplane {
     char *name;
 };
 
-void raw_bitplane2(uint8_t *rom, char dir[255]) {
+void raw_bitplane2(unsigned char *rom, size_t rom_size, char *dir) {
 
-    const struct Bitplane bp4[] = {
+    static const struct Bitplane bp4[] = {
         {0x1F8116, "Ship Deck.png"},
         {0x1FD537, "Ship Mast.png"},
         {0x1F0870, "Ship Hold.png"},
@@ -25,15 +26,14 @@ void raw_bitplane2(uint8_t *rom, char dir[255]) {
         {0x229E5F, "Ice.png"},
         {0x22E556, "Jungle (2).png"} // 13
     };
-
-    uint8_t *bp_data = malloc(65535);
-    int bp_counter;
     int i;
     
     for (i = 0; i < 13; i++) {
-        bp_counter = 0;
-        decomp(bp_data, rom, &bp_counter, bp4[i].offset);
-        dump_bitplane(bp_data, bp_counter, 4, 16, dir, bp4[i].name);
+        unsigned char *set_data = NULL;
+        size_t set_size = 0;
+        bd_decompress_mem_to_mem(&set_data, &set_size, rom+bp4[i].offset, rom_size);
+        dump_bitplane(set_data, set_size, 4, 16, dir, bp4[i].name);
+        free(set_data);
     }
     
 

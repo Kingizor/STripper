@@ -5,17 +5,17 @@
 #include "bitplane.h"
 #include "decomp.h"
 
-void anim3(uint8_t *rom, char dir[255], int priority, int region) {
+void anim3(unsigned char *rom, size_t rom_size, char *dir, int priority, int region) {
     region = region; // Unused
-    uint8_t  *bp_data = malloc(65535);
-    uint8_t *raw_data = malloc(65535);
-    uint8_t *lay_data_a = malloc(65535);
-    uint8_t *lay_data_b = malloc(65535);
+    unsigned char  *bp_data = malloc(65535);
+    unsigned char *raw_data = malloc(65535);
+    unsigned char *lay_data_a = malloc(65535);
+    unsigned char *lay_data_b = malloc(65535);
     int  bp_counter;
     int raw_counter;
     int lay_counter;
     
-    uint8_t *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
+    unsigned char *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
     
     char name[255];
     #define bp_width 512

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <bd_comp.h>
 #include "bitplane.h"
 #include "decomp.h"
 
@@ -8,13 +9,7 @@ struct Bitplane {
     char *name;
 };
 
-/*
-const struct Bitplane bp2[] = {
-    {0x},
-};
-*/
-
-void raw_bitplane3(uint8_t *rom, char dir[255]) {
+void raw_bitplane3(unsigned char *rom, size_t rom_size, char *dir) {
 
     const struct Bitplane bp4[] = {
         {0x208E80, "4bpp_Caves.png"},
@@ -84,6 +79,7 @@ void raw_bitplane3(uint8_t *rom, char dir[255]) {
         {0x28BDEC, "4bpp_Kastle KAOS.png"},
         {0x2BDC2A, "4bpp_Knautilus.png"} // 66
     };
+    int bp4_size = sizeof(bp4) / sizeof(struct Bitplane);
     
     const struct Bitplane bp2[] = {
         {0x1CFF76, "2bpp_Boardwalk BG2.png"},
@@ -103,21 +99,21 @@ void raw_bitplane3(uint8_t *rom, char dir[255]) {
         {0x367B9A, "2bpp_Krematoa (Water).png"},
         {0x2BD1D2, "2bpp_Knautilus.png"} // 16
     };
-
-    uint8_t *bp_data = malloc(65535);
-    int bp_counter;
+    int bp2_size = sizeof(bp2) / sizeof(struct Bitplane);
     int i;
     
-    for (i = 0; i < 66; i++) {
-        bp_counter = 0;
-        decomp(bp_data, rom, &bp_counter, bp4[i].offset);
-        dump_bitplane(bp_data, bp_counter, 4, 16, dir, bp4[i].name);
+    for (i = 0; i < bp4_size; i++) {
+        unsigned char *set_data = NULL;
+        size_t set_size;
+        bd_decompress_mem_to_mem(&set_data, &set_size, rom+bp4[i].offset, rom_size);
+        dump_bitplane(set_data, set_size, 4, 16, dir, bp4[i].name);
     }
     
-    for (i = 0; i < 16; i++) {
-        bp_counter = 0;
-        decomp(bp_data, rom, &bp_counter, bp2[i].offset);
-        dump_bitplane(bp_data, bp_counter, 2, 16, dir, bp2[i].name);
+    for (i = 0; i < bp2_size; i++) {
+        unsigned char *set_data = NULL;
+        size_t set_size;
+        bd_decompress_mem_to_mem(&set_data, &set_size, rom+bp2[i].offset, rom_size);
+        dump_bitplane(set_data, set_size, 2, 16, dir, bp2[i].name);
     }
     
 
