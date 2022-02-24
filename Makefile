@@ -31,9 +31,6 @@ main.c: 								 main.h
 level1.c level3.c spec3.c: 				 misc.h
 dkc_gba.c dkc2_gba.c kos.c jc.c: 		 gba_misc.h
 dkc2_gba.c gba_misc.c: 					 dkc2_decomp.h
-level2.c level3.c raw_bit2.c raw_bit3.c: decomp.h
-spec2.c spec3.c: 						 decomp.h
-anim2.c anim3.c: 						 decomp.h
 level1.c level2.c level3.c:              bitplane.h
 raw_bit2.c raw_bit3.c:                   bitplane.h
 spec1.c spec2.c spec3.c:                 bitplane.h

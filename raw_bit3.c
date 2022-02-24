@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <bd_comp.h>
 #include "bitplane.h"
-#include "decomp.h"
 
 struct Bitplane {
     int offset;
