@@ -13,16 +13,16 @@ struct kos_levels {
 };
 
 static int crop_kos(uint8_t *layout, uint32_t *tilemap_size, int *width, int height) {
-    
+
     /*
     Simple cropping.
-    
+
     Each area is always 128 tiles wide, so start at right of a row and determine the rightmost tile that isn't blank.
     Do this for each row and crop the frame along the rightmost tile.
     */
-    
+
     *width = 0;
-    
+
     for (int i = 0; i < height; i++) {
         int row = i * 128;
         for (int j = 127; j >= 0; j--) {
@@ -36,10 +36,10 @@ static int crop_kos(uint8_t *layout, uint32_t *tilemap_size, int *width, int hei
         }
     }
     (*width)++;
-    
+
     *tilemap_size = *width * height * 2;
     uint8_t *new_layout = malloc(*tilemap_size);
-    
+
     if (new_layout == NULL) {
         printf("Failed to allocate memory for cropping.\n");
         return -1;
@@ -49,15 +49,15 @@ static int crop_kos(uint8_t *layout, uint32_t *tilemap_size, int *width, int hei
     }
     memcpy(layout, new_layout, *tilemap_size);
     free(new_layout);
-    
+
     return 0;
-    
+
 }
 
 void kos_levels(uint8_t *rom, char *dir) {
-    
+
     struct kos_levels levels[] = {
-        
+
         {0x509EC0, 0x240758, 0x013644, "Banana Bungalow 1"},
         {0x50A080, 0x240758, 0x017684, "Banana Bungalow 2"},
         {0x508F00, 0x240758, 0x0064B4, "Tropical Treetops 1"},
@@ -72,7 +72,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x509600, 0x240758, 0x00C584, "Puzzling Pyramid 2"},
         {0x5097C0, 0x240758, 0x00D5A4, "Puzzling Pyramid 3"},
         {0x50A940, 0x240758, 0x023F84, "Congazuma's Castle"},
-        
+
         {0x50AB00, 0x240758, 0x024F94, "Necky's Canyon 1"},
         {0x50ACC0, 0x240758, 0x0257A4, "Necky's Canyon 2"},
         {0x50AE80, 0x240758, 0x026FD4, "Necky's Canyon 3"},
@@ -87,7 +87,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x50BAC0, 0x24405C, 0x0318F4, "Treacherous Twister 1"},
         {0x50BC80, 0x24405C, 0x032934, "Treacherous Twister 2"},
         {0x50C540, 0x24405C, 0x03A244, "Fire Necky's Nest"},
-        
+
         {0x50C700, 0x24405C, 0x03B264, "Risky Reef 1"},
         {0x50DDC0, 0x247EE0, 0x0544B4, "Risky Reef B"},
         {0x50C8C0, 0x24405C, 0x03CAA4, "Risky Reef 2"},
@@ -103,7 +103,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x50D340, 0x24405C, 0x0493E4, "Kremling Kamp 2"},
         {0x50D500, 0x24405C, 0x04AC14, "Kremling Kamp 3"},
         {0x50E140, 0x247EE0, 0x057D04, "Davy Bones Locker"},
-        
+
         {0x50E300, 0x247EE0, 0x058514, "Cold Cold Forest 1"},
         {0x50E4C0, 0x247EE0, 0x059D44, "Cold Cold Forest 2"},
         {0x50E680, 0x247EE0, 0x05BD64, "Cold Cold Forest 3"},
@@ -119,7 +119,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x50F480, 0x24F728, 0x06E724, "Ice Castle 2"},
         {0x50F640, 0x24F728, 0x06FF44, "Ice Castle 3"},
         {0x50FD40, 0x24F728, 0x0787E4, "Sassy Squatch's Lair"},
-        
+
         {0x50FF00, 0x24F728, 0x07F8D4, "Booster Barrel Skyway"},
         {0x5100C0, 0x24F728, 0x083144, "K.Kruizer III Artillery 1"},
         {0x510280, 0x24F728, 0x084974, "K.Kruizer III Artillery 2"},
@@ -136,7 +136,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x5123C0, 0x2536CC, 0x0ABCD4, "King K.Rool 5"},
         {0x512740, 0x255D70, 0x0AC504, "King K.Rool 6"},
         // {0x512580, 0x2536CC, 0x0AC4F4, "Credits"},
-        
+
         {0x511B00, 0x2536CC, 0x0A9474, "Jungle Jam"},
         // {0x512C80, 0x2536CC, 0x0A9474, "Jungle Jam 2"},
         // {0x507300, 0x240758, 0x0A9474, "Cranky 0"},
@@ -147,7 +147,7 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x507BC0, 0x240758, 0x003C54, "Cranky 5"},
         {0x507D80, 0x240758, 0x004464, "Cranky 6"},
         {0x507F40, 0x240758, 0x004C74, "Cranky 7"},
-        
+
         {0x513700, 0x259D34, 0x0B4604, "Climbing Race 1"},
         {0x5138C0, 0x259D34, 0x0B6E54, "Climbing Race 2"},
         {0x513A80, 0x259D34, 0x0B96A4, "Climbing Race 3"},
@@ -170,43 +170,43 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x511780, 0x2536CC, 0x0A8454, "Unused 4"},
         {0x515140, 0x259D34, 0x0D1964, "Unused 5"},
     };
-    
+
     uint32_t length = sizeof(levels) / sizeof(struct kos_levels);
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (uint32_t i = 0; i < length; i++) {
         uint32_t index = levels[i].tilemap;
         uint32_t tilemap_counter = 0;
-        
+
         // Heuristically determine the height by checking for pointers. (Not guaranteed to be reliable)
         while (rom[index+3] == 8) {
             tilemap_counter += 4;
             index += 16;
         }
-        
+
         index = levels[i].tilemap;
         uint32_t tilemaps[tilemap_counter];
-        
+
         // Load pointers
         for (uint32_t j = 0; j < tilemap_counter; j++) {
             tilemaps[j] = rom[index] + (rom[index+1] << 8) + (rom[index+2] << 16);
             index += 4;
         }
-        
+
         // A single nametable is 32x32, each tile is 2 bytes.
         // 32 * 32 * 2 = 2048 (0x800)
         uint32_t tilemap_size = tilemap_counter * 0x800;
         uint8_t *layout = malloc(tilemap_size);
         index = 0; // Write index
         int width = 0, height = (tilemap_counter / 4) * 32;
-        
+
         if (layout == NULL) {
             printf("Failed to allocate memory for layout.\n");
             continue;
         }
-        
-        
-        
+
+
+
         // Each row of nametables
         for (uint32_t j = 0; j < (tilemap_counter / 4); j++) {
             // Each row of tiles
@@ -218,39 +218,39 @@ void kos_levels(uint8_t *rom, char *dir) {
                 }
             }
         }
-        
+
         if (crop_kos(layout, &tilemap_size, &width, height)) {
             continue;
         }
-        
+
         uint8_t *att_data = malloc(tilemap_size/2);
-        
+
         if (att_data == NULL) {
             printf("Failed to allocate memory for layout data.\n");
             continue;
         }
-        
+
         gba_split(layout, att_data, tilemap_size/2); // Damn DKC
-        
+
         uint8_t *rgb = malloc(768);
         uint8_t *bitplane = malloc(width*height*64*4);
-        
+
         if (rgb == NULL || bitplane == NULL) {
             printf("Failed to allocate memory for output image data.\n");
             continue;
         }
-        
+
         decode_palette(rgb, &rom[levels[i].palette] - 0x40, 256);
-        
+
         // Convert tiles to rgba
         gba_tiles(bitplane, &rom[levels[i].tileset], layout, att_data, rgb, tilemap_size/2, 0, 0);
         arrange_gbc(bitplane, width*8, height*8, dir, levels[i].name);
-        
+
         free(layout);
         free(att_data);
         free(rgb);
         free(bitplane);
-        
+
     }
-    
+
 }

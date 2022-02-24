@@ -26,7 +26,7 @@ void raw_bitplane2(unsigned char *rom, size_t rom_size, char *dir) {
         {0x22E556, "Jungle (2).png"} // 13
     };
     int i;
-    
+
     for (i = 0; i < 13; i++) {
         unsigned char *set_data = NULL;
         size_t set_size = 0;
@@ -34,6 +34,6 @@ void raw_bitplane2(unsigned char *rom, size_t rom_size, char *dir) {
         dump_bitplane(set_data, set_size, 4, 16, dir, bp4[i].name);
         free(set_data);
     }
-    
+
 
 } // dump_bitplanes3();

@@ -79,7 +79,7 @@ void raw_bitplane3(unsigned char *rom, size_t rom_size, char *dir) {
         {0x2BDC2A, "4bpp_Knautilus.png"} // 66
     };
     int bp4_size = sizeof(bp4) / sizeof(struct Bitplane);
-    
+
     const struct Bitplane bp2[] = {
         {0x1CFF76, "2bpp_Boardwalk BG2.png"},
         {0x29B6C0, "2bpp_Factory BG2.png"},
@@ -100,20 +100,20 @@ void raw_bitplane3(unsigned char *rom, size_t rom_size, char *dir) {
     };
     int bp2_size = sizeof(bp2) / sizeof(struct Bitplane);
     int i;
-    
+
     for (i = 0; i < bp4_size; i++) {
         unsigned char *set_data = NULL;
         size_t set_size;
         bd_decompress_mem_to_mem(&set_data, &set_size, rom+bp4[i].offset, rom_size);
         dump_bitplane(set_data, set_size, 4, 16, dir, bp4[i].name);
     }
-    
+
     for (i = 0; i < bp2_size; i++) {
         unsigned char *set_data = NULL;
         size_t set_size;
         bd_decompress_mem_to_mem(&set_data, &set_size, rom+bp2[i].offset, rom_size);
         dump_bitplane(set_data, set_size, 2, 16, dir, bp2[i].name);
     }
-    
+
 
 } // dump_bitplanes3();

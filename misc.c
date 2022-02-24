@@ -17,15 +17,15 @@ void decode_bitplane_3(int region, unsigned char *rom, unsigned char *bp_data, u
 } // decode_bitplane_3();
 
 void pipe_layout(unsigned char *raw_data, unsigned int raw_counter) {
-    
+
     // Smoke effect in Low-G Labyrinth & Poisonous Pipeline.
-    
+
     unsigned int i;
-    
+
     for (i = 0; i < raw_counter; i+=2) {
         raw_data[i+1] |= 0x20;
     }
-    
+
     return;
 
 } // pipe_layout();
@@ -35,7 +35,7 @@ void surface_layout(unsigned char *raw_data, unsigned int raw_counter) {
 
     // Water surface in Pot-Hole Panic & Riverside Levels.
     unsigned int i;
-    
+
     for (i = 0; i < raw_counter; i+=2) {
         if ((raw_data[i+1] - 1) < 0) {
             raw_data[i+1] += 255;
@@ -44,24 +44,24 @@ void surface_layout(unsigned char *raw_data, unsigned int raw_counter) {
             raw_data[i+1] -= 1;
         }
     }
-    
+
     return;
-    
+
 } // surface_layout();
 
 
 void lights_layout(unsigned char *raw_data, unsigned int raw_counter) {
 
     // Lights in Murky Mill
-    
+
     unsigned int i;
-    
+
     for (i = 0; i < raw_counter; i+=2) {
         if ((raw_data[i] + 0x72) > 255) raw_data[i+1] += 1;
         raw_data[i]   += 0x72;
         raw_data[i+1] += 0x01;
     }
-    
+
     return;
 
 } // lights_layout();
@@ -70,7 +70,7 @@ void lights_layout(unsigned char *raw_data, unsigned int raw_counter) {
 void waterfall_layout(unsigned char *rom, unsigned char *raw_data, int type) {
 
     // WATERFALLS
-    
+
     unsigned int offset[][32] = {
         {0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387F6, 0x338836, 0x338876, 0x3388B6, 0x3388F6, 0x338936, 0x338976, 0x3389B6, 0x3389F6, 0x338A36, 0x338A76, 0x338AB6, 0x338AF6, 0x338B36, 0x338B76, 0x338BB6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6}, // 128
         {0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387F6, 0x338836, 0x338876, 0x3388B6, 0x3388F6, 0x338936, 0x338976, 0x3389B6, 0x3389F6, 0x338A36, 0x338A76, 0x338AB6, 0x338BF6, 0x338C36, 0x338C76, 0x338CB6, 0x338CF6, 0x338D36, 0x338D76, 0x338DB6, 0x338DF6, 0x338E36, 0x338E76, 0x338EB6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6}, // 192
@@ -85,16 +85,16 @@ void waterfall_layout(unsigned char *rom, unsigned char *raw_data, int type) {
         {0x338DF6, 0x338E36, 0x338E76, 0x338EB6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6}, // 448 Right
         {0x3388F6, 0x338936, 0x338976, 0x3389B6, 0x3389F6, 0x338A36, 0x338A76, 0x338AB6, 0x338BF6, 0x338C36, 0x338C76, 0x338CB6, 0x338CF6, 0x338D36, 0x338D76, 0x338DB6, 0x338DF6, 0x338E36, 0x338E76, 0x338EB6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6, 0x3387B6}  // 576 Right
     }; // 32
-    
+
     unsigned int i, j;
-    
+
     for (i = 0; i < 32; i++) {
         for (j = 0; j < 32; j++) {
             raw_data[(j*64)+(i*2)] = rom[offset[type][i] + (j*2)];
             raw_data[(j*64)+(i*2)+1] = rom[offset[type][i] + (j*2) + 1];
         }
     }
-    
+
     return;
 
 } // waterfall_layout();
@@ -105,7 +105,7 @@ void boss_photo_layout(unsigned char *raw_data, unsigned char *temp_data, int of
     int pos = offset * 0x150;
     int i;
     memset(&raw_data[0], 0, 0x800);
-    
+
     for (i = 0; i < 14; i++) {
         memcpy(&raw_data[0x214 + (i*0x40)], &temp_data[pos + (i*0x018)], 0x18);
     }
@@ -118,19 +118,19 @@ void bear_photo_layout(unsigned char *raw_data, unsigned char *temp_data, int of
     int pos = offset * 0x8C;
     int i;
     memset(&raw_data[0], 0, 0x800);
-    
+
     for (i = 0; i < 7; i++) {
         memcpy(&raw_data[0x28C + (i*0x40)], &temp_data[pos + (i*0x0A)],        0x0A);
         memcpy(&raw_data[0x2AA + (i*0x40)], &temp_data[pos + (i*0x0A) + 0x46], 0x0A);
     }
-   
+
 } // bear_photo_layout();
 
 /*
 void rareware_layout(unsigned char **raw_data) {
 
     // Reserved for Rareware logo. (Mode 7)
-    
+
 } // rareware_layout();
 */
 
@@ -138,19 +138,19 @@ void bear_layout(unsigned char *raw_data, unsigned char *rom, unsigned char a, i
 
     /*
         For Bear Cabins
-        
+
         This function requires:
             The value in the lower byte of the accumulator
             The X register
             The current program bank
-        
+
         $B4/AF6B = a & x
         $B4/AF71 = bank (Will probably always be $F5:0000)
-        
+
         $B4/AF6B = Start
         $B4/AF4C = End
     */
-    
+
     if (rom[0xFFD9] == 0) {
         if (rom[0xFFDB] == 0) {
             x -= 610;
@@ -165,14 +165,14 @@ void bear_layout(unsigned char *raw_data, unsigned char *rom, unsigned char a, i
     int y;
     int jmp;
     char run = 1;
-    
+
     char flip = 0;
-    
+
     if (a >= 0x80) flip = 1;
-    
+
     t1C = 0;
     t1D = 0;
-    
+
     a &= 0x3F;
     b = 0;
     a <<= 2;
@@ -191,32 +191,32 @@ void bear_layout(unsigned char *raw_data, unsigned char *rom, unsigned char a, i
     t27 = b;
     t28 = a;
     t29 = b;
-    
+
     jmp = 0xAF07;
-    
+
     // int count = 0;
-    
+
     while (run) {
-        
+
         // printf("\ncount = %d\n", count);
         // printf("jmp = %X\n", jmp);
         // printf("\tc = %X\n", (b*256)+a);
         // printf("\tx = %X\n", x);
         // printf("\ty = %X\n", y);
         // count++;
-        
+
         switch(jmp) {
-        
+
             case 0xAF07:
                 y = (t21*256)+t20;
                 jmp = 0xAF0A;
             break;
-            
+
             case 0xAF0A:
                 x = (t1F*256)+t1E;
-                
+
                 // $B4/AF0E
-                
+
                 if (flip == 1) {
                     jmp = 0xAF27;
                     // jmp = 0xAF10;
@@ -224,9 +224,9 @@ void bear_layout(unsigned char *raw_data, unsigned char *rom, unsigned char a, i
                 else {
                     jmp = 0xAF10;
                 }
-                
+
             break;
-            
+
             case 0xAF10:
                 do {
                     a = t26;
@@ -253,7 +253,7 @@ void bear_layout(unsigned char *raw_data, unsigned char *rom, unsigned char a, i
                 } while (x > 0);
                 jmp = 0xAF3F;
             break;
-            
+
             case 0xAF27:
                 do {
                     a = x;
@@ -280,7 +280,7 @@ void bear_layout(unsigned char *raw_data, unsigned char *rom, unsigned char a, i
                 } while (x > 0);
                 jmp = 0xAF3F;
             break;
-            
+
             case 0xAF3F:
                 a = t28;
                 b = t29;
@@ -299,17 +299,17 @@ void bear_layout(unsigned char *raw_data, unsigned char *rom, unsigned char a, i
                     run = 0;
                 }
             break;
-            
+
             default:
                 printf("Invalid jump - %X\n", jmp);
                 return;
             break;
-            
+
         } // Switch
     } // While
-    
+
     return;  
-        
+
 } // bear_layout();
 
 
@@ -317,17 +317,17 @@ void flip_bear_layout(unsigned char *raw_data) {
 
     /*
     Some bear cabins are flipped horizontally.
-    
+
     $B4:A21D - JSL
     $BC:F84C - RTL
     */
-    
+
     int c = 0x200, x = 0x7400, tempX, y = 0x1C, t1A, t1C, t1E;
     int write;
     do {
         t1E = x;
         t1A = 0;
-        
+
         do {
             write = (x-0x7400)*2;
             c = (raw_data[write+1]*256) + raw_data[write];
@@ -362,7 +362,7 @@ void flip_bear_layout(unsigned char *raw_data) {
             t1A += 2;
             c = t1A;
         } while(c < 0x1F);
-        
+
         c = x;
         c += 0x10;
         while (c > 65535) {
@@ -370,9 +370,9 @@ void flip_bear_layout(unsigned char *raw_data) {
         }
         x = c;
         y--;
-        
+
     } while(y > 0);
-    
+
 } // flip_bear_layout();
 
 /*
@@ -380,7 +380,7 @@ void dkc_bg_layout(unsigned char **raw_data, unsigned char **rom) {
 
     unsigned char a, b;
     unsigned int x, y, c, jmp;
-    
+
     a = t0A75; //
     b = t0A76; //
     b += 1
@@ -395,65 +395,65 @@ void dkc_bg_layout(unsigned char **raw_data, unsigned char **rom) {
     b = t0896; //
     b &= 0x01;
     a &= 0xE0;
-    
+
     c = (b*256)+a;
     c >>= 4;
-    
+
     a = (c % 256);
     b = (c - (c % 256)) / 256;
-    
+
     if ((a + t4C) > 255) b++;
     t4C = a + t4C;
     t4D = b + t4D;
-    
+
     a = (y % 256);
     b = (y - (y % 256)) / 256; // 873A
-    
+
     a += 0x18;
     b = 0;
-    
+
     c = (b*256)+a;
     c >>= 2;
-    
+
     a = (y % 256);
     b = (y - (y % 256)) / 256;
-    
+
     if ((a + t1B11) > 255) b++;
     a += t1B11;
     b += t1B12;
     t4E = a;
     t4F = b;
-    
+
     a = (y % 256); // 8745
     b = 0;
     a &= 0x18;
     a ^= 0x18;
-    
+
     a >>= 2;
-    
+
     if ((a + t1B11) > 255) b++;
     a += t1B11;
     b += t1B12;
     t50 = a;
     t51 = b;
-    
+
     a = tD5;
     b = tD6;
     //
     x = 0; // x = 0x0A2D;
-    
-    
+
+
     jmp = 0x875A;
-    
+
     while (run) {
-    
+
         switch (jmp) {
-            
+
             case 0x875A:
-            
+
                 a = rom[bank + (t4D*256) + t4C];
                 b = rom[bank + (t4D*256) + t4C + 1];
-                
+
                 if (bmi) {
                     jmp = 0x87BA;
                 } // bmi
@@ -463,12 +463,12 @@ void dkc_bg_layout(unsigned char **raw_data, unsigned char **rom) {
                 else {
                     jmp = 0x8763;
                 }
-                
+
             break;
-            
-            
+
+
             case 0x8763:
-            
+
                 c = (b*256)+a;
                 c <<= 5;
                 while (c > 65535) {
@@ -476,13 +476,13 @@ void dkc_bg_layout(unsigned char **raw_data, unsigned char **rom) {
                 }
                 a = (c % 256);
                 b = (c - (c % 256)) / 256;
-                
+
                 if ((a + t4E) > 255) b++;
                 a += t4E;
                 b += t4F;
-                
+
                 y = (b*256)+a;
-                
+
                 output[x]   = rom[bank + y];
                 output[x+1] = rom[bank + y + 1];
                 output[x+2] = rom[bank + y + 0x08];
@@ -491,37 +491,37 @@ void dkc_bg_layout(unsigned char **raw_data, unsigned char **rom) {
                 output[x+5] = rom[bank + y + 0x10 + 1];
                 output[x+6] = rom[bank + y + 0x18];
                 output[x+7] = rom[bank + y + 0x18 + 1];
-                
+
                 if ((t4C + 2) > 255) t4D++;
                 t4C += 2;
                 x += 8;
-                
+
                 if ((x + 0x0A2D) <= 0x0A75) {
                     jmp = 0x875A;
                 }
                 else {
                     jmp = 0x8810;
                 }
-                
+
             break;
-            
-            
+
+
             case 0x8792:
-                
-                
-                
+
+
+
             break;
-            
-            
+
+
             case 0x87BA:
-                
-                
-                
+
+
+
             break;
-            
-            
+
+
             case 0x8810:
-                
+
                 a = &rom[0x000895];
                 a &= 0xF8;
                 a >>= 2;
@@ -534,7 +534,7 @@ void dkc_bg_layout(unsigned char **raw_data, unsigned char **rom) {
                 a &= 0x40;
                 t4E = a;
                 t4F = b;
-                
+
                 a = &rom[0x000A2D + x];
                 output[y] = a;
                 output[y+1] = b;
@@ -546,17 +546,17 @@ void dkc_bg_layout(unsigned char **raw_data, unsigned char **rom) {
                 b |= &rom[0x0008A1 + 1];
                 y = (b*256)+a;
                 x += 2;
-                
+
                 if (a == t4E && b == t4F) {
                     jmp = 0x8826;
                 }
                 else {
-                
+
                 }
-                
-                
+
+
             break;
-            
+
         } // switch
     } // while
 

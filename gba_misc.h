@@ -5,7 +5,7 @@ struct comp {
     uint32_t loc; // Data Location
     uint32_t ofs; // (Compressed) ? Data Offset : Data Size
     uint8_t type; // Compression Type
-    
+
     /*
     00 - Not Compressed
     01 - BIOS

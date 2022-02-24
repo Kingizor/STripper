@@ -5,19 +5,19 @@
 #include "bitplane.h"
 
 void decode_palette(unsigned char *rgb, unsigned char *rom, int count) {
-    
+
     int i;
     for (i = 0; i < count; i++) {
-    
+
         unsigned char low = rom[i*2];
         unsigned char high =  rom[i*2+1];
-        
+
         rgb[i*3]   = (low & 0x1F) * 8;
         rgb[i*3+1] = (((low & 0xE0) >> 5) + ((high & 0x03) << 3)) * 8;
         rgb[i*3+2] = ((high & 0x7C) >> 2) * 8;
-        
+
     }
-    
+
     return;
 
 } // decode_palette();
@@ -395,7 +395,7 @@ static void colourfix_pre(unsigned char *rom, unsigned char *pal_data, int fix) 
         0x02, 0x24, 0x21, 0x04, 0x43, 0x04, 0x65, 0x04, 0x62, 0x14, 0x21, 0x04, 0x64, 0x04, 0xA7, 0x08, 0x62, 0x14, 0x65, 0x04, 0x87, 0x04, 0xEB, 0x08, 0x62, 0x14, 0x21, 0x04, 0x63, 0x08, 0xA5, 0x08, 0x02, 0x24, 0x22, 0x24, 0x45, 0x24, 0x67, 0x28, 0x8F, 0x34, 0xCE, 0x24, 0x33, 0x19, 0x76, 0x0D, 0xD8, 0x0D, 0x1A, 0x12, 0x7B, 0x12, 0xDD, 0x16, 0x1D, 0x23, 0x5E, 0x2F, 0x9E, 0x3B, 0xDE, 0x47, 0xAD, 0x21, 0x00, 0x00, 0x22, 0x00, 0x43, 0x04, 0x64, 0x04, 0x65, 0x04, 0x87, 0x08, 0xA8, 0x08, 0xC9, 0x08, 0xEA, 0x08, 0x0C, 0x0D, 0x2D, 0x0D, 0x4E, 0x0D, 0x6F, 0x11, 0x71, 0x11, 0x92, 0x11, 0xAD, 0x21, 0xCF, 0x21, 0x6C, 0x1D, 0x09, 0x15, 0xC7, 0x10, 0x84, 0x0C, 0x63, 0x08, 0x21, 0x04, 0x6F, 0x11, 0x0B, 0x0D, 0xC8, 0x08, 0x0D, 0x0D, 0xEB, 0x08, 0xA9, 0x08, 0x87, 0x04, 0x65, 0x04, 0xAD, 0x21, 0x63, 0x0C, 0xA5, 0x18, 0x06, 0x29, 0x45, 0x04, 0x4A, 0x04, 0x70, 0x08, 0xE9, 0x0C, 0x0C, 0x09, 0x2F, 0x09, 0x72, 0x0D, 0xF4, 0x15, 0x00, 0x00, 0x42, 0x04, 0x63, 0x08, 0xA5, 0x0C, 0xAD, 0x21, 0x64, 0x04, 0xA8, 0x08, 0x0F, 0x0D, 0x31, 0x0D, 0x74, 0x11, 0xD4, 0x19, 0x21, 0x00, 0x23, 0x00, 0x67, 0x08, 0xA9, 0x08, 0xEC, 0x0C, 0x65, 0x0C, 0x21, 0x04, 0x86, 0x08, 0xC8, 0x08, 0xAD, 0x21, 0x62, 0x00, 0x84, 0x00, 0xC6, 0x00, 0x2A, 0x01, 0xAE, 0x01, 0x12, 0x06, 0x00, 0x00, 0x22, 0x00, 0x64, 0x04, 0x87, 0x08, 0xC8, 0x08, 0x2D, 0x0D, 0x21, 0x04, 0x63, 0x08, 0x84, 0x0C, 0xAD, 0x21, 0x21, 0x04, 0x43, 0x04, 0x65, 0x04, 0xC7, 0x0C, 0xE9, 0x0C, 0x0C, 0x11, 0x6E, 0x15, 0xB0, 0x19, 0x45, 0x04, 0x4A, 0x04, 0x70, 0x08, 0x86, 0x08, 0xA4, 0x00, 0xA8, 0x08, 0x0C, 0x0D};
         memcpy(&pal_data[0], &new_pal[0], 0x100);
     } // Gangplank Galley (DKC2)
-    
+
     if (fix >= 66 && fix <= 96) {
         unsigned char new_pal[] = {
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -508,7 +508,7 @@ static void colourfix_pre(unsigned char *rom, unsigned char *pal_data, int fix) 
 static void colourfix_post(unsigned char *rgb, int fix) {
 
     int i;
-    
+
     if (fix == 1) {
         for (i = 0; i < 384; i+=3) {
             rgb[i] ^= 248; // R
@@ -638,8 +638,8 @@ static void colourfix_post(unsigned char *rgb, int fix) {
             rgb[i+1] = 248;
         }
     } // Toxic Tower (UW)
-    
-    
+
+
     if (fix == 59) {
         for (i = 0; i < 384; i++) {
             if (rgb[i] > 23) {
@@ -702,12 +702,12 @@ static void colourfix_post(unsigned char *rgb, int fix) {
 } // colourfix_post();
 
 static void decode_tile(unsigned char *bp_data, unsigned char *raw_data, unsigned char *rgb, unsigned char *bitplane, int raw_address, int bp_ofs, int bp_len, int mode, int bg) {
-    
+
     unsigned int low =  raw_data[raw_address+1];
     unsigned int high = raw_data[raw_address];
-    
+
     int pal_ofs = 0, vflip = 0, hflip = 0, priority = 0;
-    
+
     if (low & 1)   high += 256;
     if (low & 2)   high += 512;
     if (low & 4)   pal_ofs += 1;
@@ -716,37 +716,37 @@ static void decode_tile(unsigned char *bp_data, unsigned char *raw_data, unsigne
     if (low & 32)  priority = 1;
     if (low & 64)  hflip = 1;
     if (low & 128) vflip = 1;
-    
+
     int img_ofs;
-    
+
     if (mode == 3) {
         img_ofs = high * 16;
     } // 2bpp
     else {
         img_ofs = high * 32;
     } // 4bpp
-    
+
     int override = 0;
     if (img_ofs > bp_len) override = 1; // Edge case. (Skidda's Row)
-    
+
     if (mode == 3) {
         pal_ofs *= 4;
     } // 2bpp
     else {
         pal_ofs *= 16;
     } // 4bpp
-    
+
     int i, j;
-    
+
     unsigned int bits[8] = {128, 64, 32, 16, 8, 4, 2, 1};
-    
+
     int out_ofs = 128;
     if (mode != 1) out_ofs = 32;
-    
+
     unsigned int xpos = 0, ypos = 0;
-    
+
     unsigned char one, two, three, four;
-    
+
     for (i = 0; i < 8; i++) {
         one = bp_data[img_ofs+(i*2)];
         two = bp_data[img_ofs+(i*2)+1];
@@ -754,13 +754,13 @@ static void decode_tile(unsigned char *bp_data, unsigned char *raw_data, unsigne
             three = bp_data[img_ofs+(i*2)+16];
             four  = bp_data[img_ofs+(i*2)+17];
         } // 4bpp
-        
+
         if (vflip == 1) i = 7 - i;
-        
+
         for (j = 0; j < 8; j++) {
-        
+
             int value = 0;
-            
+
             if ( (one   & bits[j]) == bits[j]) value += 1;
             if ( (two   & bits[j]) == bits[j]) value += 2;
             if (mode != 3) {
@@ -770,13 +770,13 @@ static void decode_tile(unsigned char *bp_data, unsigned char *raw_data, unsigne
             if (override == 1) {
                 value = 0;
             }
-            
+
             if (xpos >= 8) {
                 xpos = 0;
                 ypos++;
             }
             if (ypos >= 8) ypos = 0;
-            
+
             if (hflip == 1) j = 7 - j;
             if (bg == 2 && priority == 0) {
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)]   = 255;
@@ -809,11 +809,11 @@ static void decode_tile(unsigned char *bp_data, unsigned char *raw_data, unsigne
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+3] = 255; // A
             } // Normal
             xpos++;
-            
+
             if (hflip == 1) j = 7 - j;
         }
         if (vflip == 1) i = 7 - i;
-    
+
     }
     /*
     if (override == 1) {
@@ -831,18 +831,18 @@ void decode_bitplane(unsigned char *rom, unsigned char *bp_data, unsigned char *
     unsigned char *rgb = malloc(384);
     unsigned char *pal_data = malloc(0x200);
     // memset(rgb, 0, 128*3);
-    
+
     memcpy(&pal_data[0], &rom[pal_addr], 0x200);
-    
+
     if (fix) colourfix_pre(rom, pal_data, fix); // Affects SNES palette data.
-    
+
     decode_palette(rgb, pal_data, 128);
     free(pal_data);
-    
+
     if (fix) colourfix_post(rgb, fix); // Affects converted colours.
-    
+
     // End of colour manipulation hell.
-    
+
     if (mode == 1) {
         raw_len /= 32;
         for (i = 0; i < raw_len; i++) {
@@ -863,17 +863,17 @@ void decode_bitplane(unsigned char *rom, unsigned char *bp_data, unsigned char *
         printf("Abnormal termination.");
         exit(1);
     }
-    
+
     free(rgb);
     // printf("Bitplane complete.\n");
     return;
-    
+
 } // decode_bitplane();
 
 void dump_bitplane(unsigned char *bp_data, int bp_len, int bpp, int width, char *dir, char *name) {
 
     const int tile_count = (bpp == 4) ? (bp_len/32) : (bp_len/16);
-    
+
     int px_height = ((tile_count-(tile_count%width)) / width)*8;
     if (tile_count % width) px_height += 8;
     int px_width  = width  * 8;
@@ -881,19 +881,19 @@ void dump_bitplane(unsigned char *bp_data, int bp_len, int bpp, int width, char 
     unsigned char *image = malloc(img_size);
     memset(image, 0, img_size);
     int value, offset = 0, tile_n = 0, i, j, k;
-    
+
     const unsigned int bits[] = {128, 64, 32, 16, 8, 4, 2, 1};
     unsigned char byte[4];
-    
+
     for (i = 0; i < tile_count; i++) {
-        
+
         tile_n = (i%width);
         if (i > width-1) {
             offset = ((i-(i%width))/width) * (px_width*8*4);
         }
-        
-        
-    
+
+
+
         for (j = 0; j < 8; j++) {
             byte[0] = bp_data[i*(bpp*8)+(j*2)];
             byte[1] = bp_data[i*(bpp*8)+(j*2)+1];
@@ -901,24 +901,24 @@ void dump_bitplane(unsigned char *bp_data, int bp_len, int bpp, int width, char 
                 byte[2] = bp_data[i*(bpp*8)+(j*2)+16];
                 byte[3] = bp_data[i*(bpp*8)+(j*2)+17];
             }
-            
+
             for (k = 0; k < 8; k++) {
                 value = 0;
-                
+
                 if ( (byte[0] & bits[k]) == bits[k]) value += 1;
                 if ( (byte[1] & bits[k]) == bits[k]) value += 2;
                 if (bpp == 4) {
                     if ( (byte[2] & bits[k]) == bits[k]) value += 4;
                     if ( (byte[3] & bits[k]) == bits[k]) value += 8;
                 }
-                
+
                 if (bpp == 4) {
                     value *= 16;
                 }
                 else if (bpp == 2) {
                     value *= 64;
                 }
-                
+
                 image[offset+(j*px_width*4)+(tile_n*32)+(k*4)  ] = value;
                 image[offset+(j*px_width*4)+(tile_n*32)+(k*4)+1] = value;
                 image[offset+(j*px_width*4)+(tile_n*32)+(k*4)+2] = value;
@@ -928,14 +928,14 @@ void dump_bitplane(unsigned char *bp_data, int bp_len, int bpp, int width, char 
                 else {
                     image[offset+(j*px_width*4)+(tile_n*32)+(k*4)+3] = 255;
                 }
-                
+
             } // Each plane
         } // Each line
     } // Each Tile
-    
+
     write_png(dir, name, image, px_width, px_height);
     free(image);
-    
+
     return;
 
 } // dump_bitplane();
@@ -946,21 +946,21 @@ void assemble_bitplane(unsigned char *bitplane, unsigned int width, unsigned int
     if ((raw_len/32) % (width/32)) height += 32;
 
     unsigned char *out = malloc(width * height * 4);
-    
+
     unsigned int i, j, k, m = 0;
-    
+
     for (i = 0; i < height/32; i++) {
-        
+
         unsigned int tile_row = i * (width) * 4 * 32;
-        
+
         for (j = 0; j < width/32; j++) {
-        
+
             unsigned int tile_column = j * 128;
-            
+
             for (k = 0; k < 32; k++) {
-            
+
                 unsigned int pixel = k * (width) * 4 + tile_row + tile_column;
-                
+
                 if (m >= (raw_len/32)) {
                     memset(&out[pixel], 0, 128);
                 }
@@ -971,28 +971,28 @@ void assemble_bitplane(unsigned char *bitplane, unsigned int width, unsigned int
                 m++;
         } // j
     } // i
-    
+
     char path[255];
     sprintf(path, "%s Tiles", name);
     write_png(dir, path, out, width, height);
     free(out);
-    
+
 } // assemble_bitplane();
 
 void assemble_screen(unsigned char *bitplane, unsigned int raw_len, unsigned int width, char *dir, char *name) {
 
     unsigned int height = (raw_len / 2) / width;
-    
+
     /*
     256 /  8 = 32
     224 /  8 = 28
     32  * 28 = 896
     896 *  2 = 1792
     */
-    
+
     unsigned char *out = malloc(width * height * 32 * 8 * 4);
     unsigned int i, j, k;
-    
+
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
             for (k = 0; k < 8; k++) {
@@ -1000,19 +1000,19 @@ void assemble_screen(unsigned char *bitplane, unsigned int raw_len, unsigned int
             } // Columns
         } // Each column
     } // Each row
-    
+
     write_png(dir, name, out, (width*8), (height*8));
     free(out);
-    
+
 } // assemble_screen();
 
 static unsigned int get_position(unsigned char *rom, int address) {
 
     int high = rom[address+1];
     int low  = rom[address];
-    
+
     int coordinate = ((high*256)+low);
-    
+
     return coordinate;
 
 } // get_position();
@@ -1022,13 +1022,13 @@ void assemble_level(unsigned char *bitplane, unsigned char *rom, unsigned char *
     /*
     1 = Riverside Level (DKC3). Crop top two rows of tiles (64px).
     */
-    
-    
+
+
     unsigned int i, j, k, k2, k3, k4, m, n;
-    
+
     unsigned int left, right, top, bottom;
     unsigned int px_left, px_right, px_top, px_bottom, crop_left, crop_right, crop_top, crop_bottom;
-    
+
     left   = 0;
     right = layout_size;
     top    = 0;
@@ -1037,31 +1037,31 @@ void assemble_level(unsigned char *bitplane, unsigned char *rom, unsigned char *
     px_top = 0;
     px_right = right*32;
     px_bottom = bottom*32;
-    
+
     if (!vert) {
         int temp = px_right;
         px_right = px_bottom;
         px_bottom = temp;
     }
-    
+
     unsigned int width  = (px_right  - px_left);
     unsigned int height = (px_bottom - px_top);
-    
+
     unsigned char *group = malloc(width * height * 4);
-    
-    
+
+
     for (i = 0; i < height; i+=32) {
-        
+
         unsigned int tile_row = (i/32) * width * 4 * 32;
-        
+
         for (j = 0; j < width; j+=32) {
-        
+
             unsigned int tile_column = (j/32) * 128;
             unsigned int high; // Modifier
             unsigned int low;  // Tile
             int vflip = 0;
             int hflip = 0;
-            
+
             if (!vert) {
                 high = layout[(((j/32)+left)*layout_size*2)+(((i/32)+top)*2)+1];
                 low  = layout[(((j/32)+left)*layout_size*2)+(((i/32)+top)*2)];
@@ -1070,7 +1070,7 @@ void assemble_level(unsigned char *bitplane, unsigned char *rom, unsigned char *
                 high = layout[(((i/32)+top)*layout_size*2)+(((j/32)+left)*2)+1];
                 low  = layout[(((i/32)+top)*layout_size*2)+(((j/32)+left)*2)];
             }
-            
+
             if (high & 1)   low += 256;
             if (high & 2)   low += 512;
             if (high & 64)  vflip = 1;
@@ -1091,12 +1091,12 @@ void assemble_level(unsigned char *bitplane, unsigned char *rom, unsigned char *
             else {
                 k4 = 32; // How many pixels to copy. (final column &< 32)
             }
-            
+
             while (k != k2) {
-            
+
                 // if (hflip == 1) k = (31 - k);
                 unsigned int pixel = k * width * 4 + tile_row + tile_column;
-                
+
                 if (vflip == 1) {
                     for (m = 0; m < k4; m++) {
                         n = 31 - m;
@@ -1106,7 +1106,7 @@ void assemble_level(unsigned char *bitplane, unsigned char *rom, unsigned char *
                 else {
                     memcpy(&group[pixel], &bitplane[(low*4096)+(k3*128)], (k4*4));
                 }
-                
+
                 if (hflip == 1) {
                     k--;
                 }
@@ -1114,13 +1114,13 @@ void assemble_level(unsigned char *bitplane, unsigned char *rom, unsigned char *
                     k++;
                 }
                 k3++;
-                
+
             } // 32 rows per tile.
         } // j
     } // i
-    
+
     if (position_addr) {
-        
+
         if (rom[0] == 0xFF && rom[1] == 0xFF) {
             crop_left   = (rom[3] * 256) + rom[2];
             crop_right  = (rom[5] * 256) + rom[4];
@@ -1133,26 +1133,26 @@ void assemble_level(unsigned char *bitplane, unsigned char *rom, unsigned char *
             crop_top    = get_position(rom, position_addr+4);
             crop_bottom = get_position(rom, position_addr+6); // For DKC2 & DKC3
         }
-        
+
         if (fix == 1) crop_top = 64; // Riverside (DKC3)
-        
+
         if (crop_right > px_right) {
             printf("Invalid coordinates in level %s.\n", name);
             getchar();
             return;
         } // Extra rows are easier to handle than extra columns.
-        
+
         unsigned int level_width = crop_right - crop_left;
         unsigned int level_height = crop_bottom - crop_top;
         unsigned char *level = malloc(level_width * level_height * 4);
-        
+
         for (i = 0; i < level_height; i++) {
-        
+
             if (i >= height) {
                 memset(&level[i*level_width*4], 0, ((level_height-height)*level_width*4));
                 break;
             }
-        
+
             memcpy(&level[i*level_width*4], &group[(((i+crop_top)*width)+crop_left)*4], level_width*4);
         }
         free(group);
@@ -1160,7 +1160,7 @@ void assemble_level(unsigned char *bitplane, unsigned char *rom, unsigned char *
         height = level_height;
         group = level;
     }
-    
+
     write_png(dir, name, group, width, height);
     free(group);
 
@@ -1198,7 +1198,7 @@ List of known "seeds":
     int recurse = 0; // Stack
     int jmp;
     char temp;
-    
+
     a = seed;
     b = 0;
     a &= 0x0C;
@@ -1236,9 +1236,9 @@ List of known "seeds":
     y = 0;
     // 16-bit A, X, Y
     jmp = 0xC07A;
-    
+
     // int count = 0;
-    
+
     while (run) {
         /*
         printf("\ncount: %d\n", count);
@@ -1249,7 +1249,7 @@ List of known "seeds":
         count++;
         */
         switch(jmp) {
-            
+
             case 0xC07A:
                 a = palette[y*2];
                 b = palette[(y*2)+1];
@@ -1274,7 +1274,7 @@ List of known "seeds":
                 origin[recurse] = 0xC08C;
                 recurse++;
             break;
-            
+
             case 0xC08C:
                 t1C = a;
                 t1D = b;
@@ -1297,7 +1297,7 @@ List of known "seeds":
                     jmp = 0xC07A;
                 }
             break;
-            
+
             case 0xC0B8:
                 a &= t1E;
                 b &= t1F;
@@ -1307,27 +1307,27 @@ List of known "seeds":
                 c >>= 2;
                 c ^= 0xFFFF;
                 c++;
-                
+
                 c += ((t1D*256) + t1C);
                 if (c > 65535) {
                     c -= 65536;
                 }
                 a = (c % 256);
                 b = (c - (c % 256)) / 256;
-                
+
                 if (c > (t1F*256)+t1E) {
                     a = t1E;
                     b = t1F;
                 }
-                
+
                 a &= t1E;
                 b &= t1F;
-                                
+
                 recurse--;
                 jmp = origin[recurse];
-                
+
             break;
-            
+
             case 0xC0C8:
                 a &= t1E;
                 b &= t1F;
@@ -1341,20 +1341,20 @@ List of known "seeds":
                 }
                 a = (c % 256);
                 b = (c - (c % 256)) / 256;
-                
+
                 if (c > (t1F*256)+t1E) { // CMP?
                     a = t1E;
                     b = t1F;
                 }
-                
+
                 a &= t1E;
                 b &= t1F;
-                
+
                 recurse--;
                 jmp = origin[recurse];
-                
+
             break;
-            
+
             case 0xC0D9:
                 a &= t1E;
                 b &= t1F;
@@ -1368,20 +1368,20 @@ List of known "seeds":
                 }
                 a = (c % 256);
                 b = (c - (c % 256)) / 256;
-                
+
                 if (c > (t1F*256)+t1E) {
                     a = t1E;
                     b = t1F;
                 }
-                
+
                 a &= t1E;
                 b &= t1F;
-                
+
                 recurse--;
                 jmp = origin[recurse];
-                
+
             break;
-            
+
             case 0xC0EB:
                 a &= t1E;
                 b &= t1F;
@@ -1394,13 +1394,13 @@ List of known "seeds":
                 recurse--;
                 jmp = origin[recurse];
             break;
-            
+
         } // switch
-    
+
     } // while
-    
-    
-    
+
+
+
 } // bbc_pal();
 
 void arrange_gbc(unsigned char *source, int width, int height, char *dir, char *name) {
@@ -1408,7 +1408,7 @@ void arrange_gbc(unsigned char *source, int width, int height, char *dir, char *
     int laylen = width * height / 64;
     unsigned char *image = malloc(width * height * 4);
     int i, j, k;
-    
+
     for (j = 0; j < laylen/(width/8); j++) {
         // printf("j = %X\n", j);
         for (i = 0; i < width/8; i++) {
@@ -1418,7 +1418,7 @@ void arrange_gbc(unsigned char *source, int width, int height, char *dir, char *
         }
     }
     source = image;
-    
+
     write_png(dir, name, source, width, height);
     free(image);
 
@@ -1437,15 +1437,15 @@ void gbc_assemble(unsigned char *bitplane, unsigned char *bp_data, unsigned char
     int tile;
     int offset;
     int laylen = 16 * t_width * t_height;
-    
+
     for (i = 0; i < laylen; i+=16) {
         for (j = 0; j < 16; j++) {
-            
+
             pal_val = 0;
             bank = 0;
             hflip = 0;
             vflip = 0;
-            
+
             if (mode == 1) {
                 if (col_data[i+j] & 1) pal_val += 1;
                 if (col_data[i+j] & 2) pal_val += 2;
@@ -1455,23 +1455,23 @@ void gbc_assemble(unsigned char *bitplane, unsigned char *bp_data, unsigned char
                 if (col_data[i+j] & 64) vflip = 1;
                 // ((*col_data)[i+j] & 128) priority = 1: priority = 0;
             } // GBC
-            
+
             tile = lay_data[i+j] * 16;
-            
+
             for (k = 0; k < 8; k++) {
                 one = bp_data[bank + tile + (k*2) + 0];
                 two = bp_data[bank + tile + (k*2) + 1];
                 if (vflip) k = 7 - k;
                 // Layout data is signed.
                 for (m = 0; m < 8; m++) {
-                    
+
                     bp_val = 0;
                     if (one & bits[m]) bp_val += 1;
                     if (two & bits[m]) bp_val += 2;
                     if (hflip) m = 7 - m;
-                    
+
                     offset = ((i*256)+(j*256)+(k*32)+(m*4));
-                    
+
                     if (mode == 0) {
                         bitplane[offset+0] = rgb[9-(bp_val*3)+0];
                         bitplane[offset+1] = rgb[9-(bp_val*3)+1];
@@ -1490,28 +1490,28 @@ void gbc_assemble(unsigned char *bitplane, unsigned char *bp_data, unsigned char
             }
         }
     }
-    
+
     // write_png("tiles.png", image, 8, lay_len*8);
-    
+
     // free(image);
-    
+
     return;
 
 } // gbc_assemble();
 
 void tile_generator(unsigned char *raw_data, int *rawlen, int tiles, int mode) {
-    
+
     int i, j = 0;
     for (i = 0; i < tiles; i++) {
-        
+
         raw_data[j++] = i;
         if (mode) i++; // 16-bit
-        
+
     }
-    
+
     *rawlen = tiles;
-    
+
     return;
-    
+
 } // tile_generator
 

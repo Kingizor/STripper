@@ -15,25 +15,25 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
     int raw_counter;
     int lay_counter_a;
     // int lay_counter_b;
-    
+
     unsigned char *bitplane = malloc(512 * 2000 * 4); // width * height * RGBA
-    
+
     char name[255];
     #define bp_width 512
-    
+
     int i;
-    
+
     bp_counter = 0;
     raw_counter = 0;
     lay_counter_a = 0;
     decomp( bp_data, rom,  &bp_counter, 0x207174);
     decomp(raw_data, rom, &raw_counter, 0x260FB1);
     decomp(lay_data_a, rom, &lay_counter_a, 0x245ADE);
-    
+
     // memset(bp_data, 0, 0x8000);
     // bp_counter = 0x8000;
-    
-    
+
+
     // int lava_tiles[] = {
         // 0x3B4C80, 0x350147, 0x3B0DA0, 0x3B35C0,
         // 0x3B4E20, 0x3502C7, 0x3B1060, 0x3B3760,
@@ -51,39 +51,39 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         // 0x3B61A0, 0x3514C7, 0x3B3160, 0x3B4AE0,
         // 0x3B6340, 0x351647, 0x3B0AE0, 0x3B3420 // 3
     // };
-    
+
     // unsigned char fake_layout[] = {
         // 0x73, 0x00, 0x7C, 0x00, 0xA2, 0x00, 0xAD, 0x00,
         // 0xBE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         // 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         // 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        
+
         // 0x00, 0x00, 0x00, 0x00, 0xA5, 0x00, 0xB0, 0x00,
         // 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         // 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         // 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     // };
     // memcpy(&lay_data_a[0], fake_layout, 64);
-    
+
     for (i = 0; i < 1; i++) {
-        
+
             memcpy(&bp_data[0x340], &rom[0x3B4FC0], 0x1A0);
             memcpy(&bp_data[0x020], &rom[0x351047], 0x180);
             memcpy(&bp_data[0x4E0], &rom[0x3B0AE0], 0x2C0);
             memcpy(&bp_data[0x1A0], &rom[0x3B3AA0], 0x1A0);
-        
+
             // memcpy(&bp_data[0x340], &rom[lava_tiles[i*4]  ], 0x1A0);
             // memcpy(&bp_data[0x020], &rom[lava_tiles[i*4+1]], 0x180);
             // memcpy(&bp_data[0x4E0], &rom[lava_tiles[i*4+2]], 0x2C0);
             // memcpy(&bp_data[0x1A0], &rom[lava_tiles[i*4+3]], 0x1A0);
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0EF0, raw_counter, bp_counter, 1, 0, priority);
         // sprintf(name, "Lava Tiles-%02d.png", i);
         // assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
         sprintf(name, "Lava Crush-%02d.png", i);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BF5D, 0, 16, 0, dir, "Fiery Furnace.png");
-        
-        
+
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0DF0, raw_counter, bp_counter, 1, 0, priority);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BF49, 0, 16, 0, dir, "Hot Head Hop.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BF8F, 0, 16, 0, dir, "Hot Head Hop Bonus 1.png");
@@ -94,11 +94,11 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BFA3, 0, 16, 0, dir, "Red-Hot Ride Bonus 2.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BF7B, 0, 16, 0, dir, "Kleever's Kiln.png");
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BF71, 0, 16, 0, dir, "Lava Room.png"); // ?
-        
-    
+
+
     }
-    
-    
+
+
     /*
     if (region == 1) {
         // Idiot! It's not the background, it's the terrain layer...
@@ -108,7 +108,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         decomp( bp_data, rom,  &bp_counter, 0x20CF31);
         decomp(raw_data, rom, &raw_counter, 0x26303A);
         decomp(lay_data_a, rom, &lay_counter_a, 0x2479EE);
-        
+
         int j;
         char names[][20] = {"Kannon's Klaim", "Squawks's Shaft", "Windy Well"};
         int palette[] = {0x3D228E, 0x3D238E, 0x3D248E};
@@ -121,14 +121,14 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
             }
         }
     }
-    
+
     if (region == 1) {
-        
+
         bp_counter = 0;
         raw_counter = 0;
         decomp( bp_data, rom,  &bp_counter, 0x2B2B84);
         decomp(raw_data, rom, &raw_counter, 0x19F7C9);
-        
+
         for (i = 0; i < 31; i++) {
             decode_bitplane(rom, bp_data, raw_data, bitplane, 0, raw_counter, bp_counter, 3, (66+i), 0);
             sprintf(name, "Mine Background %02X.png", i);
@@ -143,20 +143,20 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         decomp(raw_data, rom,  &raw_counter, 0x2D8415);
     int wind_map[8] = {0x3311EB, 0x3312FB, 0x33140B, 0x33151B, 0x33162B, 0x330EBB, 0x330FCB, 0x3310DB};
         memset(bp_data, 0, 0x800);
-        
+
         for (i = 0; i < 8; i++) {
             memcpy(&bp_data[16], &rom[wind_map[i]], 0x120);
             decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D248E, raw_counter, bp_counter, 3, 0, 0);
             sprintf(name, "Windy Well Wind-%d.png", i);
             assemble_screen(bitplane, raw_counter, 32, dir, name);
         }
-        
+
          bp_counter = 0x820;
         raw_counter = 0;
         decomp(raw_data, rom,  &raw_counter, 0x298B07);
         int gust_map[8] = {0x356C13, 0x356E33, 0x357053, 0x357273, 0x357493, 0x3576B3, 0x3578D3, 0x357AF3};
         memset(bp_data, 0, 0x800);
-        
+
         for (i = 0; i < 8; i++) {
             memcpy(&bp_data[32], &rom[gust_map[i]], 0x220);
             decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D25AE, raw_counter, bp_counter, 2, 0, 0);
@@ -177,7 +177,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         decomp(raw_data, rom, &raw_counter, 25 + 0x260FB1);
         decomp(lay_data_a, rom, &lay_counter_a, 25 + 0x245ADE);
     }
-    
+
     int lava_tiles[] = {
         0x3B4C80, 0x350147, 0x3B0DA0, 0x3B35C0,
         0x3B4E20, 0x3502C7, 0x3B1060, 0x3B3760,
@@ -195,16 +195,16 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         0x3B61A0, 0x3514C7, 0x3B3160, 0x3B4AE0,
         0x3B6340, 0x351647, 0x3B0AE0, 0x3B3420
     }; // 15*4
-    
+
     for (i = 0; i < 16; i++) {
-    
+
         if (i > 0) {
             memcpy(&bp_data[0x340], &rom[lava_tiles[((i-1)*4)]  ], 0x1A0);
             memcpy(&bp_data[0x020], &rom[lava_tiles[((i-1)*4)+1]], 0x180);
             memcpy(&bp_data[0x4E0], &rom[lava_tiles[((i-1)*4)+2]], 0x2C0);
             memcpy(&bp_data[0x1A0], &rom[lava_tiles[((i-1)*4)+3]], 0x1A0);
         }
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0DF0, raw_counter, bp_counter, 1, 0, priority);
         sprintf(name, "Hot Head Hop & Red-Hot Ride Tiles-%02d.png", i);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
@@ -224,15 +224,15 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BFA3, 0, 16, 0, dir, name);
         sprintf(name, "Kleever's Kiln-%02d.png", i);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BF7B, 0, 16, 0, dir, name);
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0EF0, raw_counter, bp_counter, 1, 0, priority);
         sprintf(name, "Fiery Furnace Tiles-%02d.png", i);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
         sprintf(name, "Fiery Furnace-%02d.png", i);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BF5D, 0, 16, 0, dir, name);
-        
+
     }
-    
+
     bp_counter = 0;
     raw_counter = 0;
     lay_counter_a = 0;
@@ -245,11 +245,11 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         decomp(raw_data, rom, &raw_counter, 25 + 0x268077);
         decomp(lay_data_a, rom, &lay_counter_a, 25 + 0x24F714);
     }
-    
+
     memcpy(&bp_data, &rom[0x2199BE], 0x257F);
     memcpy(&bp_data[0x4840], &rom[0x21BF3E], 0x37C0);
     bp_counter = 0x8000;
-    
+
     int castle_tiles[] = {
         0x354BCA,
         0x354F4A,
@@ -258,13 +258,13 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         0x3559CA,
         0x35484A
     }; // 6
-    
+
     for (i = 0; i < 7; i++) {
-        
+
         if (i > 0) {
             memcpy(&bp_data[0x020], &rom[castle_tiles[i-1]], 0x380);
         }
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D2DEE, raw_counter, bp_counter, 1, 0, priority);
         sprintf(name, "Castle Tiles-%02d.png", i);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
@@ -285,7 +285,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         sprintf(name, "Stronghold Showdown-%02d.png", i);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35C147, 1, 16, 0, dir, name);
     }
-    
+
      bp_counter = 0;
     raw_counter = 0;
     lay_counter_a = 0;
@@ -299,7 +299,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         decomp(raw_data, rom, &raw_counter, 25 + 0x25E0C8);
         decomp(lay_data_a, rom, &lay_counter_a, 25 + 0x23F9B2);
     }
-    
+
     int mast_tiles[] = {
         0x3A7641,
         0x3A7A01,
@@ -310,13 +310,13 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         0x3A6EC1,
         0x3A7281
     }; // 8
-    
+
     for (i = 0; i < 9; i++) {
-        
+
         if (i > 0) {
             memcpy(&bp_data[0x020], &rom[mast_tiles[i-1]], 0x3C0);
         }
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D1610, raw_counter, bp_counter, 1, 0, priority);
         sprintf(name, "Mainbrace Mayhem Tiles-%02d.png", i);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
@@ -332,7 +332,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BEC5, 1, 32, 0, dir, name);
         sprintf(name, "Krow's Nest-%02d.png", i);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BE93, 1, 32, 0, dir, name);
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D14F0, raw_counter, bp_counter, 1, 0, priority);
         sprintf(name, "Topsail Trouble Tiles-%02d.png", i);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
@@ -346,7 +346,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BEC5, 1, 32, 0, dir, name);
         sprintf(name, "Kreepy Krow-%02d.png", i);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BEBB, 1, 32, 0, dir, name);
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D304E, raw_counter, bp_counter, 1, 0, priority);
         sprintf(name, "Slime Climb Tiles-%02d.png", i);
         assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
@@ -360,7 +360,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BF15, 1, 32, 0, dir, name);
 
     }
-    
+
     bp_counter = 0x64C0;
     raw_counter = 0;
     lay_counter_a = 0;
@@ -377,7 +377,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         decomp(lay_data_a, rom, &lay_counter_a, 25 + 0x23B5D4);
         decomp(lay_data_b, rom, &lay_counter_b, 25 + 0x23A1C4);
     }
-    
+
     int hive_tiles[] = {
         0x351EA7, 0x351CC7, 0x351B87,
         0x351EA7, 0x351CC7, 0x351A47,
@@ -422,22 +422,22 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
     lay_data_a[0x05] = 0x01;
     lay_data_a[0xA4] = 0x1E;
     lay_data_a[0xA5] = 0x01;
-    
-    
-    
+
+
+
     for (i = 0; i < 30; i++) {
-        
+
         memcpy(&bp_data[0x160], &rom[hive_tiles[((i-1)*3)  ]], 0x0A0);
         memcpy(&bp_data[0x200], &rom[hive_tiles[((i-1)*3)+1]], 0x0A0);
         memcpy(&bp_data[0x020], &rom[hive_tiles[((i-1)*3)+2]], 0x140);
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, 0x3D0A10, raw_counter, bp_counter, 1, 0, priority);
         // sprintf(name, "Hive Tiles-%02d.png", i);
         // assemble_bitplane(bitplane, bp_width, raw_counter, dir, name);
-        
+
         sprintf(name, "Rambi Rumble-%02d.png", i);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BDC9, 1, 80, 0, dir, name);
-        
+
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BDD3, 1, 80, 0, dir, name);
         assemble_level(bitplane, rom, lay_data_a, lay_counter_a, 0x35BDF1, 1, 80, 0, dir, "Hornet Hole Bonus 1.png");
         assemble_level(bitplane, rom, lay_data_b, lay_counter_b, 0x35BFC7, 1, 16, 0, dir, "Hornet Hole Bonus 2.png");
@@ -452,7 +452,7 @@ void anim2(unsigned char *rom, size_t rom_size, char *dir, int priority, int reg
         assemble_level(bitplane, rom, lay_data_b, lay_counter_b, 0x35BFBD, 1, 16, 0, dir, "King Zing Sting.png");
     }
     */
-    
+
     free( bp_data);
     free(raw_data);
     free(lay_data_a);

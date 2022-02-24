@@ -70,12 +70,12 @@ static inline void rr(uint8_t *x, uint8_t *carry) {
 } // rr();
 
 static inline void swap_n(uint8_t *x) {
-    
+
     uint8_t n;
     n = *x & 0x1F;
     *x >>= 4;
     *x += n << 4;
-    
+
 } // swap();
 
 static void sr_0A8C(uint8_t *rom, int bank, uint8_t *a, uint8_t *c, uint8_t *d, uint8_t *e, uint8_t *carry) {
@@ -107,9 +107,9 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
     int sc = 0;
     // int count;
     bank *= 0x4000;
-    
+
     while (run) {
-    
+
         // printf("\n%d:\n", count);
         // printf("\t j = %04X\n", jmp);
         // printf("\t a = %02X\n", a);
@@ -121,9 +121,9 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
         // count++;
         // if (count > 1000) run = 0;
         // if (wpos > 0xFFF) run = 0;
-        
+
         switch (jmp) {
-        
+
             case 0x975:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 if (a < 0x0C) {
@@ -135,7 +135,7 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                     jmp = 0x9D0;
                 }
             break;
-            
+
             case 0x97C:
                 b = a;
                 swap_n(&b);
@@ -154,7 +154,7 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                     jmp = 0x975;
                 }
             break;
-            
+
             case 0x98C:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 b = a;
@@ -169,7 +169,7 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 a = t9B;
                 jmp = 0x9A0;
             break;
-            
+
             case 0x9A0:
                 output[wpos] = a;
                 wpos++;
@@ -177,7 +177,7 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 b--;
                 jmp = (b > 0) ? 0x9A0 : 0x975;
             break;
-            
+
             case 0x9A7:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 b = a;
@@ -199,7 +199,7 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 b = a;
                 jmp = 0x9C5;
             break;
-            
+
             case 0x9C5:
                 a = t9B;
                 output[wpos] = a;
@@ -210,12 +210,12 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 b--;
                 jmp = (b > 0) ? 0x9C5 : 0x975;
             break;
-            
+
             case 0x9D0:
                 a -= 0xD;
                 jmp = (a < 0xF3) ? 0xA1A : 0x9D4;
             break;
-            
+
             case 0x9D4:
                 a = 0;
                 t9C = a;
@@ -229,18 +229,18 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 rr(&a, &carry);
                 jmp = carry ? 0x9E6 : 0x9EB;
             break;
-            
+
             case 0x9E6:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 t9C = a;
                 jmp = 0x9EB;
             break;
-            
+
             case 0x9EB:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 jmp = (a == 0xF) ? 0x9F2 : 0x9FC;
             break;
-            
+
             case 0x9F2:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 b = a;
@@ -250,7 +250,7 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 a |= b;
                 jmp = 0x9FC;
             break;
-            
+
             case 0x9FC:
                 a += 4;
                 b = a;
@@ -265,10 +265,10 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 a = t9B;
                 rr(&a, &carry);
                 e = a;
-                
+
                 h = ((wpos - (wpos % 256)) / 256) + 0xCC;
                 l = wpos % 256;
-                
+
                 a = l;
                 carry = (a < e) ? 1 : 0;
                 a -= e;
@@ -281,7 +281,7 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 e--;
                 jmp = 0xA10;
             break;
-            
+
             case 0xA10:
                 a = output[((d-0xCC)*256)+e];
                 if ((e+1) > 255) d++;
@@ -291,48 +291,48 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 b--;
                 jmp = (b > 0) ? 0xA10 : 0xA16;
             break;
-            
+
             case 0xA16:
                 sc--;
                 e = stack[sc];
                 sc--;
                 d = stack[sc];
-                
+
                 jmp = 0x975;
             break;
-            
+
             case 0xA1A:
                 jmp = (!a) ? 0xA1C : 0xA3B;
             break;
-            
+
             case 0xA1C:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 swap_n(&a);
                 carry = 0;
                 b = a;
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
-                
+
                 stack[sc] = h;
                 sc++;
                 stack[sc] = l;
                 sc++;
-                
+
                 l = a;
                 swap_n(&l);
                 carry = 0;
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 a |= l;
-                
+
                 sc--;
                 h = stack[sc];
                 sc--;
                 h = stack[sc];
-                
+
                 stack[sc] = a;
                 sc++;
                 stack[sc] = carry;
                 sc++;
-                
+
                 a = 0x13;
                 stack[sc] = b;
                 sc++;
@@ -341,35 +341,35 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 jmp = 0xA52;
                 ret = 0xA35;
             break;
-            
+
             case 0xA35:
                 sc--;
                 carry = stack[sc];
                 sc--;
                 a = stack[sc];
-                
+
                 b = a;
-                
+
                 sc--;
                 carry = stack[sc];
                 sc--;
                 a = stack[sc];
-                
+
                 a++;
                 jmp = 0xA4C;
             break;
-            
+
             case 0xA3B:
                 a--;
                 jmp = (!a) ? 0xA3E : 0xA60;
             break;
-            
+
             case 0xA3E:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 if (a == 0x0E) run = 0; // QUIT
                 jmp = 0xA44;
             break;
-            
+
             case 0xA44:
                 swap_n(&a);
                 carry = 0;
@@ -378,12 +378,12 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 a += 4;
                 jmp = 0xA4C;
             break;
-            
+
             case 0xA4C:
                 jmp = 0xA52;
                 ret = 0x975;
             break;
-            
+
             case 0xA52:
                 output[wpos] = b;
                 b = a;
@@ -398,7 +398,7 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 } while (b > 0);
                 jmp = ret;
             break;
-            
+
             case 0xA60:
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 b = a;
@@ -410,12 +410,12 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 sr_0A8C(rom, bank, &a, &c, &d, &e, &carry);
                 jmp = (a & 8) ? 0xA77 : 0xA73; // Double Check This...
             break;
-            
+
             case 0xA73:
                 a += 3;
                 jmp = 0xA82;
             break;
-            
+
             case 0xA77:
                 a &= 7;
                 swap_n(&a);
@@ -426,31 +426,31 @@ static void dkl_raw(uint8_t *rom, uint8_t *output, int *rawlen, int bank, uint8_
                 a += 0xB;
                 jmp = 0xA82;
             break;
-            
+
             case 0xA82:
                 b = a;
                 a = t9B;
                 jmp = 0xA85;
             break;
-            
+
             case 0xA85:
                 output[wpos] = a;
                 wpos++;
                 b--;
                 jmp = (b > 0) ? 0xA85 : 0x975;
             break;
-            
+
             default:
                 run = 0;
                 printf("Unknown Case: %04X\n", jmp);
             break;
-        
+
         }
-        
+
     }
-    
+
     *rawlen = wpos;
-    
+
 }
 
 static void dkl_tiles(uint8_t *rom, uint8_t *output, int *bp_len, uint8_t a) {
@@ -458,7 +458,7 @@ static void dkl_tiles(uint8_t *rom, uint8_t *output, int *bp_len, uint8_t a) {
     int run = 1, jmp = 0x0CDB, bank;
     uint8_t b = 0, c = 0, d = 0, e = 0, h = 0, l = 0, a3 = 0, carry = 0;
     uint16_t hl, sp;
-    
+
     d = 0;
     e = a;
     hl = a;
@@ -490,14 +490,14 @@ static void dkl_tiles(uint8_t *rom, uint8_t *output, int *bp_len, uint8_t a) {
         printf("Exit@ 0x0CA7 in dkc_tiles();\n");
         return;
     }
-    
+
     e = l;
     l = 0xFE;
     jmp = 0xCDB;
     // int count = 0;
-    
+
     while (run) {
-    
+
         // printf("\ncount = %d\n", count);
         // printf("jmp = 0x%04X\n", jmp);
         // printf("\ta  = %02X\n", a);
@@ -508,9 +508,9 @@ static void dkl_tiles(uint8_t *rom, uint8_t *output, int *bp_len, uint8_t a) {
         // printf("\tc  = %d\n", carry);
         // count++;
         // if (count > 1000) return;
-    
+
         switch(jmp) {
-        
+
             case 0xCDB:
                 c = rom[bank+sp];
                 sp++;
@@ -520,17 +520,17 @@ static void dkl_tiles(uint8_t *rom, uint8_t *output, int *bp_len, uint8_t a) {
                 b = 8;
                 jmp = 0xCE5;
             break;
-            
+
             case 0xCE1:
                 l = rom[(h*256)+l];
                 jmp = 0xCE2;
             break;
-            
+
             case 0xCE2:
                 b--;
                 jmp = b ? 0xCE5 : 0xCDB;
             break;
-            
+
             case 0xCE5:
                 h = 0x3F;
                 a = rom[(h*256)+l];
@@ -538,18 +538,18 @@ static void dkl_tiles(uint8_t *rom, uint8_t *output, int *bp_len, uint8_t a) {
                 rl(&c, &carry);
                 jmp = carry ? 0xCF0 : 0xCED;
             break;
-            
+
             case 0xCED:
                 h--;
                 swap_n(&a);
                 jmp = 0xCF0;
             break;
-            
+
             case 0xCF0:
                 rl(&a, &carry);
                 jmp = (carry) ? 0xCE1 : 0xCF3;
             break;
-            
+
             case 0xCF3:
                 a = rom[(h*256)+l];
                 output[(d*256)+e-0x8000] = a;// WRITE
@@ -560,19 +560,19 @@ static void dkl_tiles(uint8_t *rom, uint8_t *output, int *bp_len, uint8_t a) {
                 a &= 0x0F;
                 jmp = a ? 0xCE2 : 0xCFD;
             break;
-            
+
             case 0xCFD:
                 a ^= e;
                 jmp = a ? 0xD08 : 0xD00;
             break;
-            
+
             case 0xD00:
                 d++;
                 a = d;
                 if (a == 0x98) d = 0x88;
                 jmp = 0xD08;
             break;
-            
+
             case 0xD08:
                 a = a3;
                 a--;
@@ -580,47 +580,47 @@ static void dkl_tiles(uint8_t *rom, uint8_t *output, int *bp_len, uint8_t a) {
                 run = a3;
                 jmp = 0xCE2;
             break;
-        
+
         } // switch();
-    
+
     } // while();
-    
+
     return;
 
 } // dkl_tiles();
 
 static void dkl_layout(uint8_t *rom, uint8_t *raw_data, uint8_t *lay_data, uint8_t arch, int bank, uint8_t width, uint8_t height) {
-    
+
     int val;
     int i, j, k, m;
-    
+
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            
+
             val = raw_data[(i*width)+j];
-            
+
             if (val > 255) {
                 printf("Error: Tile greater than 255 detected.\n");
             }
-            
+
             for (k = 0; k < 4; k++) {
                 for (m = 0; m < 4; m++) {
-                    
+
                     int addr = (i*width*16)+(j*4)+(k*width*4)+m;
                     int tile = rom[bank+val+(k*0x400)+(m*0x100)+arch];
-                    
+
                     lay_data[addr] = tile;
                 }
             }
         }
     }
-    
+
     return;
-    
+
 } // dkl_layout();
 
 void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
-    
+
     struct dkl_arch arch[] = {
         {0x00, 113, {0x82, 0x01, 0x03}}, // Jungle
         {0x1A,  94, {0x00, 0x01, 0x03}}, // Cave
@@ -635,7 +635,7 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x1B,  36, {0x5E, 0x01, 0x03}}, // Mountain (10)
         {0x19, 107, {0x95, 0x07, 0x02}}, // Skyscraper
     };
-    
+
     struct dkl_levels dkl[] = {
         { 0, 0x7C, {0x0D, 0x48, 0x1D}, 0xE936, "1-1 Jungle Jaunt"},
         { 1, 0x0F, {0x0D, 0x7F, 0x3B}, 0xE966, "1-1 Jungle Jaunt B1"},
@@ -665,7 +665,7 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         { 0, 0x05, {0x06, 0x7E, 0x5E}, 0xE996, "1-9 Arctic Barrel Arsenal B1"},
         { 5, 0x0B, {0x11, 0x7F, 0xC5}, 0xE9A6, "1-9 Arctic Barrel Arsenal B2"},
         { 4, 0x05, {0x0D, 0x7F, 0xDC}, 0xE97E, "1-B Wild Sting Fling"},
-        
+
         { 7, 0xB8, {0x0D, 0x55, 0x21}, 0xE946, "2-1 Tricky Temple"},
         { 5, 0x29, {0x06, 0x7E, 0xC5}, 0xE98E, "2-1 Tricky Temple B1"},
         { 2, 0xB6, {0x0D, 0x7B, 0x27}, 0xE9AE, "2-2 Kremlantis"},
@@ -677,7 +677,7 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         { 7, 0xB3, {0x0D, 0x5B, 0x4B}, 0xE96E, "2-7 Swirlwind Storm"},
         { 5, 0x1D, {0x06, 0x7F, 0x6C}, 0xE996, "2-7 Swirlwind Storm B1"},
         { 2, 0x05, {0x0E, 0x7F, 0xED}, 0xE9FE, "2-B Seabed Showdown"},
-        
+
         { 1, 0xAC, {0x0E, 0x56, 0xEF}, 0xE9BE, "3-1 Pot Hole Panic"},
         { 6, 0x19, {0x0B, 0x7F, 0x26}, 0xEA0E, "3-1 Pot Hole Panic B1"},
         { 4, 0x05, {0x0D, 0x7F, 0xDC}, 0xE94E, "3-1 Pot Hole Panic B2"},
@@ -699,7 +699,7 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         { 6, 0x09, {0x0B, 0x7F, 0x03}, 0xE976, "3-7 Collapsing Clouds B1"},
         { 0, 0x05, {0x06, 0x7E, 0x5E}, 0xE9AE, "3-7 Collapsing Clouds B2"},
         { 1, 0x05, {0x07, 0x4E, 0x9C}, 0xEA2E, "3-B Mad Mole Holes"},
-        
+
         {11, 0x9B, {0x0E, 0x40, 0x01}, 0xE9B6, "4-1 Construction Site Fight"},
         { 9, 0x15, {0x07, 0x4F, 0x86}, 0xE9B6, "4-1 Construction Site Fight B1"},
         { 9, 0x24, {0x07, 0x4E, 0xB6}, 0xE9D6, "4-1 Construction Site Fight B2"},
@@ -721,23 +721,23 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         { 4, 0x07, {0x06, 0x7E, 0x79}, 0xE97E, "4-7 Oil Drum Slum B2"},
         { 6, 0x09, {0x0B, 0x7F, 0x03}, 0xEA06, "4-B K. Rool's Kingdom"}
     };
-    
+
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
     int size = sizeof(dkl) / sizeof(struct dkl_levels);
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
-        
+
         uint8_t *bp_data = malloc(0x2000);
         uint8_t *lay_data = malloc(0x20000);
         uint8_t *rgb = malloc(384);
         uint8_t *raw_data = calloc(0x4000, 1);
         int t_width, t_height;
-        
+
         int a = dkl[i].arch;
         int rawlen = 0;
         int bp_len = 0;
-        
+
         if (!tileset) {
             dkl_raw(rom, raw_data, &rawlen, dkl[i].raw[0], dkl[i].raw[1], dkl[i].raw[2]);
             t_width  = dkl[i].t_width;
@@ -749,42 +749,42 @@ void dkl_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
             t_height = (rawlen / t_width);
             if (rawlen % t_width) t_height++;
         }
-        
+
         // Decompress bitplane data
         dkl_tiles(rom, bp_data, &bp_len, arch[a].bp_val);
         memmove(&bp_data[0], &bp_data[0x1000], 0x800);
-        
+
         // Skyscraper Rope Fix
         if (arch[a].lay[0] == 0x95) {
             memcpy(&bp_data[0x1000], &bp_data[0x1C0], 16);
             memcpy(&bp_data[0x1C0], &bp_data[0x1D0], 16);
             memcpy(&bp_data[0x1D0], &bp_data[0x1000], 16);
         }
-        
+
         int bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
-        
+
         // Assemble complete layout from lay and raw
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
-        
+
         if (sgb) {
             decode_palette(rgb, &bw[0], 4);
         }
         else {
             decode_palette(rgb, &rom[dkl[i].pal], 4);
         }
-        
+
         uint8_t *bitplane = malloc(t_width * t_height * 1024 * 4);
         gbc_assemble(bitplane, bp_data, lay_data, lay_data, rgb, t_width, t_height, 0);
         arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, dkl[i].name);
-        
+
         free(bp_data);
         free(lay_data);
         free(raw_data);
         free(rgb);
         free(bitplane);
-    
+
     }
-    
+
     return;
 
 } // dkl_levels();
@@ -797,11 +797,11 @@ static void dkl2_tiles(uint8_t *rom, uint8_t *output, int *bp_len, int bank, int
     int wpos = *bp_len;
     // int count = 0;
     bank *= 0x4000;
-    
+
     // FILE *out = fopen("output.txt", "w");
-    
+
     while (run) {
-        
+
         // fprintf(out, "\n\n%d:", count);
         // fprintf(out, "\n\tj  = %X", jmp);
         // fprintf(out, "\n\ta  = %02X", a);
@@ -814,9 +814,9 @@ static void dkl2_tiles(uint8_t *rom, uint8_t *output, int *bp_len, int bank, int
         // fprintf(out, "\n\tAD = %X", tAD);
         // count++;
         // if (c > 100) run = 0;
-        
+
         switch(jmp) {
-        
+
             case 0xA39:
                 c = rom[bank + sc];
                 sc++; // +2, -1
@@ -824,17 +824,17 @@ static void dkl2_tiles(uint8_t *rom, uint8_t *output, int *bp_len, int bank, int
                 b = 0x08;
                 jmp = 0xA43;
             break;
-            
+
             case 0xA3F:
                 l = rom[(h*256)+l];
                 jmp = 0xA40;
             break;
-            
+
             case 0xA40:
                 b--;
                 jmp = b ? 0xA43 : 0xA39;
             break;
-            
+
             case 0xA43:
                 h = 0x3F;
                 a = rom[(h*256)+l];
@@ -842,18 +842,18 @@ static void dkl2_tiles(uint8_t *rom, uint8_t *output, int *bp_len, int bank, int
                 rl(&c, &carry);
                 jmp = (carry) ? 0xA4E : 0xA4B;
             break;
-            
+
             case 0xA4B:
                 h--;
                 swap_n(&a);
                 jmp = 0xA4E;
             break;
-            
+
             case 0xA4E:
                 rl(&a, &carry);
                 jmp = (carry) ? 0xA3F : 0xA51;
             break;
-            
+
             case 0xA51:
                 a = rom[(h*256)+l];
                 output[wpos] = a;
@@ -865,12 +865,12 @@ static void dkl2_tiles(uint8_t *rom, uint8_t *output, int *bp_len, int bank, int
                 a &= 0x0F;
                 jmp = a ? 0xA40 : 0xA5B;
             break;
-            
+
             case 0xA5B:
                 a ^= e;
                 jmp = a ? 0xA66 : 0xA5E;
             break;
-            
+
             case 0xA5E:
                 d++;
                 a = d;
@@ -882,7 +882,7 @@ static void dkl2_tiles(uint8_t *rom, uint8_t *output, int *bp_len, int bank, int
                 }
                 jmp = 0xA66;
             break;
-            
+
             case 0xA66:
                 a = tAD;
                 a--;
@@ -894,13 +894,13 @@ static void dkl2_tiles(uint8_t *rom, uint8_t *output, int *bp_len, int bank, int
                     run = 0;
                 }
             break;
-        
+
         }
-    
+
     }
     // fclose(out);
     *bp_len = wpos;
-    
+
     return;
 
 } // dkl2_tiles();
@@ -908,9 +908,9 @@ static void dkl2_tiles(uint8_t *rom, uint8_t *output, int *bp_len, int bank, int
 static void dkl2_raw_fix(uint8_t *rom, uint8_t *raw_data, int rawlen, int addr, int bank) {
 
     int i;
-    
+
     for (i = 0; i < rawlen; i++) {
-    
+
         if (raw_data[i] & 0x80) {
             raw_data[i] = rom[addr] & 0x7F;
             addr++;
@@ -922,7 +922,7 @@ static void dkl2_raw_fix(uint8_t *rom, uint8_t *raw_data, int rawlen, int addr, 
 } // dkl2_raw_fix();
 
 void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
-    
+
     struct dkl2_arches arch[] = {
         //  3A35 ROM,  HL/SP, A      2FB8 DBD0, ROM & H
         { {0x12, 0x4A, 0xE8, 0xDB}, {0x3D, 0x11, 0x03}, 114, {0xFF, 0x3A, 0xB8, 0x11, 0xF0, 0x08, 0x00, 0x00} }, // Ship Deck
@@ -939,10 +939,10 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         { {0x14, 0x40, 0x02, 0xE1}, {0x32, 0x14, 0x02},  51, {0x78, 0x7F, 0x31, 0x4A, 0x10, 0x01, 0x00, 0x00} }, // Castle
         { {0x12, 0x68, 0xAE, 0xCE}, {0x00, 0x11, 0x02},  85, {0x58, 0x03, 0x91, 0x02, 0x8C, 0x01, 0x00, 0x00} }, // Jungle
     };
-    
+
     struct dkl2_levels dkl[] = {
     //  31FF-A     3250 ROM & BC       31C7 ROM & BC       3B95 ROM & DE       PALETTE
-        
+
         {0xBD, 0x00, {0x56, 0x90}, {0x4A, 0xF9}, {0x16, 0x53, 0x4F}, "1-1 Pirate Panic"},
         {0x09, 0x00, {0x41, 0xF2}, {0x57, 0x6E}, {0x17, 0x41, 0xC0}, "1-1 Pirate Panic B1"},
         {0x14, 0x00, {0x42, 0x63}, {0x57, 0x6E}, {0x17, 0x41, 0xFB}, "1-1 Pirate Panic B2"},
@@ -958,7 +958,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x08, 0x01, {0x40, 0x2A}, {0x57, 0x32}, {0x17, 0x40, 0x02}, "1-5 Topsail Trouble B1"},
         {0x0F, 0x01, {0x41, 0x37}, {0x57, 0x32}, {0x17, 0x40, 0xB5}, "1-5 Topsail Trouble B2"},
         {0x06, 0x01, {0x52, 0xB7}, {0x4A, 0x18}, {0x16, 0x52, 0x9C}, "1-B Krow's Nest"}, // 15
-        
+
         {0xFB, 0x03, {0x77, 0xF3}, {0x51, 0x56}, {0x16, 0x74, 0x13}, "2-1 Hothead Hop"},
         {0x12, 0x03, {0x48, 0x91}, {0x58, 0x55}, {0x17, 0x48, 0x2F}, "2-1 Hothead Hop B1"},
         {0x1A, 0x03, {0x49, 0x10}, {0x58, 0x55}, {0x17, 0x48, 0x96}, "2-1 Hothead Hop B2"},
@@ -985,7 +985,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x1E, 0x01, {0x45, 0x86}, {0x4A, 0x18}, {0x18, 0x40, 0x02}, "2-A Slime Climb"},
         {0x15, 0x01, {0x41, 0xB9}, {0x57, 0x32}, {0x17, 0x41, 0x43}, "2-A Slime Climb B1"},
         {0x1B, 0x03, {0x53, 0x46}, {0x51, 0x56}, {0x16, 0x52, 0xBA}, "2-B Kleaver's Kiln"}, // 26
-        
+
         {0x4C, 0x06, {0x4F, 0xFA}, {0x54, 0xD4}, {0x18, 0x4A, 0xDD}, "3-1 Hornet Hole"},
         {0x11, 0x06, {0x51, 0xFC}, {0x59, 0x36}, {0x17, 0x51, 0x93}, "3-1 Hornet Hole B1"},
         {0xFF, 0x07, {0x44, 0x14}, {0x50, 0x7B}, {0x16, 0x40, 0x03}, "3-2 Target Terror"},
@@ -1004,7 +1004,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x13, 0x06, {0x52, 0x62}, {0x59, 0x36}, {0x17, 0x52, 0x01}, "3-7 Rambi Rumble B1"},
         {0x29, 0x06, {0x52, 0xE8}, {0x59, 0x36}, {0x17, 0x52, 0x6D}, "3-7 Rambi Rumble B2"},
         {0x0C, 0x06, {0x5F, 0xC4}, {0x54, 0xD4}, {0x17, 0x5F, 0x82}, "3-B King Zing Sting"}, // 18
-        
+
         {0xFF, 0x09, {0x44, 0x78}, {0x4E, 0x02}, {0x19, 0x40, 0x02}, "4-1 Ghostly Grove"},
         {0x1D, 0x09, {0x50, 0x4E}, {0x59, 0x06}, {0x17, 0x4F, 0xB3}, "4-1 Ghostly Grove B1"},
         {0xFF, 0x07, {0x53, 0x83}, {0x50, 0x7B}, {0x19, 0x4E, 0xC9}, "4-2 Krazy Koaster"},
@@ -1018,7 +1018,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0xFF, 0x09, {0x4E, 0x51}, {0x4E, 0x02}, {0x19, 0x49, 0xEF}, "4-5 Web Woods"},
         {0x14, 0x09, {0x51, 0x8D}, {0x59, 0x06}, {0x17, 0x51, 0x3A}, "4-5 Web Woods B1"},
         {0x06, 0x01, {0x64, 0x22}, {0x4A, 0x18}, {0x17, 0x63, 0xE2}, "4-B Kreepy Krow"}, // 13
-        
+
         {0x47, 0x0A, {0x60, 0x0F}, {0x4B, 0xE0}, {0x19, 0x59, 0xD6}, "5-1 Arctic Abyss"},
         {0x0B, 0x0A, {0x43, 0xCF}, {0x57, 0xAA}, {0x17, 0x43, 0x4C}, "5-1 Arctic Abyss B1"},
         {0x11, 0x0A, {0x44, 0x72}, {0x57, 0xAA}, {0x17, 0x43, 0xD8}, "5-1 Arctic Abyss B2"},
@@ -1035,11 +1035,11 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x13, 0x0B, {0x7A, 0xE2}, {0x53, 0xF0}, {0x19, 0x73, 0x4F}, "5-6 Toxic Tower"},
         {0x15, 0x0B, {0x5F, 0x48}, {0x57, 0xFE}, {0x17, 0x5E, 0xC1}, "5-6 Toxic Tower B1"},
         {0x09, 0x0B, {0x7C, 0xCE}, {0x53, 0xF0}, {0x19, 0x7B, 0xAA}, "5-B Stronghold Showdown"}, // 16
-        
+
         {0x5B, 0x08, {0x58, 0x45}, {0x4E, 0xEC}, {0x1A, 0x52, 0x05}, "6-1 Screech's Sprint"},
         {0x1A, 0x08, {0x4C, 0xFB}, {0x58, 0x85}, {0x17, 0x4C, 0x49}, "6-1 Screech's Sprint B1"},
         {0x08, 0x0B, {0x5F, 0x7F}, {0x53, 0xF0}, {0x17, 0x5F, 0x58}, "6-B K.Rool Duel"}, // 3
-        
+
         {0xFF, 0x0C, {0x48, 0x9A}, {0x4F, 0xBE}, {0x1A, 0x44, 0xA1}, "7-1 Jungle Jinx"},
         {0x19, 0x0C, {0x5C, 0x00}, {0x57, 0xD7}, {0x17, 0x5B, 0xB2}, "7-1 Jungle Jinx B1"},
         {0x11, 0x0A, {0x5E, 0xFD}, {0x4B, 0xE0}, {0x1A, 0x59, 0x0F}, "7-2 Black Ice Battle"},
@@ -1052,13 +1052,13 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x16, 0x0C, {0x5C, 0xC2}, {0x57, 0xD7}, {0x17, 0x5C, 0x74}, "7-5 Animal Antics B1"},
         {0x08, 0x03, {0x5F, 0xD3}, {0x51, 0x56}, {0x1A, 0x5F, 0xAB}, "7-B Krocodile Kore"}, // 11
     };
-    
+
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
     int size = sizeof(dkl) / sizeof(struct dkl2_levels);
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
-        
+
         uint8_t *bp_data = malloc(0x2000);
         uint8_t *lay_data = malloc(0x20000);
         uint8_t *col_data = malloc(0x20000);
@@ -1069,7 +1069,7 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         int a = dkl[i].arch;
         int rawlen = 0;
         int bp_len = 0;
-       
+
         if (!tileset) {
             dkl_raw(rom, raw_data, &rawlen, dkl[i].raw[0], dkl[i].raw[1], dkl[i].raw[2]);
             dkl2_raw_fix(rom, raw_data, rawlen, (dkl[i].raw[0]*0x4000)+((dkl[i].rf1[0]-0x40)*256)+dkl[i].rf1[1], (0x10 * 0x4000)+((dkl[i].rf2[0]-0x40)*256)+dkl[i].rf2[1]);
@@ -1082,26 +1082,26 @@ void dkl2_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
             t_height = (rawlen / t_width);
             if (rawlen % t_width) t_height++;
         }
-        
+
         // Decompress Bitplane data
         dkl2_tiles(rom, bp_data, &bp_len, arch[a].bp_bank[0], ((arch[a].bp_bank[1]-0x40)*256)+arch[a].bp_bank[2], arch[a].bp_bank[3]);
-        
+
         int bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
-        
+
         // Decode layout (raw is stored uncompressed in ROM)
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
-        
+
         if (sgb) {
             decode_palette(rgb, &bw[0], 4);
         }
         else {
             decode_palette(rgb, &arch[a].pal[0], 4);
         }
-        
+
         uint8_t *bitplane = malloc(t_width * t_height * 1024 * 4);
         gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 0);
         arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, dkl[i].name);
-    
+
         free(bp_data);
         free(lay_data);
         free(raw_data);
@@ -1130,7 +1130,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         { {0x13, 0x77, 0x46, 0xE0}, {0x91, 0x15, 0x00}, 106}, // Pipe
         { {0x12, 0x51, 0x5A, 0xDE}, {0x9B, 0x11, 0x02},  71}, // Cave
     }; // 
-    
+
     struct dkl3_levels dkl[] = {
     //   327C-A     32CD ROM & BC  3244 BC          3BC7 ROM & DE       PALETTE
         {0x97, 0x00, {0x43, 0xA0}, {0x4F, 0x5A}, {0x17, 0x40, 0x03}, {0x16, 0x7F, 0xD0, 0x45, 0x8A, 0x08, 0x00, 0x00}, "1-1 Red Wharf"},
@@ -1158,7 +1158,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x18, 0x02, {0x4B, 0x21}, {0x5A, 0x82}, {0x18, 0x4A, 0x70}, {0x36, 0x16, 0x91, 0x0D, 0xEB, 0x00, 0x00, 0x00}, "1-5 Liftshaft Lottery B2"},
         {0x15, 0x02, {0x61, 0xA7}, {0x5A, 0x82}, {0x18, 0x61, 0x61}, {0x36, 0x16, 0x91, 0x0D, 0xEB, 0x00, 0x00, 0x00}, "1-5 Liftshaft Lottery Warp"},
         {0x09, 0x01, {0x64, 0x55}, {0x4B, 0xF1}, {0x16, 0x64, 0x25}, {0xDA, 0x7F, 0xD1, 0x5A, 0xC9, 0x35, 0x00, 0x00}, "1-B Barbos Bastion"},
-    
+
         {0x44, 0x01, {0x57, 0x04}, {0x4B, 0xF1}, {0x16, 0x4C, 0x04}, {0x9F, 0x7E, 0x58, 0x51, 0x11, 0x20, 0x00, 0x00}, "2-1 Coral Quarrel"},
         {0x21, 0x01, {0x46, 0xDF}, {0x5A, 0x22}, {0x18, 0x46, 0x58}, {0x9F, 0x7E, 0x58, 0x51, 0x11, 0x20, 0x00, 0x00}, "2-1 Coral Quarrel B1"},
         {0x16, 0x01, {0x47, 0x9A}, {0x5A, 0x22}, {0x18, 0x46, 0xEE}, {0x9F, 0x7E, 0x58, 0x51, 0x11, 0x20, 0x00, 0x00}, "2-1 Coral Quarrel B2"},
@@ -1178,7 +1178,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x1B, 0x02, {0x4B, 0xEA}, {0x5A, 0x82}, {0x18, 0x4B, 0x31}, {0x36, 0x36, 0x91, 0x21, 0xEB, 0x10, 0x00, 0x00}, "2-6 Miller Instinct B1"},
         {0x0F, 0x02, {0x4C, 0x37}, {0x5A, 0x82}, {0x18, 0x4B, 0xFB}, {0x36, 0x36, 0x91, 0x21, 0xEB, 0x10, 0x00, 0x00}, "2-6 Miller Instinct B2"},
         {0x07, 0x05, {0x7D, 0xCE}, {0x50, 0xB6}, {0x1A, 0x7D, 0x9F}, {0xDA, 0x7F, 0xD1, 0x5A, 0xC9, 0x35, 0x00, 0x00}, "2-B Bleak Magic"},
-    
+
         {0x1A, 0x06, {0x43, 0xCB}, {0x54, 0x2B}, {0x18, 0x40, 0x03}, {0xF8, 0x7F, 0xA6, 0x56, 0x60, 0x29, 0x00, 0x00}, "3-1 Rocketeer Rally"},
         {0x0E, 0x06, {0x6D, 0x66}, {0x5C, 0x95}, {0x18, 0x6C, 0xF5}, {0xF8, 0x7F, 0xA6, 0x56, 0x60, 0x29, 0x00, 0x00}, "3-1 Rocketeer Rally B1"},
         {0x0C, 0x06, {0x6D, 0xD0}, {0x5C, 0x95}, {0x18, 0x6D, 0x79}, {0xF8, 0x7F, 0xA6, 0x56, 0x60, 0x29, 0x00, 0x00}, "3-1 Rocketeer Rally B2"},
@@ -1198,7 +1198,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x0E, 0x04, {0x5A, 0x79}, {0x5B, 0xE4}, {0x18, 0x59, 0xBE}, {0x79, 0x02, 0x52, 0x01, 0x2B, 0x00, 0x00, 0x00}, "3-6 Redwood Rampage B1"},
         {0x0E, 0x04, {0x5B, 0x4B}, {0x5B, 0xE4}, {0x18, 0x5A, 0x86}, {0x79, 0x02, 0x52, 0x01, 0x2B, 0x00, 0x00, 0x00}, "3-6 Redwood Rampage B2"},
         {0x08, 0x04, {0x69, 0x63}, {0x51, 0xDF}, {0x17, 0x69, 0x3B}, {0xBA, 0x7F, 0x2F, 0x4E, 0xA3, 0x1C, 0x00, 0x00}, "3-B Arich Attack"},
-    
+
         {0xE9, 0x08, {0x6D, 0xA5}, {0x56, 0xCB}, {0x17, 0x69, 0x66}, {0xF5, 0x02, 0x0E, 0x02, 0xC7, 0x00, 0x00, 0x00}, "4-1 Jungle Jeopardy"},
         {0x1F, 0x08, {0x77, 0x3D}, {0x5D, 0x55}, {0x17, 0x76, 0xA6}, {0xF5, 0x02, 0x0E, 0x02, 0xC7, 0x00, 0x00, 0x00}, "4-1 Jungle Jeopardy B1"},
         {0x23, 0x08, {0x77, 0xC8}, {0x5D, 0x55}, {0x17, 0x77, 0x49}, {0xF5, 0x02, 0x0E, 0x02, 0xC7, 0x00, 0x00, 0x00}, "4-1 Jungle Jeopardy B2"},
@@ -1218,7 +1218,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x2C, 0x07, {0x5F, 0x07}, {0x5C, 0x5C}, {0x18, 0x5E, 0x40}, {0x3C, 0x67, 0x14, 0x42, 0x0C, 0x21, 0x00, 0x00}, "4-6 Rockface Chase B1"},
         {0x14, 0x07, {0x5F, 0xB8}, {0x5C, 0x5C}, {0x18, 0x5F, 0x24}, {0x3C, 0x67, 0x14, 0x42, 0x0C, 0x21, 0x00, 0x00}, "4-6 Rockface Chase B2"},
         {0x09, 0x09, {0x7D, 0x9C}, {0x57, 0xD0}, {0x1A, 0x7D, 0x60}, {0xFF, 0x3A, 0xB8, 0x11, 0xF0, 0x08, 0x00, 0x00}, "4-B Krazy KAOS"},
-    
+
         {0xEB, 0x08, {0x72, 0x2D}, {0x56, 0xCB}, {0x17, 0x6E, 0x06}, {0xF4, 0x02, 0x10, 0x02, 0x2B, 0x01, 0x00, 0x00}, "5-1 Tropical Tightropes"},
         {0x1C, 0x08, {0x78, 0x54}, {0x5D, 0x55}, {0x17, 0x77, 0xD2}, {0xF4, 0x02, 0x10, 0x02, 0x2B, 0x01, 0x00, 0x00}, "5-1 Tropical Tightropes B1"},
         {0x25, 0x08, {0x78, 0xD4}, {0x5D, 0x55}, {0x17, 0x78, 0x62}, {0xF4, 0x02, 0x10, 0x02, 0x2B, 0x01, 0x00, 0x00}, "5-1 Tropical Tightropes B2"},
@@ -1238,7 +1238,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x1E, 0x0B, {0x74, 0x56}, {0x5C, 0xEF}, {0x18, 0x73, 0xA7}, {0xF7, 0x43, 0x91, 0x22, 0x0C, 0x01, 0x00, 0x00}, "5-6 Stalagmite Frights B1"},
         {0x16, 0x0B, {0x75, 0x4A}, {0x5C, 0xEF}, {0x18, 0x74, 0x5F}, {0xF7, 0x43, 0x91, 0x22, 0x0C, 0x01, 0x00, 0x00}, "5-6 Stalagmite Frights B2"},
         {0x0B, 0x0A, {0x7E, 0x0B}, {0x59, 0x0E}, {0x1A, 0x7D, 0xD1}, {0xFF, 0x3A, 0xB8, 0x11, 0xF0, 0x08, 0x00, 0x00}, "5-B K.Rool Duel"},
-    
+
         {0xC4, 0x0A, {0x7F, 0x11}, {0x59, 0x0E}, {0x17, 0x7C, 0x0D}, {0x16, 0x7F, 0x4C, 0x5A, 0x81, 0x35, 0x00, 0x00}, "6-1 Whiplash Dash"},
         {0x16, 0x0A, {0x7B, 0x89}, {0x5E, 0x06}, {0x17, 0x7B, 0x5D}, {0x16, 0x7F, 0x4C, 0x5A, 0x81, 0x35, 0x00, 0x00}, "6-1 Whiplash Dash B1"},
         {0x1E, 0x0A, {0x7C, 0x01}, {0x5E, 0x06}, {0x17, 0x7B, 0x92}, {0x16, 0x7F, 0x4C, 0x5A, 0x81, 0x35, 0x00, 0x00}, "6-1 Whiplash Dash B2"},
@@ -1259,13 +1259,13 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         {0x22, 0x0B, {0x78, 0x5D}, {0x5C, 0xEF}, {0x18, 0x77, 0xE7}, {0x1F, 0x1B, 0xF6, 0x0D, 0xCD, 0x00, 0x00, 0x00}, "6-6 Ghoulish Grotto B2"},
         {0x0B, 0x0B, {0x7E, 0x5E}, {0x55, 0xA8}, {0x1A, 0x7E, 0x0E}, {0xFF, 0x3A, 0xB8, 0x11, 0xF0, 0x08, 0x00, 0x00}, "6-B K.Rool's Last Stand"},
     };
-    
+
     uint8_t bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
     int size = sizeof(dkl) / sizeof(struct dkl3_levels);
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
-        
+
         uint8_t *bp_data = malloc(0x2000);
         uint8_t *lay_data = malloc(0x20000);
         uint8_t *col_data = malloc(0x20000);
@@ -1276,7 +1276,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         int a = dkl[i].arch;
         int rawlen = 0;
         int bp_len = 0;
-        
+
         if (!tileset) {
             dkl_raw(rom, raw_data, &rawlen, dkl[i].raw[0], dkl[i].raw[1], dkl[i].raw[2]);
             dkl2_raw_fix(rom, raw_data, rawlen, (dkl[i].raw[0]*0x4000)+((dkl[i].rf1[0]-0x40)*256)+dkl[i].rf1[1], (0x10 * 0x4000)+((dkl[i].rf2[0]-0x40)*256)+dkl[i].rf2[1]);
@@ -1289,24 +1289,24 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
             t_height = (rawlen / t_width);
             if (rawlen % t_width) t_height++;
         }
-        
+
         dkl2_tiles(rom, bp_data, &bp_len, arch[a].bp_bank[0], ((arch[a].bp_bank[1]-0x40)*256)+arch[a].bp_bank[2], arch[a].bp_bank[3]);
-        
+
         int bank = ((arch[a].lay[1] * 0x4000) + (arch[a].lay[2] * 0x1000));
-        
+
         dkl_layout(rom, raw_data, lay_data, arch[a].lay[0], bank, t_width, t_height);
-        
+
         if (sgb) {
             decode_palette(rgb, &bw[0], 4);
         }
         else {
             decode_palette(rgb, &dkl[i].pal[0], 4);
         }
-        
+
         uint8_t *bitplane = malloc(t_width * t_height * 1024 * 4);
         gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 0);
         arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, dkl[i].name);
-    
+
         free(bp_data);
         free(lay_data);
         free(raw_data);
@@ -1314,7 +1314,7 @@ void dkl3_levels(uint8_t *rom, char *dir, uint8_t sgb, int tileset) {
         free(pal_data);
         free(rgb);
         free(bitplane);
-        
+
     }
 
 } // dkl3_levels();

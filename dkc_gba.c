@@ -46,9 +46,9 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {0x463C68, 0x4E31A0}, // Kremkroc Industries
         {0x4786C4, 0x4E5998}, // Chimp Caverns
     };
-    
+
     struct dkc_gba_levels dkc[] = {
-    
+
         { 0, {0x4EAF90, 0, 1}, 0x9DB4C, "Jungle Hijinxs"},
         { 1, {0x4F1B80, 0, 1}, 0xA1D4C, "Jungle Hijinxs B1"},
         { 0, {0x4ED5AC, 0, 1}, 0x9DB4C, "Jungle Hijinxs B2"},
@@ -63,7 +63,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 0, {0x4ED90C, 0, 1}, 0x9E94C, "Barrel Cannon Canyon"},
         { 1, {0x4F3630, 0, 1}, 0xA1D4C, "Barrel Cannon Canyon B1"},
         { 0, {0x4EE984, 0, 1}, 0x9DB4C, "Barrel Cannon Canyon B2"},
-        
+
         { 3, {0x504574, 0, 1}, 0x9EB4C, "Winky's Walkway"},
         { 3, {0x504470, 0, 1}, 0x9EB4C, "Winky's Walkway B1"},
         { 4, {0x4FFA24, 0, 1}, 0x9ED4C, "Mine Cart Carnage"},
@@ -79,7 +79,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 6, {0x5064F8, 0, 1}, 0xA1F4C, "Millstone Mayhem B1"},
         { 6, {0x506684, 0, 1}, 0xA1F4C, "Millstone Mayhem B2"},
         { 6, {0x5065F8, 0, 1}, 0xA1F4C, "Millstone Mayhem B3"},
-        
+
         { 7, {0x4FB554, 0, 1}, 0x9F74C, "Vulture Culture"},
         { 7, {0x4FC914, 0, 1}, 0x9F74C, "Vulture Culture B1"},
         { 7, {0x4FC628, 0, 1}, 0x9F74C, "Vulture Culture B2"},
@@ -100,7 +100,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 6, {0x505938, 0, 1}, 0x9F54C, "Temple Tempest"},
         { 6, {0x50654C, 0, 1}, 0xA1F4C, "Temple Tempest B1"},
         { 6, {0x506710, 0, 1}, 0xA1F4C, "Temple Tempest B2"},
-        
+
         { 9, {0x500A08, 0, 1}, 0x9FF4C, "Snow Barrel Blast"},
         { 9, {0x5014B4, 0, 1}, 0x9FF4C, "Snow Barrel Blast B1"},
         { 9, {0x5013B8, 0, 1}, 0x9FF4C, "Snow Barrel Blast B2"},
@@ -119,7 +119,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 1, {0x4F1E9C, 0, 1}, 0x9E54C, "Torchlight Trouble"},
         { 1, {0x4F3CA8, 0, 1}, 0x9E54C, "Torchlight Trouble B1"},
         { 1, {0x4F3D20, 0, 1}, 0x9E54C, "Torchlight Trouble B2"},
-        
+
         {11, {0x4FA000, 0, 1}, 0xA0B4C, "Oil Drum Alley"},
         {11, {0x4FB390, 0, 1}, 0xA0B4C, "Oil Drum Alley B1"},
         {11, {0x4FB300, 0, 1}, 0xA0B4C, "Oil Drum Alley B2"},
@@ -141,7 +141,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 1, {0x4F3F88, 0, 1}, 0xA1D4C, "Mine Cart Madness B1"},
         { 3, {0x504A70, 0, 1}, 0x9EB4C, "Mine Cart Madness B2"},
         { 3, {0x504AE4, 0, 1}, 0x9EB4C, "Mine Cart Madness B3"},
-        
+
         { 3, {0x503C3C, 0, 1}, 0x9E14C, "Tanked-Up Trouble"},
         { 3, {0x504B60, 0, 1}, 0x9EB4C, "Tanked-Up Trouble B1"},
         { 1, {0x4F0BC8, 0, 1}, 0xA114C, "Manic Mincers"},
@@ -157,7 +157,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         { 3, {0x502BE4, 0, 1}, 0x9EB4C, "Platform Perils"},
         { 3, {0x504BD4, 0, 1}, 0x9EB4C, "Platform Perils B1"},
         { 3, {0x504C48, 0, 1}, 0x9EB4C, "Platform Perils B2"},
-        
+
         {15, {0x50C554, 0x90, 0}, 0xA314C, "DK's Treehouse"},
         {15, {0x50C5E8, 0, 1}, 0xA314C, "DK's Treehouse Overlay"}, // Huff
         { 1, {0x4F4218, 0, 1}, 0xA6B4C, "Banana Hoard"},
@@ -176,13 +176,13 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {22, {0x50F65C, 0x34C, 0}, 0xA274C, "Gorilla Glacier"}, //
         {23, {0x50FA58, 0x34C, 0}, 0xA294C, "Kremkroc Industries Inc"}, //
         {24, {0x50ED10, 0x34C, 0}, 0xA2D4C, "Chimp Caverns"}, //
-        
+
         {19, {0x50EA88, 0, 1}, 0xA214C, "Kongo Jungle Overlay"},
         {20, {0x50EC60, 0, 1}, 0xA234C, "Monkey Mines Overlay"},
         {21, {0x50F478, 0, 1}, 0xA254C, "Vine Valley Overlay"},
         {22, {0x50F9AC, 0, 1}, 0xA274C, "Gorilla Glacier Overlay"},
         {23, {0x50FDA8, 0, 1}, 0xA294C, "Kremkroc Industries Inc Overlay"},
-        
+
         {16, {0x50A28C, 0, 1}, 0xA5F4C, "Find the Exit"},
         {17, {0x50A4E4, 0, 1}, 0xA694C, "Warp"},
         {16, {0x50A304, 0, 1}, 0xA614C, "Stop the Barrel(s)"},
@@ -194,14 +194,14 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         {16, {0x50A1B4, 0, 1}, 0xA5B4C, "Winky"},
         {16, {0x50A158, 0, 1}, 0xA594C, "Rambi"},
         {16, {0x50A0C8, 0, 1}, 0xA554C, "Enguarde"},
-    
+
     };
-    
+
     int size = (sizeof(dkc) / sizeof(struct dkc_gba_levels));
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) {
-        
+
         if (tileset) {
             int duplicate = 0;
             for (int j = 0; j < i; j++) {
@@ -214,7 +214,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
                 continue;
             }
         }
-        
+
         uint8_t *bp_data = malloc(0x20000);
         uint8_t *raw_data = malloc(0x10000);
         uint8_t *lay_data = malloc(0x100000);
@@ -227,18 +227,18 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         int height = 0;
         int a = dkc[i].arch;
         char name[255];
-        
+
         if (bp_data == NULL || raw_data == NULL || lay_data == NULL || att_data == NULL || rgb == NULL) {
             printf("Error allocating memory for decompression.\n");
             continue;
         }
-        
+
         gba_decomp(rom,  bp_data,  &bp_len, arch[a].bp);
         gba_decomp(rom, raw_data, &raw_len, arch[a].raw);
         gba_data(rom, lay_data, &lay_len, dkc[i].lay.loc, dkc[i].lay.ofs, dkc[i].lay.type);
-        
+
         int mode = (a == 8 || (a > 11 && a < 18)) ? 1 : 0; // Levels/Areas with fewer sets of tiles.
-        
+
         if (tileset) {
             gba_tileset(lay_data, raw_data);
             // Number of tiles + extra row
@@ -248,31 +248,31 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         else {
             strcpy(name, dkc[i].name);
         }
-        
+
         gba_layout(lay_data, raw_data, att_data, &width, &height, mode);
-        
+
         if (mode) gba_split(lay_data, att_data, width*height*9);
-        
+
         decode_palette(rgb, &rom[dkc[i].pal], 256);
-        
+
         // (Number of 24x24 tiles) * (24*24 dots) * (RGBA)
         uint8_t *bitplane = malloc((lay_len / 2) * 576 * 4);
-        
+
         if (bitplane == NULL) {
             printf("Error allocating memory for output.\n");
             continue;
         }
-        
+
         gba_tiles(bitplane, bp_data, lay_data, att_data, rgb, width*height*9, priority, 0);
         arrange_gbc(bitplane, width*24, height*24, dir, name);
-        
+
         free(bp_data);
         free(raw_data);
         free(lay_data);
         free(att_data);
         free(rgb);
         free(bitplane);
-        
+
     }
-    
+
 }

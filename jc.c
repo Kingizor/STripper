@@ -17,65 +17,65 @@ static void extract_target(char current_target[128], char *target, int *target_p
     while (target[*target_pos] != '/' && *target_pos < target_length) {
         (*target_pos)++;
     }
-    
+
     for (int i = *last_split; i < *target_pos; i++) {
         current_target[i - *last_split] = target[i];
     }
     current_target[*target_pos - *last_split] = '\0';
     (*target_pos)++;
     *last_split = *target_pos;
-    
+
     return;
 }
 
 static int fetch_NDS_file(uint8_t *rom, char *target, int *file_start, int *file_length) {
-    
+
     uint8_t *fnt = rom + rom[0x40] + (rom[0x41] << 8) + (rom[0x42] << 16) + (rom[0x43] << 24); // Start of FNT
     uint8_t *fat = rom + rom[0x48] + (rom[0x49] << 8) + (rom[0x4A] << 16) + (rom[0x4B] << 24); // Start of FAT
-    
+
     // Not the most elegant implementation, but it should work okay.
     // Just specify the path. (Case sensitive)
-    
+
     char current_target[128]; // Current segment
     int depth = 0;            // How deep is the target?
     int current_depth = 0;    // How deep are we in search of the target?
     int target_pos = 0;       // Where is the next split?
     int last_split = 0;       // When was the split last?
     int target_length = strlen(target);
-    
+
     int folder_id = 0; // Current Directory
     int file_id = 0; // Position of file in FAT
-    
+
     // Count depth of target (How many folders deep)
     for (int i = 0; i < target_length; i++) {
         if (target[i] == '/') {
             depth++;
         }
     }
-    
+
     // Traverse until file located.
     while (current_depth <= depth) {
-    
+
         // Extract name to search for
         extract_target(current_target, target, &target_pos, &last_split, target_length);
         int target_length = strlen(current_target);
-    
+
         // Go to the current folder
         uint8_t *current_dir = fnt + fnt[folder_id * 8] + (fnt[(folder_id*8)+1] << 8) + (fnt[(folder_id*8)+2] << 16) + (fnt[(folder_id*8)+3] << 24);
         file_id = fnt[(folder_id * 8) + 4] + (fnt[(folder_id * 8) + 5] << 8);
-        
+
         while (1) {
-            
+
             uint8_t fn_length = *current_dir & 0x7F; // Length of current filename
             uint8_t file_type = *current_dir & 0x80; // Folder yes, File no
             uint8_t target_ft = !(current_depth == depth); // Target File Type
-            
+
             // Exit if no more entries
             if (*current_dir == 0) {
                 // printf("Couldn't fild a %s called \"%s\".\n", target_ft ? "Folder" : "File", current_target);
                 return -1;
             }
-            
+
             // Skip entry if target and entry are of different types
             if (!file_type && target_ft) { // Current entry is file, target is folder
                 current_dir += fn_length + 1;
@@ -97,7 +97,7 @@ static int fetch_NDS_file(uint8_t *rom, char *target, int *file_start, int *file
                 continue;
             }
             current_dir++;
-            
+
             // Compare entry and target filenames, letter by letter
             int state = 0;
             int mismatch = 0;
@@ -108,7 +108,7 @@ static int fetch_NDS_file(uint8_t *rom, char *target, int *file_start, int *file
                     break;
                 }
             } while (state > 0 && !mismatch && state < fn_length);
-            
+
             if (mismatch) { // Names don't match
                 while (state++ < 0) current_dir++;
                 if (file_type) {
@@ -119,58 +119,58 @@ static int fetch_NDS_file(uint8_t *rom, char *target, int *file_start, int *file
                 }
                 continue;
             }// Filenames do not match
-            
+
             // Match found
-            
+
             // Get folder ID for next round
             if (file_type) {
                 folder_id = (*current_dir + (*(current_dir + 1) << 8)) & 0xFFF;
                 current_dir += 2;
                 break;
             }
-            
+
             // File Found
             break;
-            
+
         }
         current_depth++;
     }
-    
+
     // Lookup FAT with file_id
     *file_start = fat[ file_id*8   ] + (fat[(file_id*8)+1] << 8) + (fat[(file_id*8)+2] << 16) + (fat[(file_id*8)+3] << 24);
     int file_end   = fat[(file_id*8)+4] + (fat[(file_id*8)+5] << 8) + (fat[(file_id*8)+6] << 16) + (fat[(file_id*8)+7] << 24);
     *file_length = file_end - *file_start;
-    
+
     return 0;
-    
+
 }
 
 static void decode_layout(uint8_t *layout, int *layout_len) {
     // Jungle Climber layouts are stored as the difference from the previous tile
     // This function converts these values to absolutes
-    
+
     int tc = 0; // Tile Counter
     int map_length = layout[1] + (layout[2] << 8) + (layout[3] << 16);
-    
+
     for (int i = 0; i < map_length; i+=2) {
-        
+
         uint16_t current_half = layout[i+4] + (layout[i+5] << 8);
-        
+
         // Detect signed negatives
         tc += (current_half & 0x8000) ? 0 - (0x10000 - current_half) : current_half;
-        
+
         layout[i]   = tc & 0xFF;
         layout[i+1] = tc >> 8;
-        
+
     }
     *layout_len = map_length;
     return;
 }
 
 void jc_levels(uint8_t *rom, char *dir) {
-    
+
     char *folders[5] = {"BG0Data", "BG1Data", "BG2Data", "BG3Data", "BG16"};
-    
+
     struct Level levels[] = {
         {3, 3, "sel_bg_1", "sel_top"},
         {3, 1, "x_start_menu_main", "sel_top"},
@@ -771,7 +771,7 @@ void jc_levels(uint8_t *rom, char *dir) {
         {0, 4, "xvs02-6", "pvs02-6"},
         {0, 4, "yvs02-6", "pvs02-6"},
         {0, 4, "zvs02-6", "pvs02-6"},
-        
+
         // Unusual entries:
         // {3, 3, "z2-4-3", "p2-4-3"},
         // {3, 3, "z1-2-2", "p2-4-4"},
@@ -787,16 +787,16 @@ void jc_levels(uint8_t *rom, char *dir) {
         // {0, 4, "logo_nintendo", "p_logo"},
         // {0, 4, "logo_paon", "p_logo"},
     };
-    
+
     int length = sizeof(levels) / sizeof(struct Level);
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
-        
+
         int tileset, tilemap, palette; // Addresses within ROM
         int tileset_len, tilemap_len, palette_len; // Length of data, may be compressed
         char name[255];
-        
+
         // Open tilemap, tileset and palette files.
         sprintf(name, "%s/%s.nbfc", folders[levels[i].index], levels[i].name);
         if (fetch_NDS_file(rom, name, &tileset, &tileset_len)) {
@@ -813,48 +813,48 @@ void jc_levels(uint8_t *rom, char *dir) {
             printf("Failed to locate file: \"%s\".\n", name);
             continue;;
         }
-        
+
         uint8_t *tileset_d = malloc(0x100000); // Decompressed
         uint8_t *tilemap_d = malloc(0x100000); // Decompressed
-        
+
         if (tileset_d == NULL || tilemap_d == NULL) {
             printf("Failed to allocate memory for tiles and layout.\n");
             free(tileset_d);
             free(tilemap_d);
             continue;
         }
-        
+
         // Decompress Tileset
         gba_decomp(rom, tileset_d, &tileset_len, tileset);
         // Decompress Tilemap (first word is width&height)
         gba_decomp(rom, tilemap_d, &tilemap_len, tilemap+4);
-        
+
         decode_layout(tilemap_d, &tilemap_len);
-        
-        
+
+
         // Do things here
         // 8bpp GBA-type tiles, etc
-        
+
         int width  = rom[tilemap+0] + (rom[tilemap+1] << 8);
         int height = rom[tilemap+2] + (rom[tilemap+3] << 8);
-        
+
         uint8_t *att_data = malloc(tilemap_len/2);
         gba_split(tilemap_d, att_data, tilemap_len/2); // DKC ruined my life
-        
+
         uint8_t *rgb = malloc(768);
         decode_palette(rgb, &rom[palette], 256);
-        
+
         uint8_t *bitplane = malloc(width * height * 4);
-        
+
         gba_tiles(bitplane, tileset_d, tilemap_d, att_data, rgb, tilemap_len/2, 0, levels[i].mode);
         arrange_gbc(bitplane, width, height, dir, levels[i].name);
-        
+
         free(rgb);
         free(att_data);
         free(bitplane);
         free(tileset_d);
         free(tilemap_d);
-        
+
     }
-    
+
 }

@@ -19,7 +19,7 @@ struct Level {
 
 
 void spec1(uint8_t *rom, char dir[255]) {
-    
+
     struct Level levels[] = {
         {0x7000, 0x700, 0, 0, 0x0116F1, 0x010FF0, 0x39BE03, 0, 2, 1, "DKC Overworld"},
         {0x7000, 0x700, 0, 0, 0x0116F1, 0x010FF0, 0x39BE03, 0, 2, 1, "DKC Overworld"},
@@ -60,27 +60,27 @@ void spec1(uint8_t *rom, char dir[255]) {
         {0x2000, 0x800, 0x1000, 0, 0x318502, 0x317D02, 0x39B2A3, 0, 3, 1, "Tree Top Town BG3"},
         {0x2000, 0x800, 0x1000, 0, 0x318502, 0x317D02, 0x39B1A3, 0, 3, 1, "Rope Bridge Rumble BG3"}
     };
-    
+
     int length = sizeof(levels) / sizeof(struct Level);
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
-        
+
         uint8_t *bp_data = calloc(0x8000, 1);
         uint8_t *raw_data = calloc(0x2000, 1);
         uint8_t *bitplane = malloc(0x100000);
-        
+
         memcpy(&bp_data[levels[i].bp_ofs], &rom[levels[i].bp_addr], levels[i].bp_len);
         memcpy(&raw_data[levels[i].raw_ofs], &rom[levels[i].raw_addr], levels[i].raw_len);
-        
+
         decode_bitplane(rom, bp_data, raw_data, bitplane, levels[i].palette, levels[i].raw_len, levels[i].bp_len, levels[i].mode, levels[i].palette_fix, levels[i].opacity);
         assemble_screen(bitplane, levels[i].raw_len, 32, dir, levels[i].name);
-        
+
         free(bp_data);
         free(raw_data);
         free(bitplane);
     }
-    
+
     return;
-    
+
 }

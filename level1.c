@@ -57,24 +57,24 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
     int sc = 0; // Stack Counter
     int jmp = 0x970E;
     int run = 1;
-    
+
     // 8-bit A
     tF7 = x;
     tFA = y;
-    
+
     // int count = 0;
-    
+
     while (run) {
-        
+
         // count++;
         // printf("\n\n%04d:\n", count);
         // printf("\tj = %04X\n", jmp);
         // printf("\ta = %02X%02X\n", b, a);
         // printf("\tx = %04X\n", x);
         // printf("\ty = %04X\n", y);
-        
+
         switch(jmp) {
-            
+
             case 0x970E:
                 a = rom[(bank*0x10000) + y + 0x80];
                 if (a == 0) {
@@ -103,11 +103,11 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
                 }
                 jmp = 0x9728;
             break;
-            
+
             case 0x9728:
                 run = 0;
             break;
-            
+
             case 0x972C:
                 xba(&a, &b);
                 a &= 0x3F;
@@ -115,14 +115,14 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
                 a = rom[(bank*0x10000) + y + 0x80];
                 jmp = 0x9734;
             break;
-            
+
             case 0x9734:
                 y++;
                 push_16(stack, &sc, &y);
                 y = tF7;
                 jmp = 0x9738;
             break;
-            
+
             case 0x9738:
                 bp_data[x] = a;
                 x++;
@@ -131,12 +131,12 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
                 pull_16(stack, &sc, &y);
                 jmp = 0x970E;
             break;
-            
+
             case 0x9743:
                 xba(&a, &b);
                 jmp = 0x9744;
             break;
-            
+
             case 0x9744:
                 xba(&a, &b);
                 a = rom[(bank*0x10000) + y + 0x80];
@@ -147,7 +147,7 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
                 a--;
                 jmp = (a > 0) ? 0x9744 : 0x970E;
             break;
-            
+
             case 0x9754:
                 xba(&a, &b);
                 a &= 0x3F;
@@ -163,7 +163,7 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
                 a = mem[0xF9];
                 jmp = 0x9766;
             break;
-            
+
             case 0x9766:
                 xba(&a, &b);
                 push_16(stack, &sc, &x);
@@ -179,7 +179,7 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
                 pull_16(stack, &sc, &y);
                 jmp = 0x970E;
             break;
-            
+
             case 0x977B:
                 a = 0;
                 xba(&a, &b);
@@ -199,17 +199,17 @@ static void dkc_tile_decomp(uint8_t *rom, uint8_t *bp_data, unsigned int *bp_len
                 pull_16(stack, &sc, &y);
                 jmp = 0x970E;
             break;
-            
+
             default:
                 run = 0;
                 printf("\nError\n");
                 break;
         }
-    
+
     }
-    
+
     *bp_len = x;
-    
+
     return;
 
 } // dkc_tile_decomp();
@@ -232,9 +232,9 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         {12, 0x230000, 0x200, 0x39D363, "Gang-Plank Galleon"},
         {13, 0x03EDA0, 0x200, 0x39CE63, "Bosses"}
     };
-    
+
     const struct Area areas[] = {
-        
+
         { 0, 0x39A1DC, 62, {0x00, 0x15, 0x00, 0x17, 0x00, 0x00, 0x00, 0x01}, "Jungles BG"},
         { 0, 0x39A1DC, 0, {0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00, 0x02}, "Jungle Hijinxs (Day)"},
         { 0, 0x39A1DC, 58, {0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00, 0x02}, "Jungle Hijinxs (Night)"},
@@ -257,7 +257,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         { 0, 0x39A1DC, 0, {0x60, 0x90, 0x60, 0x92, 0x00, 0x00, 0x00, 0x02}, "Jungle C"},
         { 0, 0x39A1DC, 0, {0x60, 0x92, 0x60, 0x94, 0x00, 0x00, 0x00, 0x01}, "Jungle D"},
         { 0, 0x39A1DC, 0, {0x60, 0x94, 0xC0, 0xA3, 0x00, 0x00, 0x00, 0x02}, "Expresso Room"}, // 22
-        
+
         { 1, 0x39A01C, 0, {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01}, "Caves BG-1"},
         { 1, 0x39AF65, 0, {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01}, "Caves BG-2"},
         { 1, 0x39A01C, 0, {0x00, 0x01, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x02}, "Reptile Rumble"},
@@ -279,7 +279,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         { 1, 0x39AF65, 0, {0x00, 0xB0, 0x00, 0xB1, 0x00, 0x01, 0x00, 0x02}, "Banana Hoard"},
         { 1, 0x39A01C, 0, {0x00, 0x6F, 0x00, 0x71, 0x00, 0x00, 0x00, 0x02}, "Caves 9"},
         { 1, 0x39A01C, 0, {0x80, 0x4A, 0x80, 0x4C, 0x00, 0x01, 0x00, 0x02}, "Unused Caves Bonus"}, // 21
-        
+
         { 2, 0x39A2DC, 0, {0x80, 0xCA, 0x40, 0xE0, 0x00, 0x00, 0x00, 0x02}, "Winky's Walkway"},
         { 2, 0x39A2DC, 0, {0x80, 0xC9, 0x80, 0xCA, 0x00, 0x01, 0x00, 0x02}, "WinkysW B1 & TrickTT B2&3 & MineCM B2 & TankedUT B1 & PlatformP B1&2"},
         { 2, 0x39A2DC, 0, {0x00, 0x00, 0x00, 0x3A, 0x00, 0x00, 0x00, 0x02}, "Mine Cart Madness"},
@@ -289,7 +289,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         { 2, 0x39A2DC, 0, {0x00, 0x3B, 0x80, 0x6B, 0x00, 0x00, 0x00, 0x02}, "Platform Perils"},
         { 2, 0x39A2DC, 0, {0x00, 0x3A, 0x00, 0x3B, 0x00, 0x00, 0x00, 0x01}, "Walkway 1"},
         { 2, 0x39A2DC, 0, {0x80, 0xC9, 0x80, 0xCA, 0x00, 0x00, 0x00, 0x01}, "Walkway 2"}, // 9
-        
+
         { 3, 0x39A3DC, 0, {0x00, 0x01, 0x00, 0x03, 0x00, 0x00, 0x00, 0x02}, "Stop & Go Station B1"},
         { 3, 0x39A3DC, 0, {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02}, "Stop & Go Station B2"},
         { 3, 0x39A3DC, 0, {0x80, 0x34, 0x00, 0x5B, 0x00, 0x00, 0x00, 0x02}, "Stop & Go Station"},
@@ -302,7 +302,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         { 3, 0x39A3DC, 0, {0x00, 0x5C, 0x00, 0x5E, 0x00, 0x00, 0x00, 0x01}, "Mines 6"},
         { 3, 0x39A3DC, 0, {0x00, 0x97, 0x00, 0x99, 0x00, 0x00, 0x00, 0x02}, "Mines 11"},
         { 3, 0x39A3DC, 0, {0x00, 0x99, 0x00, 0x9B, 0x00, 0x00, 0x00, 0x01}, "Mines 12"}, // 12
-        
+
         { 4, 0x39B0A3, 0, {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02}, "Oil Drum Alley FG"},
         { 4, 0x39B0A3, 63, {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02}, "Blackout Basement FG"},
         { 4, 0x39B0A3, 0, {0x00, 0x02, 0x60, 0x2F, 0x00, 0x00, 0x00, 0x02}, "Oil Drum Alley"},
@@ -315,13 +315,13 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         { 4, 0x39B0A3, 0, {0x00, 0x5A, 0x00, 0x5C, 0x00, 0x01, 0x00, 0x02}, "Factory 4"},
         { 4, 0x39B0A3, 0, {0x00, 0x5C, 0x00, 0x5D, 0x00, 0x01, 0x00, 0x02}, "Factory 5"},
         { 4, 0x39B0A3, 0, {0x00, 0x60, 0x00, 0x62, 0x00, 0x00, 0x00, 0x02}, "Factory 9"}, // 12
-        
+
         { 5, 0x399C1C, 0, {0x00, 0x00, 0x00, 0x08, 0x00, 0x23, 0x80, 0x2A}, "Coral Capers"},
         { 5, 0x399C1C, 0, {0x00, 0x00, 0x00, 0x08, 0x80, 0x2A, 0xE0, 0x30}, "Clam City"},
         { 5, 0x399D1C, 0, {0x00, 0x00, 0x00, 0x08, 0x20, 0x0C, 0x40, 0x1D}, "Croctopus Chase"},
         { 5, 0x399F1C, 0, {0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x20, 0x0C}, "Poison Pond"},
         { 5, 0x399E1C, 0, {0x00, 0x00, 0x80, 0x05, 0x40, 0x1D, 0x00, 0x23}, "Enguarde Token Room"}, // 5
-        
+
         { 6, 0x39B3A3, 0, {0x00, 0x08, 0x00, 0x34, 0x00, 0x00, 0x00, 0x02}, "Millstone Mayhem"},
         { 6, 0x39B3A3, 0, {0x00, 0x66, 0x00, 0x67, 0x00, 0x00, 0x00, 0x02}, "Millstone Mayhem B1"},
         { 6, 0x39B3A3, 0, {0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x01}, "Temple Tempest B1"},
@@ -330,7 +330,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         { 6, 0x39B3A3, 0, {0x00, 0x04, 0x00, 0x06, 0x00, 0x00, 0x00, 0x02}, "Temple 4"},
         { 6, 0x39B3A3, 0, {0x00, 0x06, 0x00, 0x08, 0x00, 0x00, 0x00, 0x02}, "Temple 5"},
         { 6, 0x39B3A3, 0, {0x00, 0x34, 0x00, 0x66, 0x00, 0x00, 0x00, 0x02}, "Temple 7"}, // 8
-        
+
         { 7, 0x399B1C, 0, {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01}, "Snow BG"},
         { 7, 0x399B1C, 0, {0x00, 0x02, 0xE0, 0x38, 0x00, 0x00, 0x00, 0x02}, "Snow Barrel Blast"},
         { 7, 0x399B1C, 0, {0x00, 0x3A, 0x00, 0x3B, 0x00, 0x01, 0x00, 0x02}, "Snow Barrel Blast B1 & Ice Age Alley B2"},
@@ -341,7 +341,7 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         { 7, 0x399B1C, 0, {0x00, 0x3B, 0x00, 0x3D, 0x00, 0x01, 0x00, 0x02}, "Snow 3"},
         { 7, 0x399B1C, 0, {0x00, 0x3E, 0x00, 0x40, 0x00, 0x00, 0x00, 0x02}, "Snow 5"},
         { 7, 0x399B1C, 0, {0xA0, 0x6B, 0xA0, 0x74, 0x00, 0x00, 0x00, 0x02}, "Rambi Token Room"}, // 10
-        
+
         { 8, 0x39C723, 0, {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01}, "Ice Cave BG"},
         { 8, 0x39C723, 0, {0x00, 0x00, 0x00, 0x08, 0x00, 0x01, 0x80, 0x0C}, "Slipslide Ride"},
         { 8, 0x39C723, 0, {0x00, 0x06, 0x00, 0x07, 0x00, 0x01, 0x00, 0x02}, "Slipslide Ride B1&2"},
@@ -351,17 +351,17 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         { 8, 0x39C723, 0, {0x00, 0x07, 0x00, 0x08, 0x00, 0x01, 0x00, 0x03}, "Ice Cave 4"},
         { 8, 0x39C723, 0, {0x00, 0x00, 0x00, 0x02, 0x80, 0x0C, 0x80, 0x0E}, "Ice Cave 5"},
         { 8, 0x39C723, 0, {0x00, 0x02, 0x00, 0x04, 0x80, 0x0C, 0x80, 0x0E}, "Ice Cave 6"}, // 9
-        
+
         { 9, 0x399A14, 0, {0x00, 0x00, 0x00, 0x49, 0x00, 0x00, 0x00, 0x02}, "Mine Cart Carnage"},
         { 9, 0x399A14, 0, {0x00, 0x4B, 0x00, 0x94, 0x00, 0x00, 0x00, 0x02}, "Mine Cart Carnage BG"}, // 2
-        
+
         {10, 0x39B2A3, 0, {0x00, 0x00, 0x00, 0x29, 0x00, 0x00, 0x00, 0x02}, "Tree Top Town"},
         {10, 0x39B2A3, 0, {0x00, 0x29, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x02}, "Tree Top Town B2"},
         {10, 0x39B2A3, 0, {0x00, 0x2A, 0x00, 0x2B, 0x00, 0x01, 0x00, 0x02}, "Tree Top Town B1 & Rope Bridge Rumble B2"},
         {10, 0x39B1A3, 0, {0x00, 0x2B, 0x00, 0x4E, 0x00, 0x00, 0x00, 0x02}, "Rope Bridge Rumble"},
         {10, 0x39B2A3, 0, {0x00, 0x4E, 0x00, 0x52, 0x00, 0x00, 0x00, 0x01}, "Rope Bridge Rumble B1"},
         {10, 0x39B2A3, 0, {0x00, 0x4E, 0x00, 0x50, 0x00, 0x01, 0x00, 0x02}, "Treetown 6"}, // 6
-        
+
         {11, 0x39C623, 0, {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0xC0, 0x00}, "Forest BG"},
         {11, 0x39C623, 0, {0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02}, "Forest FG"},
         {11, 0x39C623, 0, {0x00, 0x02, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x02}, "Vulture Culture"},
@@ -370,16 +370,16 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         {11, 0x39C623, 0, {0x00, 0x30, 0x00, 0x59, 0x00, 0x00, 0x00, 0x02}, "Forest Frenzy"},
         {11, 0x39C623, 0, {0x00, 0x59, 0x00, 0x5B, 0x00, 0x00, 0x00, 0x02}, "Forest Frenzy B2"},
         {11, 0x39C623, 0, {0x00, 0x2D, 0x00, 0x2F, 0x00, 0x00, 0x00, 0x01}, "Forest 3"}, // 8
-        
+
         {12, 0x39D363, 0, {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01}, "Gang-Plank Galleon"},
         {12, 0x39D363, 0, {0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x90, 0x01}, "Gang-Plank Galleon BG"},
         {13, 0x39CE63, 0, {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01}, "Boss (Large)"},
         {13, 0x39CE63, 0, {0x00, 0x01, 0x00, 0x02, 0x00, 0x01, 0xE0, 0x01}, "Boss (Small)"},
         {13, 0x39CE63, 0, {0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x80, 0x01}, "Boss BG"},
         {13, 0x39CE63, 0, {0x00, 0x00, 0x00, 0x01, 0x80, 0x01, 0xE0, 0x01}, "Boss FG"} // 6
-        
+
     }; // 130
-    
+
     const struct Archetypes archetype[] = {
         {0x15, 0x8FC0, 0x19A3C0, 0x4940}, // Jungle
         {0x1C, 0x0000, 0x1ABF00, 0x3680}, // Caves
@@ -396,12 +396,12 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         {0x0F, 0x0000, 0x230200, 0x0F80}, // Gang-Plank Galleon
         {0x08, 0x8864, 0x03EFA0, 0x0F40} // Bosses
     };
-    
+
     int length = (mode == 2) ? 14 : 130; // Layouts vs. Levels
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < length; i++) {
-        
+
         if (tileset) {
             int duplicate = 0;
             for (int j = 0; j < i; j++) {
@@ -414,21 +414,21 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
                 continue;
             }
         }
-        
+
         uint8_t *bp_data = malloc(0xFFFF);
         uint8_t *lay_data = malloc(0xFFFF);
         uint8_t *raw_data = malloc(0xFFFF);
         unsigned int bp_len = 0;
         int raw_counter = 0;
         int lay_counter = 0;
-        
+
         int vert, layout_size, arch;
         uint8_t *coords = malloc(10);
         coords[0] = 0xFF;
         coords[1] = 0xFF;
 
         arch = (mode == 2) ? i : levels[areas[i].type].arch;
-        
+
         if (arch == 12) {
             bp_len = 0x8000;
             memcpy(bp_data, &rom[0x0F0000], bp_len);
@@ -436,13 +436,13 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
         else {
             dkc_tile_decomp(rom, bp_data, &bp_len, archetype[arch].bp_a, archetype[arch].bp_y);
         }
-        
+
         if (arch == 6) {
             memmove(&bp_data[0x22A0], bp_data, bp_len);
             memcpy(&bp_data[0x22C0], &rom[0x1300C0], 0xC0);
             bp_len += 0x22A0;
         } // Temple Fix
-        
+
         if (arch == 5 || arch == 8) {
             vert = 1;
             layout_size = 64;
@@ -451,9 +451,9 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
             vert = 0;
             layout_size = 16;
         }
-        
+
         memcpy(&coords[2], &areas[i].crop, 8);
-        
+
         if (mode == 2) {
             memcpy(raw_data, &rom[archetype[arch].raw_loc], arch[archetype].raw_len);
             memcpy(lay_data, &rom[levels[i].lay_loc], levels[i].lay_len);
@@ -466,10 +466,10 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
             raw_counter = archetype[arch].raw_len;
             lay_counter = levels[arch].lay_len;
         } // Levels
-        
+
         uint8_t *bitplane = malloc((lay_counter / 2) * 1024 * 4);
         // dump_bitplane(&bp_data, bp_len, 4, 16, dir, "Bitplane");
-        
+
         if (mode == 2) {
             decode_bitplane(rom, bp_data, raw_data, bitplane, levels[i].pal_ofs, raw_counter, bp_len, 1, 0, priority);
             assemble_level(bitplane, rom, lay_data, lay_counter, 0, vert, layout_size, 0, dir, levels[i].name);
@@ -482,14 +482,14 @@ void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset) 
             decode_bitplane(rom, bp_data, raw_data, bitplane, areas[i].pal_ofs, raw_counter, bp_len, 1, areas[i].pal_fix, priority);
             assemble_level(bitplane, coords, lay_data, lay_counter, 1, vert, layout_size, 0, dir, areas[i].name);
         } // Levels
-    
+
         free(bp_data);
         free(raw_data);
         free(lay_data);
         free(bitplane);
         free(coords);
     }
-    
+
     return;
 
 } // main()

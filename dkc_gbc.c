@@ -16,9 +16,9 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
     // int run_count = 0;
     *ram_count = 0;
     int ret = 0;
-    
+
     while (run) {
-    
+
         // printf("\nr = %d\n", run_count);
         // if (run_count > 10) run = 0;
         // run_count++;
@@ -27,9 +27,9 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
         // printf("bc = %04X\n", (b*256)+c);
         // printf("de = %04X\n", (d*256)+e);
         // printf("hl = %04X\n", (h*256)+l);
-        
+
         switch(jmp) {
-        
+
             case 0x3E4:
                 a = rom[((d-0x40)*256)+e+(rom_bank*0x4000)];
                 if (a == 0) { 
@@ -48,7 +48,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                 e++;
                 jmp = 0x3EF;
             break;
-            
+
             case 0x3EF:
                 ram[*ram_count] = a;
                 ram_count[0]++;
@@ -62,7 +62,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                     jmp = 0x3E4;
                 }
             break;
-            
+
             case 0x3F7:
                 if (a & 0x40) {
                     jmp = 0x406;
@@ -72,7 +72,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                 c = a;
                 jmp = 0x3FE;
             break;
-            
+
             case 0x3FE:
                 a = rom[((d-0x40)*256)+e+(rom_bank*0x4000)];
                 if ((e+1) > 255) d++;
@@ -89,7 +89,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                     jmp = 0x3FE;
                 }
             break;
-            
+
             case 0x406:
                 a &= 0x3F;
                 c = a;
@@ -113,7 +113,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                 d = a;
                 jmp = 0x414;
             break;
-            
+
             case 0x414:
                 if (d & 0xD0) {
                     a = ram[ram_count[0]-(ram_count[0]%0x1000)+((d-0xD0)*256)+e];
@@ -138,7 +138,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                 e = stack[sc];
                 jmp = 0x3E4;
             break;
-            
+
             case 0xB9C:
                 stack[sc] = c;
                 sc++;
@@ -166,7 +166,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                 jmp = 0x3E4;
                 ret = 0xBAF;
             break;
-            
+
             case 0xBAF:
                 sc--;
                 h = stack[sc];
@@ -187,7 +187,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                     jmp = 0xB9C;
                 }
             break;
-            
+
             case 0xBBC:
                 a = ram_reg[0];
                 a &= 2;
@@ -198,7 +198,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                 b = 5;
                 jmp = 0xBC3;
             break;
-            
+
             case 0xBC3:
                 stack[sc] = c;
                 sc++;
@@ -227,7 +227,7 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                 jmp = 0x3E4;
                 ret = 0xBD6;
             break;
-            
+
             case 0xBD6:
                 sc--;
                 h = stack[sc];
@@ -248,50 +248,50 @@ static void ram_p(uint8_t *rom, uint8_t *ram, int *ram_count, int *ram_reg) {
                     jmp = 0xBC3;
                 }
             break;
-            
+
         } // switch();
     } // while();
-    
+
     // printf("\n\tRAM LENGTH = %X\n", (*ram_count)[0]);
-    
+
     return;
 
 } // ram_p();
 
 static void gbc_layout(uint8_t *rom, uint8_t *raw_data, uint8_t *lay_data, uint8_t *col_data, int bank, int width, int height) {
-    
+
     int val, alt, ofs, tile, addr;
     int i, j, k, m;
-    
+
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            
+
             val = raw_data[(i*width)+j];
             alt = raw_data[(i*width)+j+(height*width)];
-            
+
             if (val > 511) {
                 printf("Error: Tile greater than 255 detected.\n");
             }
-            
+
             ofs = ((alt - (alt % 4)) * 0x1000) + (((alt % 4) * 0x100));
-            
+
             for (k = 0; k < 4; k++) {
                 for (m = 0; m < 4; m++) {
-                    
+
                     addr = (i*width*16)+(j*4)+(k*width*4)+m;
                     tile = bank+val+(k*0x1000)+(m*0x400) + ofs;
-                    
+
                     lay_data[addr] = rom[tile];
-                    
+
                     tile++;
                     col_data[addr] = rom[tile];
                 }
             }
         }
     }
-    
+
     return;
-    
+
 } // gbc_layout();
 
 struct gbc_levels {
@@ -308,12 +308,12 @@ struct gbc_levels {
 };
 
 void tidy_gbc(uint8_t *raw_data, int *rawlen, int width, int px_height, int vert) {
-    
+
     int i, shortwidth, ex;
     int div = (vert) ? 0x40 : 0x100;
-    
+
     int length = 0x2000 / div;
-    
+
     if (vert == 0 && width <= div) {
         ex = 0;
     }
@@ -323,9 +323,9 @@ void tidy_gbc(uint8_t *raw_data, int *rawlen, int width, int px_height, int vert
     else {
         ex = 1;
     }
-    
+
     uint8_t *new_data = calloc(0x6000, 1);
-    
+
     if (!ex) {
         // printf("Normal Mode\n");
         for (i = 0; i < length; i++) {
@@ -351,17 +351,17 @@ void tidy_gbc(uint8_t *raw_data, int *rawlen, int width, int px_height, int vert
             memcpy(&new_data[i * width], &raw_data[i * div], width);
         }
     } // Extended Layout for vertical levels.
-    
+
     memcpy(raw_data, new_data, 0x6000);
     free(new_data);
     *rawlen = width * length;
-    
+
     return;
-    
+
 } // tidy_gbc();
 
 void gbc_levels(uint8_t *rom, char dir[255]) {
-    
+
     struct gbc_levels dkc[] = {
         {0x083, 0x10, 0x20C000, 0x9C, {0x01, 0xE2, 0x66, 0xDE}, 0, 0x200317, 4192, 416, "Jungle Hijinxs"},
         {0x015, 0x10, 0x21DF70, 0xB7, {0x01, 0xE8, 0x69, 0x93}, 0, 0x200857, 672, 160, "Jungle Hijinxs Bonus 1"},
@@ -377,7 +377,7 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         {0x0F7, 0x10, 0x20C000, 0x9C, {0x01, 0xE3, 0x67, 0x0B}, 0, 0x200397, 7904, 384, "Barrel Cannon Canyon"},
         {0x016, 0x10, 0x21DF70, 0xB7, {0x01, 0xEB, 0x69, 0xCF}, 0, 0x200857, 704, 192, "Barrel Cannon Canyon Bonus 1"},
         {0x007, 0x10, 0x20C000, 0x9C, {0x01, 0xEB, 0x67, 0x47}, 0, 0x200397, 224, 352, "Barrel Cannon Canyon Bonus 2"}, // 14
-        
+
         {0x0C8, 0x10, 0x220000, 0xBD, {0x01, 0xE9, 0x6A, 0xA4}, 0, 0x200717, 6400, 448, "Winky's Walkway"},
         {0x006, 0x10, 0x220000, 0xBD, {0x01, 0xEC, 0x6A, 0xE0}, 0, 0x200717, 192, 192, "Winky's Walkway Bonus"},
         {0x1DB, 0x10, 0x209ED0, 0x99, {0x02, 0xE1, 0x66, 0xC9}, 0, 0x200697, 15200, 512, "Mine Cart Carnage"},
@@ -395,7 +395,7 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         {0x005, 0x10, 0x204000, 0x90, {0x01, 0xE0, 0x65, 0xF1}, 0, 0x200F97, 160, 320, "Millstone Mayhem Bonus 1"},
         {0x007, 0x10, 0x204000, 0x90, {0x01, 0xEB, 0x66, 0x00}, 0, 0x200F97, 224, 160, "Millstone Mayhem Bonus 2"},
         {0x006, 0x10, 0x204000, 0x90, {0x01, 0xEB, 0x66, 0x1E}, 0, 0x200F97, 192, 160, "Millstone Mayhem Bonus 3"}, // 17
-        
+
         {0x0FB, 0x10, 0x215FC0, 0xAB, {0x01, 0xE5, 0x68, 0x67}, 0, 0x200C97, 8032, 320, "Vulture Culture"},
         {0x007, 0x10, 0x215FC0, 0xAB, {0x01, 0xE5, 0x68, 0x85}, 0, 0x200C97, 224, 160, "Vulture Culture Bonuses 1 & 2"},
         {0x016, 0x10, 0x215FC0, 0xAB, {0x01, 0xEB, 0x68, 0xA3}, 0, 0x200C97, 704, 192, "Vulture Culture Bonus 3"},
@@ -415,7 +415,7 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         {0x007, 0x10, 0x228000, 0xC9, {0x01, 0xEC, 0x6C, 0x09}, 0, 0x2003D7, 224, 192, "Orang-utan Gang Bonus 4"},
         {0x016, 0x10, 0x20C000, 0x9C, {0x01, 0xEC, 0x67, 0x56}, 0, 0x2003D7, 704, 192, "Orang-utan Gang Bonus 5"},
         {0x038, 0x40, 0x2119F0, 0xA5, {0x01, 0xE3, 0x67, 0x92}, 1, 0x200D57, 1792, 1408, "Clam City"}, // 19
-        
+
         {0x148, 0x10, 0x219460, 0xB1, {0x02, 0xE6, 0x68, 0xC1}, 0, 0x200E57, 10496, 480, "Snow Barrel Blast"},
         {0x006, 0x10, 0x221B00, 0xC6, {0x01, 0xEA, 0x6B, 0xA0}, 0, 0x200F17, 192, 160, "Snow Barrel Blast Bonus 1"},
         {0x005, 0x10, 0x219460, 0xB1, {0x01, 0xE6, 0x68, 0xE5}, 0, 0x200E57, 160, 320, "Snow Barrel Blast Bonus 2"},
@@ -436,7 +436,7 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         {0x0C0, 0x10, 0x206000, 0x93, {0x01, 0xE0, 0x66, 0x3C}, 0, 0x200557, 6144, 416, "Rope Bridge Rumble"},
         {0x019, 0x10, 0x206000, 0x93, {0x01, 0xE0, 0x66, 0x4B}, 0, 0x200557, 800, 192, "Rope Bridge Rumble Bonus 1"},
         {0x006, 0x10, 0x225E10, 0xC3, {0x01, 0xEC, 0x6C, 0x81}, 0, 0x2006D7, 192, 160, "Rope Bridge Rumble Bonus 2"}, // 20
-        
+
         {0x0FF, 0x10, 0x214000, 0xA8, {0x01, 0xE5, 0x67, 0xDA}, 0, 0x200B17, 8160, 416, "Oil Drum Alley"},
         {0x005, 0x10, 0x214000, 0xA8, {0x01, 0xEB, 0x68, 0x1C}, 0, 0x200B17, 160, 320, "Oil Drum Alley Bonus 1"},
         {0x008, 0x10, 0x228000, 0xC9, {0x01, 0xEC, 0x6B, 0xFA}, 0, 0x200C17, 256, 160, "Oil Drum Alley Bonus 2"},
@@ -458,7 +458,7 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         {0x11D, 0x10, 0x214000, 0xA8, {0x02, 0xE5, 0x67, 0xE9}, 0, 0x200B57, 9120, 480, "Blackout Basement"},
         {0x00B, 0x10, 0x214000, 0xA8, {0x01, 0xE5, 0x67, 0xFE}, 0, 0x200B57, 352, 320, "Blackout Basement Bonus 1"},
         {0x007, 0x10, 0x228000, 0xC9, {0x01, 0xEC, 0x6B, 0xEB}, 0, 0x200C57, 224, 160, "Blackout Basement Bonus 2"}, // 21
-        
+
         {0x128, 0x10, 0x220000, 0xBD, {0x02, 0xE9, 0x6A, 0x80}, 0, 0x2007D7, 9472, 448, "Tanked Up Trouble"},
         {0x006, 0x10, 0x220000, 0xBD, {0x01, 0xEB, 0x6A, 0xD1}, 0, 0x2007D7, 192, 160, "Tanked Up Trouble Bonus"},
         {0x108, 0x10, 0x21DF70, 0xB7, {0x02, 0xE7, 0x69, 0x5A}, 0, 0x200957, 8448, 512, "Manic Mincers"},
@@ -475,7 +475,7 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         {0x01F, 0x10, 0x224000, 0xC0, {0x01, 0xEC, 0x6B, 0x82}, 0, 0x2005D7, 992, 512, "Loopy Lights Bonus 2"},
         {0x11B, 0x10, 0x220000, 0xBD, {0x02, 0xE9, 0x6A, 0x6B}, 0, 0x200817, 9056, 512, "Platform Perils"},
         {0x006, 0x10, 0x220000, 0xBD, {0x01, 0xEB, 0x6A, 0xD1}, 0, 0x200817, 192, 160, "Platform Perils Bonuses 1 & 2"}, // 16
-        
+
         {0x033, 0x10, 0x221B00, 0xC6, {0x01, 0xEA, 0x6B, 0x91}, 0, 0x200ED7, 1632, 512, "Rambi Bonus Room"},
         {0x063, 0x10, 0x228000, 0xC9, {0x01, 0xEB, 0x6B, 0xBE}, 0, 0x200417, 3168, 416, "Expresso Bonus Room"},
         {0x042, 0x10, 0x225E10, 0xC3, {0x01, 0xEB, 0x6C, 0x36}, 0, 0x200997, 2112, 384, "Winky Bonus Room"},
@@ -489,12 +489,12 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         {0x010, 0x10, 0x208000, 0x96, {0x01, 0xEC, 0x66, 0xBA}, 0, 0x200A57, 512, 352, "Candy's Challenge - Kremkroc Industries Inc"},
         {0x016, 0x40, 0x214000, 0xA8, {0x01, 0xEC, 0x68, 0x58}, 1, 0x200BD7, 704, 640, "Candy's Challenge - Chimp Caverns"} // 12
     };
-    
+
     int size = sizeof(dkc) / sizeof(struct gbc_levels);
-    
+
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < size; i++) { // 119
-        
+
         uint8_t *bp_data = malloc(0x2000); // Tiles Bank 0:1
         uint8_t *raw_data = malloc(0x8000);
         uint8_t *lay_data = malloc(0x20000);
@@ -506,12 +506,12 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         int t_height = dkc[i].t_height;
         int width = dkc[i].width;
         int height = dkc[i].height;
-        
+
         memcpy(bp_data, &rom[dkc[i].bp_addr], 0x2000);
-        
+
         ram_p(rom, raw_data, &rawlen, dkc[i].ram_reg);
         tidy_gbc(raw_data, &rawlen, t_width, height, dkc[i].vert);
-        
+
         // memset(raw_data, 0, 0x8000);
         // tile_generator(raw_data, &rawlen, 255, 0);
         // t_width = 16;
@@ -519,18 +519,18 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         // if (rawlen % t_width) t_height++;
         // width = t_width * 32;
         // height = t_height * 32;
-        
+
         gbc_layout(rom, raw_data, lay_data, col_data, dkc[i].rom_bank*0x4000, t_width, t_height);
-        
+
         memcpy(pal_data, &rom[dkc[i].pal_addr], 128);
         decode_palette(rgb, pal_data, 128);
-        
+
         uint8_t *bitplane = malloc(t_width * t_height * 1024 * 4);
-        
+
         gbc_assemble(bitplane, bp_data, lay_data, col_data, rgb, t_width, t_height, 1);
-        
+
         arrange_gbc(bitplane, width, height, dir, dkc[i].name);
-        
+
         free(bp_data);
         free(lay_data);
         free(raw_data);
@@ -539,15 +539,15 @@ void gbc_levels(uint8_t *rom, char dir[255]) {
         free(rgb);
         free(bitplane);
     }
-    
-    
-    
+
+
+
     /*
     FILE * lay_file = fopen("lay.bin", "wb");
     fwrite(lay_data, 0x400, 1, lay_file);
     fclose(lay_file);
     */
-    
+
     return;
 
 } // gbc_levels();
