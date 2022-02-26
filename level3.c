@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-#include <bd_comp.h>
+#include <dkcomp.h>
 #include "bitplane.h"
 #include "misc.h"
 
@@ -24,7 +23,7 @@ struct Level {
     char *name;
 };
 
-static void jungle_rope_fix(uint8_t *rom, uint8_t *tileset, int region) {
+static void jungle_rope_fix(unsigned char *rom, unsigned char *tileset, int region) {
     int jungle_offsets[] = {0x2BBD80, 0x2BBD8A, 0x2BC052, 0x2BC051};
     int jungle_fix = (region == 0) ? rom[0xFFDB] : region+1;
     memcpy(&tileset[0x020], &rom[jungle_offsets[jungle_fix]], 0x140);
@@ -32,7 +31,7 @@ static void jungle_rope_fix(uint8_t *rom, uint8_t *tileset, int region) {
     memcpy(&tileset[0x2A0], &rom[jungle_offsets[jungle_fix]], 0x80);
 }
 
-static int terrain_damage(uint8_t *data, int pos) {
+static int terrain_damage(unsigned char *data, int pos) {
     switch(pos) {
         case 0x37B43A: case 0x37B44E: case 0x37B444: { // Boardwalk
             data[0x0690] = 1;
@@ -97,11 +96,11 @@ static int terrain_damage(uint8_t *data, int pos) {
     return 0;
 }
 
-static int terrain_damage2(uint8_t *data, int pos) {
+static int terrain_damage2(unsigned char *data, int pos) {
     int index = 0;
-    uint8_t *copy = calloc(0xFFFF, 1);
-    uint8_t count[8] = {3, 20, 7, 2, 4, 4, 12, 8};
-    uint16_t values[8][20] = {
+    unsigned char *copy = calloc(0xFFFF, 1);
+    unsigned char count[8] = {3, 20, 7, 2, 4, 4, 12, 8};
+    unsigned short values[8][20] = {
         {0x0690, 0x3714, 0x44B6},
         {0x0244, 0x0246, 0x0274, 0x0276, 0x0BBC, 0x0BBE, 0x0BEC, 0x0BEE, 0x1D5C, 0x1D5E, 0x1D8C, 0x1D8E, 0x68B0, 0x68B2, 0x68E0, 0x68E2, 0x658C, 0x658E, 0x65BC, 0x65BE},
         {0x1144, 0x1290, 0x2128, 0x4358, 0x4408, 0x5DE2, 0x800E},
@@ -132,7 +131,7 @@ static int terrain_damage2(uint8_t *data, int pos) {
     }
     int len = count[index];
     for (int i = 0; i < len; i++) {
-        uint16_t addr = values[index][i];
+        unsigned short addr = values[index][i];
         copy[addr] = data[addr];
     }
     memcpy(data, copy, 0xFFFF);
@@ -384,15 +383,15 @@ void level3 (
         size_t map_counter = 0;
 
         // Decompression
-        if (bd_decompress_mem_to_mem(&tileset, &set_counter, &rom[archetype[arch].tileset], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_DECOMP, &tileset, &set_counter, &rom[archetype[arch].tileset], rom_size)) {
             fprintf(stderr, "Tileset decompression failed. (%d)\n", i);
             continue;
         }
-        if (bd_decompress_mem_to_mem(&raw_map, &raw_counter, &rom[archetype[arch].raw_map], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_DECOMP, &raw_map, &raw_counter, &rom[archetype[arch].raw_map], rom_size)) {
             fprintf(stderr, "Raw map decompression failed. (%d)\n", i);
             goto cleanup;
         }
-        if (bd_decompress_mem_to_mem(&tilemap, &map_counter, &rom[archetype[arch].tilemap], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_DECOMP, &tilemap, &map_counter, &rom[archetype[arch].tilemap], rom_size)) {
             fprintf(stderr, "Tilemap decompression failed. (%d)\n", i);
             goto cleanup;
         }

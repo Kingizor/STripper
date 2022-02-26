@@ -1,7 +1,7 @@
 #ifndef main_h
 #define main_h
 
-void level1(unsigned char *rom, char *dir, int priority, int mode, int tileset);
+void level1(unsigned char *rom, size_t rom_size, char *dir, int priority, int mode, int tileset);
 void level2(unsigned char *rom, size_t rom_size, char *dir, int priority, int special, int tileset, int region);
 void level3(unsigned char *rom, size_t rom_size, char *dir, int priority, int special, int tileset, int region);
 void spec1 (unsigned char *rom, char *dir);

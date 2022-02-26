@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
-#include <bd_comp.h>
+#include <dkcomp.h>
 #include "bitplane.h"
 
 struct Bitplane {
@@ -104,14 +104,14 @@ void raw_bitplane3(unsigned char *rom, size_t rom_size, char *dir) {
     for (i = 0; i < bp4_size; i++) {
         unsigned char *set_data = NULL;
         size_t set_size;
-        bd_decompress_mem_to_mem(&set_data, &set_size, rom+bp4[i].offset, rom_size);
+        dk_decompress_mem_to_mem(BD_DECOMP, &set_data, &set_size, rom+bp4[i].offset, rom_size);
         dump_bitplane(set_data, set_size, 4, 16, dir, bp4[i].name);
     }
 
     for (i = 0; i < bp2_size; i++) {
         unsigned char *set_data = NULL;
         size_t set_size;
-        bd_decompress_mem_to_mem(&set_data, &set_size, rom+bp2[i].offset, rom_size);
+        dk_decompress_mem_to_mem(BD_DECOMP, &set_data, &set_size, rom+bp2[i].offset, rom_size);
         dump_bitplane(set_data, set_size, 2, 16, dir, bp2[i].name);
     }
 

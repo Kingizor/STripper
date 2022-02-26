@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bd_comp.h>
-#include <sd_comp.h>
+#include <dkcomp.h>
 #include "bitplane.h"
 #include "misc.h"
 
@@ -262,7 +261,7 @@ static const struct DKC3_SCREEN dkc3[] = {
     { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D7201, 37,2, 0,0, "Bear Cabin (Bjorn)" },
     { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6A01, 38,2, 0,0, "Bear Cabin (Baffle)" },
     { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D6E01, 39,2, 0,0, "Bear Cabin (Boomer)" },
-    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D7301, 40,2, 0,0, "Bear Cabin (Boomer) (AK)" },
+    { { 0x3B0000, 0,0, 1 }, { 0x29305A, 0,0, 2 }, 0x3D7301, 39,2, 0,0, "Bear Cabin (Boomer) (AK)" },
 
     { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6A01, 41,2, 0,0, "Bear Cabin BG (Bazaar)" },
     { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6F01, 42,2, 0,0, "Bear Cabin BG (Barnacle)" },
@@ -277,7 +276,7 @@ static const struct DKC3_SCREEN dkc3[] = {
     { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D7201, 51,2, 0,0, "Bear Cabin BG (Bjorn)" },
     { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6A01, 52,2, 0,0, "Bear Cabin BG (Baffle)" },
     { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D6E01, 53,2, 0,0, "Bear Cabin BG (Boomer)" },
-    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D7301, 54,2, 0,0, "Bear Cabin BG (Boomer) (AK)" },
+    { { 0x3B6897, 0,0x1000, 1 }, { 0x29305A, 0,0, 3}, 0x3D7301, 53,2, 0,0, "Bear Cabin BG (Boomer) (AK)" },
 
     { { 0x350000, 0,0, 1 }, { 0x320000, 0,0, 1}, 0x3D7421, 55,2, 0,0, "Overworld" },
     { { 0x321DA4, 0,0, 1 }, { 0x3215A9, 0,0, 1}, 0x3D7421,  0,3, 0,0, "Overworld (Water)" },
@@ -346,12 +345,12 @@ static int decomp (unsigned char **data, size_t *size, unsigned char *src, size_
             break;
         }
         case 1: { /* big data */
-            if (bd_decompress_mem_to_mem(data, size, src, src_size))
+            if (dk_decompress_mem_to_mem(BD_DECOMP, data, size, src, src_size))
                 return 1;
             break;
         }
         case 2: { /* small data */
-            if (sd_decompress_mem_to_mem(data, size, src, src_size))
+            if (dk_decompress_mem_to_mem(SD_DECOMP, data, size, src, src_size))
                 return 1;
             break;
         }
@@ -457,7 +456,7 @@ void spec3 (unsigned char *rom, size_t rom_size, char *dir, int region) {
             case 26: { /* bleak */
                 unsigned char *t;
                 size_t ts;
-                if (bd_decompress_mem_to_mem(&t, &ts, rom+0x370000, rom_size-0x370000))
+                if (dk_decompress_mem_to_mem(BD_DECOMP, &t, &ts, rom+0x370000, rom_size-0x370000))
                     goto error;
                 if (extend(&set_data, &set_size, 0x5140 + ts)
                 ||  extend(&map_data, &map_size, 0x200)) {

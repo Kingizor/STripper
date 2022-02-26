@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bd_comp.h>
+#include <dkcomp.h>
 #include "bitplane.h"
 
 
@@ -173,7 +173,7 @@ static int decomp (unsigned char **data, size_t *size, unsigned char *src, size_
             break;
         }
         case 1: { /* big data */
-            if (bd_decompress_mem_to_mem(data, size, src, src_size))
+            if (dk_decompress_mem_to_mem(BD_DECOMP, data, size, src, src_size))
                 return 1;
             break;
         }
@@ -204,6 +204,10 @@ void spec2 (unsigned char *rom, size_t rom_size, char *dir, int region) {
         switch (d->spec) {
             case 0: { break; }
             case 1: { /* Title screen */
+                struct DATA mapd = d->map;
+                mapd.type = (!region) ? 0 : BD_COMP;
+                if (decomp(&map_data, &map_size, map, rom_size-(map-rom), &mapd))
+                    goto error;
                 break;
             }
             case 2: { /* Mudhole Marsh */

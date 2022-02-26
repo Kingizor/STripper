@@ -7,7 +7,7 @@ CFLAGS += -fstack-protector-all
 CFLAGS += -fopenmp
 CFLAGS += -DLODEPNG
 # LDFLAGS = -flto -s -fopenmp
-LDFLAGS = -lxxhash -lbd_comp -lsd_comp -llodepng
+LDFLAGS = -lxxhash -llodepng -ldkcomp
 TARGET = stripper
 
 OBJ = main.o \
@@ -38,4 +38,4 @@ anim2.c anim3.c: 		                 bitplane.h
 bitplane.c misc.c gba_misc.c jc.c kos.c: bitplane.h
 
 clean:
-	rm $(OBJ) $(TARGET)
+	rm -f $(OBJ) $(TARGET)

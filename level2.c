@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-#include <bd_comp.h>
+#include <dkcomp.h>
 #include "bitplane.h"
 
 struct Arch {
@@ -288,22 +287,26 @@ void level2 (
         }
 
         // Decompression
-        //
-        if (bd_decompress_mem_to_mem(&tileset, &set_counter, &rom[archetype[arch].tileset], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_DECOMP, &tileset, &set_counter, &rom[archetype[arch].tileset], rom_size)) {
             fprintf(stderr, "Tileset decompression failed. (%d)\n", i);
             continue;
         }
-        if (bd_decompress_mem_to_mem(&raw_map, &raw_counter, &rom[archetype[arch].raw_map], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_DECOMP, &raw_map, &raw_counter, &rom[archetype[arch].raw_map], rom_size)) {
             fprintf(stderr, "Raw map decompression failed. (%d)\n", i);
             goto cleanup;
         }
 
 
         if (arch == 15) { // K.Rool Duel
-            memcpy(tilemap, &rom[archetype[arch].tilemap], 0x100);
             map_counter = 0x100;
+            tilemap = malloc(map_counter);
+            if (tilemap == NULL) {
+                fprintf(stderr, "Tilemap allocation failed. (%d)\n", i);
+                goto cleanup;
+            }
+            memcpy(tilemap, &rom[archetype[arch].tilemap], map_counter);
         }
-        else if (bd_decompress_mem_to_mem(&tilemap, &map_counter, &rom[archetype[arch].tilemap], rom_size)) {
+        else if (dk_decompress_mem_to_mem(BD_DECOMP, &tilemap, &map_counter, &rom[archetype[arch].tilemap], rom_size)) {
             fprintf(stderr, "Tilemap decompression failed. (%d)\n", i);
             goto cleanup;
         }
