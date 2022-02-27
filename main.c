@@ -244,7 +244,7 @@ int main (int argc, char *argv[]) {
         case SNES_DKC:   { level1(rom, romlen, dir, priority, special, tileset);         break; }
         case SNES_DKC2:  { level2(rom, romlen, dir, priority, special, tileset, region); break; }
         case SNES_DKC3:  { level3(rom, romlen, dir, priority, special, tileset, region); break; }
-        case  GBC_DKC:   { gbc_levels(rom, dir); break; }
+        case  GBC_DKC:   {  gbc_levels(rom, romlen, dir); break; }
         case   GB_DKL:   {  dkl_levels(rom, dir, special, tileset); break; }
         case   GB_DKL2:  { dkl2_levels(rom, dir, special, tileset); break; }
         case   GB_DKL3:  { dkl3_levels(rom, dir, special, tileset); break; }
