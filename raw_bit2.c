@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdint.h>
 #include <dkcomp.h>
 #include "bitplane.h"
 

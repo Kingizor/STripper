@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 
 #if (defined(LODEPNG))
@@ -12,7 +11,7 @@ unsigned lodepng_encode32_file(const char* filename, const unsigned char* image,
 #include <png.h>
 #include <zlib.h>
 
-static int libpng_write(char *name, uint8_t *image, int w, int h) {
+static int libpng_write(char *name, unsigned char *image, int w, int h) {
 
     png_structp png_ptr;
     png_infop info_ptr;
@@ -92,7 +91,7 @@ static int libpng_write(char *name, uint8_t *image, int w, int h) {
 
 #else
 
-static int bitmap_write32(char *name, uint8_t *image, int w, int h) {
+static int bitmap_write32(char *name, unsigned char *image, int w, int h) {
 
     FILE *bmp = fopen(name, "wb");
 
@@ -106,7 +105,7 @@ static int bitmap_write32(char *name, uint8_t *image, int w, int h) {
     #define HEADER_SIZE 0x48
     int size = image_size + HEADER_SIZE;
 
-    uint8_t bmp_header[HEADER_SIZE] = {
+    unsigned char bmp_header[HEADER_SIZE] = {
         0x42, 0x4D, // Sig
         size, size>>8, size>>16, size>>24, // Size
         0x00, 0x00, 0x00, 0x00, // Reserved
@@ -151,7 +150,7 @@ static int bitmap_write32(char *name, uint8_t *image, int w, int h) {
 
 #endif
 
-int write_png(char *dir, char *name, uint8_t *image, int w, int h) {
+int write_png(char *dir, char *name, unsigned char *image, int w, int h) {
 
     if ((strlen(dir) + strlen(name) + 4) > 255) {
         fprintf(stderr, "Error: Path is longer than 255 characters. (%s)", name);

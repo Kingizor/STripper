@@ -1,48 +1,50 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 
-static inline uint32_t getHalf(uint8_t *rom, int addr) {
+static inline unsigned getHalf(unsigned char *rom, int addr) {
     addr &= 0xFFFFFF;
     return rom[addr] + (rom[addr+1] << 8);
 }
 
-static inline uint32_t getSignedHalf(uint8_t *rom, int addr) {
-    uint32_t n = getHalf(rom, addr);
+static inline unsigned getSignedHalf(unsigned char *rom, int addr) {
+    unsigned n = getHalf(rom, addr);
     if (n & 0x8000) n += 0xFFFF0000; // Prepend 0xFFFF if negative
     return n;
 }
 
-static inline uint32_t getWord(uint8_t *rom, int addr) {
+static inline unsigned getWord(unsigned char *rom, int addr) {
     addr &= 0xFFFFFF;
-    return rom[addr] + (rom[addr+1] << 8) + (rom[addr+2] << 16) + (rom[addr+3] << 24);
+    return rom[addr]
+        | ((unsigned)rom[addr+1] <<  8u)
+        | ((unsigned)rom[addr+2] << 16u)
+        | ((unsigned)rom[addr+3] << 24u);
 }
 
-static inline void setHalf(uint8_t *data, uint32_t addr, uint32_t n) {
+static inline void setHalf(unsigned char *data, unsigned addr, unsigned n) {
     data[addr++] = n;
     data[addr++] = n >> 8;
 }
 
-static inline void setWord(uint8_t *data, uint32_t addr, uint32_t n) {
+static inline void setWord(unsigned char *data, unsigned addr, unsigned n) {
     data[addr++] = n;
     data[addr++] = n >> 8;
     data[addr++] = n >> 16;
     data[addr++] = n >> 24;
 }
 
-void dkc2_decomp(uint8_t *rom, uint8_t *output, uint32_t *outlen, uint32_t src) {
+void dkc2_decomp(unsigned char *rom, unsigned char *output, unsigned *outlen, unsigned src) {
 
-    uint32_t *r = calloc(16, 4); // Registers
-    uint8_t *ram = calloc(0x4000, 1);
-    uint8_t bytes[] = {0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15};
+    unsigned *r = calloc(16, 4); // Registers
+    unsigned char *ram = calloc(0x4000, 1);
+    unsigned char bytes[] = {0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15};
     int jmp = 0x8AC;
     int rtn = 0;
     int run = 1;
-    uint32_t stack[25];
+    unsigned stack[25];
     int sc = 0;
     int carry = 0, zero = 0, negative = 0;
-    uint32_t wpos = 0;
+    unsigned wpos = 0;
     int seed = 0; // ram offset
     int dest = 0; // out offset
 
@@ -972,10 +974,10 @@ void dkc2_decomp(uint8_t *rom, uint8_t *output, uint32_t *outlen, uint32_t src) 
 
 }
 
-void dkc2_decode(uint8_t *rom, uint8_t *output, uint32_t *outlen, uint32_t src) {
+void dkc2_decode(unsigned char *rom, unsigned char *output, unsigned *outlen, unsigned src) {
 
-    uint32_t *r = calloc(16, 4);
-    uint8_t *ram = calloc(0x2000, 1);
+    unsigned *r = calloc(16, 4);
+    unsigned char *ram = calloc(0x2000, 1);
     int run = 1;
     int jmp = 0xD38;
     int carry = 0, negative = 0, zero = 0;

@@ -14,7 +14,6 @@ Floodlit Fish uses window clipping and other shenanigans.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 #include <xxhash.h>
 
 #ifdef WIN32

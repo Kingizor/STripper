@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include "bitplane.h"
@@ -11,13 +10,13 @@ struct dkc_archetype {
 };
 
 struct dkc_gba_levels {
-    uint8_t arch;
+    unsigned char arch;
     struct comp lay;
     int pal;
     char *name;
 };
 
-void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
+void dkc_gba_levels(unsigned char *rom, char *dir, int priority, int tileset) {
 
     struct dkc_archetype arch[] = {
         {0x2D7CDC, 0x4A57FC}, // Jungle
@@ -215,11 +214,11 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
             }
         }
 
-        uint8_t *bp_data = malloc(0x20000);
-        uint8_t *raw_data = malloc(0x10000);
-        uint8_t *lay_data = malloc(0x100000);
-        uint8_t *att_data = malloc(0x50000);
-        uint8_t *rgb = malloc(768);
+        unsigned char *bp_data = malloc(0x20000);
+        unsigned char *raw_data = malloc(0x10000);
+        unsigned char *lay_data = malloc(0x100000);
+        unsigned char *att_data = malloc(0x50000);
+        unsigned char *rgb = malloc(768);
         int bp_len = 0;
         int raw_len = 0;
         int lay_len = 0;
@@ -256,7 +255,7 @@ void dkc_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         decode_palette(rgb, &rom[dkc[i].pal], 256);
 
         // (Number of 24x24 tiles) * (24*24 dots) * (RGBA)
-        uint8_t *bitplane = malloc((lay_len / 2) * 576 * 4);
+        unsigned char *bitplane = malloc((lay_len / 2) * 576 * 4);
 
         if (bitplane == NULL) {
             printf("Error allocating memory for output.\n");

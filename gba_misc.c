@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 #include "bitplane.h"
 #include "dkc2_decomp.h"
 
-void huff_decomp(uint8_t *rom, uint8_t *output, int len, int rpos) {
+void huff_decomp(unsigned char *rom, unsigned char *output, int len, int rpos) {
 
     int wpos = 0, tpos = 0, tree, value, i, j, node_l, node_r, write = 0, dir;
 
@@ -44,7 +43,7 @@ void huff_decomp(uint8_t *rom, uint8_t *output, int len, int rpos) {
 
 } // huff_decomp();
 
-void rle_decomp(uint8_t *rom, uint8_t *output, int len, int rpos) {
+void rle_decomp(unsigned char *rom, unsigned char *output, int len, int rpos) {
 
     int wpos = 0, size, i;
 
@@ -69,10 +68,10 @@ void rle_decomp(uint8_t *rom, uint8_t *output, int len, int rpos) {
 
 } // rle_decomp();
 
-void lz77_decomp(uint8_t *rom, uint8_t *output, int len, int rpos) {
+void lz77_decomp(unsigned char *rom, unsigned char *output, int len, int rpos) {
 
     int i, j, wpos = 0, flag, cpos, sz, ofs;
-    uint8_t bit_table[] = {128, 64, 32, 16, 8, 4, 2, 1};
+    unsigned char bit_table[] = {128, 64, 32, 16, 8, 4, 2, 1};
 
     while (wpos < len) {
 
@@ -102,7 +101,7 @@ void lz77_decomp(uint8_t *rom, uint8_t *output, int len, int rpos) {
 
 } // lz77_decomp();
 
-void gba_decomp(uint8_t *rom, uint8_t *output, int *len, int address) {
+void gba_decomp(unsigned char *rom, unsigned char *output, int *len, int address) {
 
     int type = rom[address] & 0x30; // Compression Type
     *len = (rom[address+3] << 16) + (rom[address+2] << 8) + rom[address+1];
@@ -129,7 +128,7 @@ void gba_decomp(uint8_t *rom, uint8_t *output, int *len, int address) {
 
 } // gba_decomp();
 
-void gba_data(uint8_t *rom, uint8_t *output, int *length, uint32_t location, uint32_t offset, uint8_t type) {
+void gba_data(unsigned char *rom, unsigned char *output, int *length, unsigned location, unsigned offset, unsigned char type) {
 
         switch (type) {
             case 0:
@@ -156,7 +155,7 @@ void gba_data(uint8_t *rom, uint8_t *output, int *length, uint32_t location, uin
         if (type && offset) memmove(output, &output[offset], *length - offset);
 }
 
-void gba_layout(uint8_t *lay_data, uint8_t *raw_data, uint8_t *att_data, int *width, int *height, int mode) {
+void gba_layout(unsigned char *lay_data, unsigned char *raw_data, unsigned char *att_data, int *width, int *height, int mode) {
 
     raw_data[1] &= ~0xC0;
 
@@ -165,7 +164,7 @@ void gba_layout(uint8_t *lay_data, uint8_t *raw_data, uint8_t *att_data, int *wi
     *height = lay_data[2] + (lay_data[3] * 256);
     int lay_size = *width * *height * 0x12 * 2;
 
-    uint8_t *lev_data = calloc(lay_size, 1);
+    unsigned char *lev_data = calloc(lay_size, 1);
 
     if (lev_data == NULL) {
         printf("Error allocating memory for tile conversion.\n");
@@ -193,7 +192,7 @@ void gba_layout(uint8_t *lay_data, uint8_t *raw_data, uint8_t *att_data, int *wi
 
 } // gba_layout();
 
-void gba_split(uint8_t *lay_data, uint8_t *att_data, int size) {
+void gba_split(unsigned char *lay_data, unsigned char *att_data, int size) {
 
     int i;
     for (i = 0; i < size; i++) {
@@ -203,7 +202,7 @@ void gba_split(uint8_t *lay_data, uint8_t *att_data, int size) {
 
 } // gba_split();
 
-void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *att_data, uint8_t *rgb, int lay_len, int priority, int mode) {
+void gba_tiles(unsigned char *bitplane, unsigned char *bp_data, unsigned char *lay_data, unsigned char *att_data, unsigned char *rgb, int lay_len, int priority, int mode) {
 
     // mode flags:
     // 0 = 16 palettes, 1 = 256 colour mode
@@ -245,7 +244,7 @@ void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *
                         rp = temp;
                     }
 
-                    bitplane[ofs] = rgb[((pal_ofs + lp) * 3)];
+                    bitplane[ofs]   = rgb[((pal_ofs + lp) * 3)];
                     bitplane[ofs+1] = rgb[((pal_ofs + lp) * 3) + 1];
                     bitplane[ofs+2] = rgb[((pal_ofs + lp) * 3) + 2];
                     bitplane[ofs+3] = 255;
@@ -276,7 +275,7 @@ void gba_tiles(uint8_t *bitplane, uint8_t *bp_data, uint8_t *lay_data, uint8_t *
 
 }
 
-void gba_tileset(uint8_t *lay_data, uint8_t *raw_data) {
+void gba_tileset(unsigned char *lay_data, unsigned char *raw_data) {
 
     raw_data[1] &= ~0xC0;
     int total = raw_data[0] + (raw_data[1]*256); // Number of tile groups.

@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include "gba_misc.h"
 #include "bitplane.h"
 
 struct Level {
-    uint8_t mode; // Bit depth and palette mode
-    uint8_t index; // Path index
+    unsigned char mode; // Bit depth and palette mode
+    unsigned char index; // Path index
     char *name;    // Area name
     char *palette; // Palette name
 };
@@ -28,10 +27,10 @@ static void extract_target(char current_target[128], char *target, int *target_p
     return;
 }
 
-static int fetch_NDS_file(uint8_t *rom, char *target, int *file_start, int *file_length) {
+static int fetch_NDS_file(unsigned char *rom, char *target, int *file_start, int *file_length) {
 
-    uint8_t *fnt = rom + rom[0x40] + (rom[0x41] << 8) + (rom[0x42] << 16) + (rom[0x43] << 24); // Start of FNT
-    uint8_t *fat = rom + rom[0x48] + (rom[0x49] << 8) + (rom[0x4A] << 16) + (rom[0x4B] << 24); // Start of FAT
+    unsigned char *fnt = rom + rom[0x40] + (rom[0x41] << 8) + (rom[0x42] << 16) + (rom[0x43] << 24); // Start of FNT
+    unsigned char *fat = rom + rom[0x48] + (rom[0x49] << 8) + (rom[0x4A] << 16) + (rom[0x4B] << 24); // Start of FAT
 
     // Not the most elegant implementation, but it should work okay.
     // Just specify the path. (Case sensitive)
@@ -61,14 +60,14 @@ static int fetch_NDS_file(uint8_t *rom, char *target, int *file_start, int *file
         int target_length = strlen(current_target);
 
         // Go to the current folder
-        uint8_t *current_dir = fnt + fnt[folder_id * 8] + (fnt[(folder_id*8)+1] << 8) + (fnt[(folder_id*8)+2] << 16) + (fnt[(folder_id*8)+3] << 24);
+        unsigned char *current_dir = fnt + fnt[folder_id * 8] + (fnt[(folder_id*8)+1] << 8) + (fnt[(folder_id*8)+2] << 16) + (fnt[(folder_id*8)+3] << 24);
         file_id = fnt[(folder_id * 8) + 4] + (fnt[(folder_id * 8) + 5] << 8);
 
         while (1) {
 
-            uint8_t fn_length = *current_dir & 0x7F; // Length of current filename
-            uint8_t file_type = *current_dir & 0x80; // Folder yes, File no
-            uint8_t target_ft = !(current_depth == depth); // Target File Type
+            unsigned char fn_length = *current_dir & 0x7F; // Length of current filename
+            unsigned char file_type = *current_dir & 0x80; // Folder yes, File no
+            unsigned char target_ft = !(current_depth == depth); // Target File Type
 
             // Exit if no more entries
             if (*current_dir == 0) {
@@ -145,7 +144,7 @@ static int fetch_NDS_file(uint8_t *rom, char *target, int *file_start, int *file
 
 }
 
-static void decode_layout(uint8_t *layout, int *layout_len) {
+static void decode_layout(unsigned char *layout, int *layout_len) {
     // Jungle Climber layouts are stored as the difference from the previous tile
     // This function converts these values to absolutes
 
@@ -154,7 +153,7 @@ static void decode_layout(uint8_t *layout, int *layout_len) {
 
     for (int i = 0; i < map_length; i+=2) {
 
-        uint16_t current_half = layout[i+4] + (layout[i+5] << 8);
+        unsigned short current_half = layout[i+4] + (layout[i+5] << 8);
 
         // Detect signed negatives
         tc += (current_half & 0x8000) ? 0 - (0x10000 - current_half) : current_half;
@@ -167,7 +166,7 @@ static void decode_layout(uint8_t *layout, int *layout_len) {
     return;
 }
 
-void jc_levels(uint8_t *rom, char *dir) {
+void jc_levels(unsigned char *rom, char *dir) {
 
     char *folders[5] = {"BG0Data", "BG1Data", "BG2Data", "BG3Data", "BG16"};
 
@@ -814,8 +813,8 @@ void jc_levels(uint8_t *rom, char *dir) {
             continue;;
         }
 
-        uint8_t *tileset_d = malloc(0x100000); // Decompressed
-        uint8_t *tilemap_d = malloc(0x100000); // Decompressed
+        unsigned char *tileset_d = malloc(0x100000); // Decompressed
+        unsigned char *tilemap_d = malloc(0x100000); // Decompressed
 
         if (tileset_d == NULL || tilemap_d == NULL) {
             printf("Failed to allocate memory for tiles and layout.\n");
@@ -838,13 +837,13 @@ void jc_levels(uint8_t *rom, char *dir) {
         int width  = rom[tilemap+0] + (rom[tilemap+1] << 8);
         int height = rom[tilemap+2] + (rom[tilemap+3] << 8);
 
-        uint8_t *att_data = malloc(tilemap_len/2);
+        unsigned char *att_data = malloc(tilemap_len/2);
         gba_split(tilemap_d, att_data, tilemap_len/2); // DKC ruined my life
 
-        uint8_t *rgb = malloc(768);
+        unsigned char *rgb = malloc(768);
         decode_palette(rgb, &rom[palette], 256);
 
-        uint8_t *bitplane = malloc(width * height * 4);
+        unsigned char *bitplane = malloc(width * height * 4);
 
         gba_tiles(bitplane, tileset_d, tilemap_d, att_data, rgb, tilemap_len/2, 0, levels[i].mode);
         arrange_gbc(bitplane, width, height, dir, levels[i].name);

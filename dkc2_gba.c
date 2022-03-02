@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include "bitplane.h"
@@ -7,22 +6,22 @@
 #include "dkc2_decomp.h"
 
 struct dkc2_archetype {
-    uint8_t raw_split; // Some tile data is grouped together in pairs while some isn't.
-    uint8_t lay_split;
+    unsigned char raw_split; // Some tile data is grouped together in pairs while some isn't.
+    unsigned char lay_split;
     struct comp bp;
     struct comp raw;
 };
 
 struct dkc2_gba_levels {
-    uint8_t arch;
+    unsigned char arch;
     struct comp lay;
     struct comp pal;
     char *name;
 };
 
-static void lay_double(uint8_t *lay_data, int laylen) {
+static void lay_double(unsigned char *lay_data, int laylen) {
 
-    uint8_t *lay_double = malloc(laylen*2);
+    unsigned char *lay_double = malloc(laylen*2);
     int i;
 
     for (i = 0; i < laylen-4; i++) {
@@ -33,7 +32,7 @@ static void lay_double(uint8_t *lay_data, int laylen) {
     free(lay_double);
 }
 
-void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
+void dkc2_gba_levels(unsigned char *rom, char *dir, int priority, int tileset) {
 
     struct dkc2_archetype arch[] = {
         {0, 0, {0x31A5F4, 0, 1}, {0x4A290C, 0, 1}}, // Ship Deck
@@ -255,12 +254,12 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
             }
         }
 
-        uint8_t *bp_data  = malloc(0x21000);
-        uint8_t *raw_data = malloc(0x10000);
-        uint8_t *lay_data = malloc(0x100000);
-        uint8_t *att_data = malloc(0x80000);
-        uint8_t *pal_data = malloc(0x50000);
-        uint8_t *rgb = malloc(768);
+        unsigned char *bp_data  = malloc(0x21000);
+        unsigned char *raw_data = malloc(0x10000);
+        unsigned char *lay_data = malloc(0x100000);
+        unsigned char *att_data = malloc(0x80000);
+        unsigned char *pal_data = malloc(0x50000);
+        unsigned char *rgb = malloc(768);
         int width = 0;
         int height = 0;
         int bp_len = 0;
@@ -297,7 +296,7 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         if (arch[a].raw_split) gba_split(lay_data, att_data, width*height*9);
         decode_palette(rgb, pal_data, 256);
 
-        uint8_t *bitplane = malloc((lay_len / 2) * 576 * 4);
+        unsigned char *bitplane = malloc((lay_len / 2) * 576 * 4);
 
         if (bitplane == NULL) {
             printf("Error allocating memory for output.\n");
@@ -319,7 +318,7 @@ void dkc2_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
 
 }
 
-void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
+void dkc3_gba_levels(unsigned char *rom, char *dir, int priority, int tileset) {
 
 
     struct dkc2_archetype arch[] = {
@@ -674,12 +673,12 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
             }
         }
 
-        uint8_t *bp_data = malloc(0x40000);
-        uint8_t *raw_data = malloc(0x10000);
-        uint8_t *lay_data = malloc(0x100000);
-        uint8_t *att_data = malloc(0x50000);
-        uint8_t *pal_data = malloc(0x50000);
-        uint8_t *rgb = malloc(768);
+        unsigned char *bp_data = malloc(0x40000);
+        unsigned char *raw_data = malloc(0x10000);
+        unsigned char *lay_data = malloc(0x100000);
+        unsigned char *att_data = malloc(0x50000);
+        unsigned char *pal_data = malloc(0x50000);
+        unsigned char *rgb = malloc(768);
         int width = 0;
         int height = 0;
         int bp_len = 0;
@@ -715,7 +714,7 @@ void dkc3_gba_levels(uint8_t *rom, char *dir, int priority, int tileset) {
         if (arch[a].raw_split) gba_split(lay_data, att_data, width*height*9);
         decode_palette(rgb, pal_data, 256);
 
-        uint8_t *bitplane = malloc(width * height * 576 * 4);
+        unsigned char *bitplane = malloc(width * height * 576 * 4);
 
         if (bitplane == NULL) {
             printf("Error allocating memory for output.\n");

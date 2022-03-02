@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdint.h>
 #include "bitplane.h"
 
 void decode_bitplane_3(int region, unsigned char *rom, unsigned char *bp_data, unsigned char *raw_data, unsigned char *bitplane, int pal_addr, unsigned int raw_len, unsigned int bp_len, int mode, int fix, int bg) {

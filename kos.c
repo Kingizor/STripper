@@ -1,18 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include "gba_misc.h"
 #include "bitplane.h"
 
 struct kos_levels {
-    uint32_t palette;
-    uint32_t tileset;
-    uint32_t tilemap;
+    unsigned palette;
+    unsigned tileset;
+    unsigned tilemap;
     char *name;
 };
 
-static int crop_kos(uint8_t *layout, uint32_t *tilemap_size, int *width, int height) {
+static int crop_kos(unsigned char *layout, unsigned *tilemap_size, int *width, int height) {
 
     /*
     Simple cropping.
@@ -38,7 +37,7 @@ static int crop_kos(uint8_t *layout, uint32_t *tilemap_size, int *width, int hei
     (*width)++;
 
     *tilemap_size = *width * height * 2;
-    uint8_t *new_layout = malloc(*tilemap_size);
+    unsigned char *new_layout = malloc(*tilemap_size);
 
     if (new_layout == NULL) {
         printf("Failed to allocate memory for cropping.\n");
@@ -54,7 +53,7 @@ static int crop_kos(uint8_t *layout, uint32_t *tilemap_size, int *width, int hei
 
 }
 
-void kos_levels(uint8_t *rom, char *dir) {
+void kos_levels(unsigned char *rom, char *dir) {
 
     struct kos_levels levels[] = {
 
@@ -171,12 +170,12 @@ void kos_levels(uint8_t *rom, char *dir) {
         {0x515140, 0x259D34, 0x0D1964, "Unused 5"},
     };
 
-    uint32_t length = sizeof(levels) / sizeof(struct kos_levels);
+    unsigned length = sizeof(levels) / sizeof(struct kos_levels);
 
     #pragma omp parallel for schedule(dynamic)
-    for (uint32_t i = 0; i < length; i++) {
-        uint32_t index = levels[i].tilemap;
-        uint32_t tilemap_counter = 0;
+    for (unsigned i = 0; i < length; i++) {
+        unsigned index = levels[i].tilemap;
+        unsigned tilemap_counter = 0;
 
         // Heuristically determine the height by checking for pointers. (Not guaranteed to be reliable)
         while (rom[index+3] == 8) {
@@ -185,18 +184,18 @@ void kos_levels(uint8_t *rom, char *dir) {
         }
 
         index = levels[i].tilemap;
-        uint32_t tilemaps[tilemap_counter];
+        unsigned tilemaps[tilemap_counter];
 
         // Load pointers
-        for (uint32_t j = 0; j < tilemap_counter; j++) {
+        for (unsigned j = 0; j < tilemap_counter; j++) {
             tilemaps[j] = rom[index] + (rom[index+1] << 8) + (rom[index+2] << 16);
             index += 4;
         }
 
         // A single nametable is 32x32, each tile is 2 bytes.
         // 32 * 32 * 2 = 2048 (0x800)
-        uint32_t tilemap_size = tilemap_counter * 0x800;
-        uint8_t *layout = malloc(tilemap_size);
+        unsigned tilemap_size = tilemap_counter * 0x800;
+        unsigned char *layout = malloc(tilemap_size);
         index = 0; // Write index
         int width = 0, height = (tilemap_counter / 4) * 32;
 
@@ -208,11 +207,11 @@ void kos_levels(uint8_t *rom, char *dir) {
 
 
         // Each row of nametables
-        for (uint32_t j = 0; j < (tilemap_counter / 4); j++) {
+        for (unsigned j = 0; j < (tilemap_counter / 4); j++) {
             // Each row of tiles
-            for (uint8_t k = 0; k < 32; k++) {
+            for (unsigned char k = 0; k < 32; k++) {
                 // Particular row within nametable
-                for (uint8_t m = 0; m < 4; m++) {
+                for (unsigned char m = 0; m < 4; m++) {
                     memcpy(&layout[index], &rom[tilemaps[(j*4)+m]+(k*0x40)], 0x40);
                     index += 0x40;
                 }
@@ -223,7 +222,7 @@ void kos_levels(uint8_t *rom, char *dir) {
             continue;
         }
 
-        uint8_t *att_data = malloc(tilemap_size/2);
+        unsigned char *att_data = malloc(tilemap_size/2);
 
         if (att_data == NULL) {
             printf("Failed to allocate memory for layout data.\n");
@@ -232,8 +231,8 @@ void kos_levels(uint8_t *rom, char *dir) {
 
         gba_split(layout, att_data, tilemap_size/2); // Damn DKC
 
-        uint8_t *rgb = malloc(768);
-        uint8_t *bitplane = malloc(width*height*64*4);
+        unsigned char *rgb = malloc(768);
+        unsigned char *bitplane = malloc(width*height*64*4);
 
         if (rgb == NULL || bitplane == NULL) {
             printf("Failed to allocate memory for output image data.\n");
