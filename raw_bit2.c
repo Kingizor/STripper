@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <dkcomp.h>
 #include "bitplane.h"
@@ -26,10 +27,14 @@ void raw_bitplane2(unsigned char *rom, size_t rom_size, char *dir) {
     };
     int i;
 
+    #pragma omp parallel for schedule(dynamic)
     for (i = 0; i < 13; i++) {
         unsigned char *set_data = NULL;
         size_t set_size = 0;
-        dk_decompress_mem_to_mem(BD_DECOMP, &set_data, &set_size, rom+bp4[i].offset, rom_size);
+        if (dk_decompress_mem_to_mem(BD_DECOMP, &set_data, &set_size, rom+bp4[i].offset, rom_size)) {
+            fprintf(stderr, "Error: %d.\n", i);
+            continue;
+        }
         dump_bitplane(set_data, set_size, 4, 16, dir, bp4[i].name);
         free(set_data);
     }

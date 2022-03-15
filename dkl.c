@@ -51,6 +51,14 @@ struct DKL3_ARCH {
 };
 
 
+static void decode_palette24 (unsigned char *rgb, unsigned *palette) {
+    for (int j = 0; j < 4; j++) {
+        rgb[j*3  ] = palette[j] >> 16;
+        rgb[j*3+1] = palette[j] >>  8;
+        rgb[j*3+2] = palette[j];
+    }
+}
+
 /* bounds checking would be nice */
 static int dkl_tiles (
     unsigned char *rom,
@@ -122,7 +130,16 @@ static void dkl_layout(unsigned char *rom, unsigned char *map_data, unsigned cha
             }
         }
     }
-    return;
+}
+
+static int tile_generator(unsigned char **raw_data, size_t *rawlen, int tiles) {
+    *raw_data = calloc((tiles+1)*16, 1);
+    if (raw_data == NULL)
+        return 1;
+    for (int i = 0; i < tiles; i++)
+        (*raw_data)[i] = i;
+    *rawlen = tiles;
+    return 0;
 }
 
 static const struct DKL_ARCH dkl_arch[] = {
@@ -225,26 +242,25 @@ static const struct DKL_LEVEL dkl_areas[] = {
     { 4, 0x07, 0x1BE79, 0xE97E, "4-7 Oil Drum Slum B2"},
     { 6, 0x09, 0x2FF03, 0xEA06, "4-B K. Rool's Kingdom"}
 };
+static const int dkl_size = sizeof(dkl_areas) / sizeof(struct DKL_LEVEL);
 
-void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, unsigned char sgb, int tileset) {
-
-    unsigned char bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
-    static const int size = sizeof(dkl_areas) / sizeof(struct DKL_LEVEL);
+void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset) {
 
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < dkl_size; i++) {
 
         unsigned char *set_data = malloc(0x2000);
         unsigned char *lay_data = malloc(0x20000);
-        unsigned char  rgb[384];
         unsigned char *map_data = NULL;
         unsigned char *bitplane = NULL;
-        size_t map_size = 0;
+        unsigned char rgb[12];
         int t_width, t_height;
-
-        const struct DKL_ARCH  *a = &dkl_arch[dkl_areas[i].arch];
+        size_t set_len  = 0;
+        size_t map_size = 0;
         const struct DKL_LEVEL *d = &dkl_areas[i];
-        size_t set_len = 0;
+        const struct DKL_ARCH  *a = &dkl_arch[d->arch];
+        char *name = d->name;
+        char nbuf[64];
 
         if (set_data == NULL
         ||  lay_data == NULL) {
@@ -261,11 +277,13 @@ void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, unsigned char s
             t_height = map_size / d->t_width;
         }
         else {
-            int ms = map_size;
-            tile_generator(map_data, &ms, a->tiles, 0);
+            if (tile_generator(&map_data, &map_size, a->tiles))
+                goto cleanup;
             t_width = 16;
             t_height = (map_size / t_width);
             if (map_size % t_width) t_height++;
+            snprintf(nbuf, 64, "%s Tileset", name);
+            name = nbuf;
         }
 
         // Decompress bitplane data
@@ -286,7 +304,10 @@ void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, unsigned char s
         // Assemble complete layout from lay and raw
         dkl_layout(rom, map_data, lay_data, a->lay[0], bank, t_width, t_height);
 
-        decode_palette(rgb, sgb ? bw : &rom[d->pal], 4);
+        if (!sgb)
+            decode_palette(rgb, &rom[d->pal], 4);
+        else
+            decode_palette24(rgb, palette);
 
         bitplane = malloc(t_width * t_height * 1024 * 4);
         if (bitplane == NULL) {
@@ -295,7 +316,7 @@ void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, unsigned char s
         }
 
         gbc_assemble(bitplane, set_data, lay_data, lay_data, rgb, t_width, t_height, 0);
-        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, d->name);
+        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
 cleanup:
         free(set_data);
         free(lay_data);
@@ -439,26 +460,26 @@ static const struct DKL2_LEVEL dkl2_areas[] = {
     {0x16, 0x0C, 0x5DC74, 0x5DCC2, 0x417D7, "7-5 Animal Antics B1"},
     {0x08, 0x03, 0x69FAB, 0x69FD3, 0x41156, "7-B Krocodile Kore"}, // 11
 };
+static const int dkl2_size = sizeof(dkl2_areas) / sizeof(struct DKL2_LEVEL);
 
-void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, unsigned char sgb, int tileset) {
-
-    unsigned char bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
-    static const int size = sizeof(dkl2_areas) / sizeof(struct DKL2_LEVEL);
+void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset) {
 
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < dkl2_size; i++) {
 
         unsigned char *set_data = malloc(0x2000);
         unsigned char *lay_data = malloc(0x20000);
         unsigned char *col_data = malloc(0x20000);
-        unsigned char  rgb[384];
         unsigned char *map_data = NULL;
         unsigned char *bitplane = NULL;
+        unsigned char rgb[12];
         int t_width, t_height;
         size_t set_size = 0;
         size_t map_size = 0;
         const struct DKL2_LEVEL *d = &dkl2_areas[i];
-        const struct DKL2_ARCH *a = &dkl2_arch[d->arch];
+        const struct DKL2_ARCH  *a = &dkl2_arch[d->arch];
+        char *name = d->name;
+        char nbuf[64];
 
         if (set_data == NULL
         ||  lay_data == NULL
@@ -477,11 +498,13 @@ void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, unsigned char 
             t_height = map_size / d->t_width;
         }
         else {
-            int ms = map_size;
-            tile_generator(map_data, &ms, a->tiles, 0);
+            if (tile_generator(&map_data, &map_size, a->tiles))
+                goto cleanup;
             t_width = 16;
             t_height = (map_size / t_width);
             if (map_size % t_width) t_height++;
+            snprintf(nbuf, 64, "%s Tileset", name);
+            name = nbuf;
         }
 
         // Decompress Bitplane data
@@ -492,14 +515,10 @@ void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, unsigned char 
         // Decode layout (raw is stored uncompressed in ROM)
         dkl_layout(rom, map_data, lay_data, a->lay[0], bank, t_width, t_height);
 
-        if (sgb) {
-            decode_palette(rgb, &bw[0], 4);
-        }
-        else {
-            unsigned char z[8];
-            memcpy(z, a->pal, 8);
-            decode_palette(rgb, z, 4);
-        }
+        if (!sgb)
+            decode_palette(rgb, a->pal, 4);
+        else
+            decode_palette24(rgb, palette);
 
         bitplane = malloc(t_width * t_height * 1024 * 4);
         if (bitplane == NULL) {
@@ -715,27 +734,27 @@ static const struct DKL3_LEVEL dkl3_areas[] = {
     {0x22, 0x0B, 0x637E7, 0x6385D, 0x41CEF, 37, "6-6 Ghoulish Grotto B2"},
     {0x0B, 0x0B, 0x6BE0E, 0x6BE5E, 0x415A8, 26, "6-B K.Rool's Last Stand"},
 };
+static const int dkl3_size = sizeof(dkl3_areas) / sizeof(struct DKL3_LEVEL);
 
 
-void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, unsigned char sgb, int tileset) {
-
-    unsigned char bw[] = {0xBD, 0x77, 0x94, 0x52, 0xAD, 0x35, 0x42, 0x08}; // 16, 88, 160, 232
-    static const int size = sizeof(dkl3_areas) / sizeof(struct DKL3_LEVEL);
+void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset) {
 
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < dkl3_size; i++) {
 
         unsigned char *set_data = malloc(0x2000);
         unsigned char *lay_data = malloc(0x20000);
         unsigned char *col_data = malloc(0x20000);
-        unsigned char  rgb[384];
         unsigned char *map_data = NULL;
         unsigned char *bitplane = NULL;
+        unsigned char rgb[12];
         int t_width, t_height;
-        size_t set_len = 0;
+        size_t set_len  = 0;
         size_t map_size = 0;
         const struct DKL3_LEVEL *d = &dkl3_areas[i];
-        const struct DKL3_ARCH *a = &dkl3_arch[d->arch];
+        const struct DKL3_ARCH  *a = &dkl3_arch[d->arch];
+        char *name = d->name;
+        char nbuf[64];
 
         if (set_data == NULL
         ||  lay_data == NULL
@@ -754,11 +773,13 @@ void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, unsigned char s
             t_height = map_size / d->t_width;
         }
         else {
-            int ms = map_size;
-            tile_generator(map_data, &ms, a->tiles, 0);
+            if (tile_generator(&map_data, &map_size, a->tiles))
+                goto cleanup;
             t_width = 16;
             t_height = (map_size / t_width);
             if (map_size % t_width) t_height++;
+            snprintf(nbuf, 64, "%s Tileset", name);
+            name = nbuf;
         }
 
         dkl_tiles(rom, set_data, &set_len, a->set_addr, rom[a->set_addr-1]);
@@ -767,14 +788,10 @@ void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, unsigned char s
 
         dkl_layout(rom, map_data, lay_data, a->lay[0], bank, t_width, t_height);
 
-        if (sgb) {
-            decode_palette(rgb, &bw[0], 4);
-        }
-        else {
-            unsigned char z[8];
-            memcpy(z, dkl3_pal[d->pal], 8);
-            decode_palette(rgb, z, 4);
-        }
+        if (!sgb)
+            decode_palette(rgb, dkl3_pal[d->pal], 4);
+        else
+            decode_palette24(rgb, palette);
 
         bitplane = malloc(t_width * t_height * 1024 * 4);
         if (bitplane == NULL) {
@@ -783,7 +800,7 @@ void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, unsigned char s
         }
 
         gbc_assemble(bitplane, set_data, lay_data, col_data, rgb, t_width, t_height, 0);
-        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, d->name);
+        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
 
 cleanup:
         free(set_data);

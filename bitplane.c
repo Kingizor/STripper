@@ -3,7 +3,7 @@
 #include <string.h>
 #include "bitplane.h"
 
-void decode_palette(unsigned char *rgb, unsigned char *rom, int count) {
+void decode_palette(unsigned char *rgb, const unsigned char *rom, int count) {
 
     int i;
     for (i = 0; i < count; i++) {
@@ -777,19 +777,19 @@ static void decode_tile(unsigned char *bp_data, unsigned char *raw_data, unsigne
             if (ypos >= 8) ypos = 0;
 
             if (hflip == 1) j = 7 - j;
-            if (bg == 2 && priority == 0) {
+            if ((bg & 2) && priority == 0) {
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)]   = 255;
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+1] = 255;
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+2] = 255;
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+3] = 0;
             } // Don't draw background tiles.
-            else if (bg == 3 && priority == 1) {
+            else if ((bg & 4) && priority == 1) {
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)]   = 255;
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+1] = 255;
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+2] = 255;
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+3] = 0;
             } // Don't draw foreground tiles.
-            else if (bg == 1 && value == 0) {
+            else if ((bg & 1) && value == 0) {
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)]   = rgb[0];
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+1] = rgb[1];
                 bitplane[bp_ofs+(i*out_ofs)+(j*4)+2] = rgb[2];
@@ -884,16 +884,13 @@ void dump_bitplane(unsigned char *bp_data, int bp_len, int bpp, int width, char 
     const unsigned int bits[] = {128, 64, 32, 16, 8, 4, 2, 1};
     unsigned char byte[4];
 
-    for (i = 0; i < tile_count; i++) {
-
+    for (i = 0; i < tile_count; i++) { // Each Tile
         tile_n = (i%width);
         if (i > width-1) {
             offset = ((i-(i%width))/width) * (px_width*8*4);
         }
 
-
-
-        for (j = 0; j < 8; j++) {
+        for (j = 0; j < 8; j++) { // Each line
             byte[0] = bp_data[i*(bpp*8)+(j*2)];
             byte[1] = bp_data[i*(bpp*8)+(j*2)+1];
             if (bpp == 4) {
@@ -901,7 +898,7 @@ void dump_bitplane(unsigned char *bp_data, int bp_len, int bpp, int width, char 
                 byte[3] = bp_data[i*(bpp*8)+(j*2)+17];
             }
 
-            for (k = 0; k < 8; k++) {
+            for (k = 0; k < 8; k++) { // Each plane
                 value = 0;
 
                 if ( (byte[0] & bits[k]) == bits[k]) value += 1;
@@ -927,10 +924,9 @@ void dump_bitplane(unsigned char *bp_data, int bp_len, int bpp, int width, char 
                 else {
                     image[offset+(j*px_width*4)+(tile_n*32)+(k*4)+3] = 255;
                 }
-
-            } // Each plane
-        } // Each line
-    } // Each Tile
+            }
+        }
+    }
 
     write_png(dir, name, image, px_width, px_height);
     free(image);
@@ -1497,20 +1493,4 @@ void gbc_assemble(unsigned char *bitplane, unsigned char *bp_data, unsigned char
     return;
 
 } // gbc_assemble();
-
-void tile_generator(unsigned char *raw_data, int *rawlen, int tiles, int mode) {
-
-    int i, j = 0;
-    for (i = 0; i < tiles; i++) {
-
-        raw_data[j++] = i;
-        if (mode) i++; // 16-bit
-
-    }
-
-    *rawlen = tiles;
-
-    return;
-
-} // tile_generator
 
