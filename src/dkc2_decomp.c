@@ -4,6 +4,7 @@
 
 static inline unsigned getHalf(unsigned char *rom, int addr) {
     addr &= 0xFFFFFF;
+    printf("getHalf -> %04X -> [%06X]\n", rom[addr] + (rom[addr+1] << 8), addr);
     return rom[addr] + (rom[addr+1] << 8);
 }
 
@@ -15,25 +16,34 @@ static inline unsigned getSignedHalf(unsigned char *rom, int addr) {
 
 static inline unsigned getWord(unsigned char *rom, int addr) {
     addr &= 0xFFFFFF;
-    return rom[addr]
+    unsigned n = rom[addr]
         | ((unsigned)rom[addr+1] <<  8u)
         | ((unsigned)rom[addr+2] << 16u)
         | ((unsigned)rom[addr+3] << 24u);
+    printf("getWord -> %08X -> [%06X]\n", n, addr);
+    return n;
 }
 
 static inline void setHalf(unsigned char *data, unsigned addr, unsigned n) {
+    printf("setHalf -> [%06X] = %04X\n", addr, n);
     data[addr++] = n;
     data[addr++] = n >> 8;
 }
 
 static inline void setWord(unsigned char *data, unsigned addr, unsigned n) {
+    printf("setWord -> [%06X] = %08X\n", addr, n);
     data[addr++] = n;
     data[addr++] = n >> 8;
     data[addr++] = n >> 16;
     data[addr++] = n >> 24;
 }
 
-void dkc2_decomp(unsigned char *rom, unsigned char *output, unsigned *outlen, unsigned src) {
+void dkc2_decomp(
+    unsigned char *rom,
+    unsigned char *output,
+    unsigned *outlen,
+    unsigned src
+) {
 
     unsigned *r = calloc(16, 4); // Registers
     unsigned char *ram = calloc(0x4000, 1);

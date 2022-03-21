@@ -34,6 +34,7 @@ static int libpng_write(char *name, unsigned char *image, int w, int h) {
 
     if (!png_ptr) {
         fprintf(stderr, "Failed to write output PNG. (Write)\n");
+        fclose(out);
         return -1;
     }
 
@@ -41,11 +42,13 @@ static int libpng_write(char *name, unsigned char *image, int w, int h) {
 
     if (!info_ptr) {
         fprintf(stderr, "Failed to write output PNG. (Info)\n");
+        fclose(out);
         return -1;
     }
 
     if (setjmp(png_jmpbuf(png_ptr))) {
         fprintf(stderr, "Failed to write output PNG. (Initialization error)\n");
+        fclose(out);
         return -1;
     }
 
@@ -53,6 +56,7 @@ static int libpng_write(char *name, unsigned char *image, int w, int h) {
 
     if (setjmp(png_jmpbuf(png_ptr))) {
         fprintf(stderr, "Failed to write output PNG. (PNG header #1)\n");
+        fclose(out);
         return -1;
     }
 
@@ -72,6 +76,7 @@ static int libpng_write(char *name, unsigned char *image, int w, int h) {
 
     if (setjmp(png_jmpbuf(png_ptr))) {
         fprintf(stderr, "Failed to write output PNG. (PNG header #2)\n");
+        fclose(out);
         return -1;
     }
 
@@ -79,6 +84,7 @@ static int libpng_write(char *name, unsigned char *image, int w, int h) {
 
     if (setjmp(png_jmpbuf(png_ptr))) {
         fprintf(stderr, "Failed to write output PNG. (Write error)\n");
+        fclose(out);
         return -1;
     }
 
@@ -105,34 +111,38 @@ static int bitmap_write32(char *name, unsigned char *image, int w, int h) {
     #define HEADER_SIZE 0x48
     int size = image_size + HEADER_SIZE;
 
-    unsigned char bmp_header[HEADER_SIZE] = {
-        0x42, 0x4D, // Sig
-        size, size>>8, size>>16, size>>24, // Size
-        0x00, 0x00, 0x00, 0x00, // Reserved
-        0x48, 0x00, 0x00, 0x00, // Start of pixel data (absolute)
+#define WORD(X) (X & 0xFF),\
+                ((X >>  8) & 0xFF),\
+                ((X >> 16) & 0xFF),\
+                ((X >> 24) & 0xFF)
 
-        0x3A, 0x00, 0x00, 0x00, // Subheader size
-        w, w>>8, w>>16, w>>24, // Width
-        h, h>>8, h>>16, h>>24, // Height
+    unsigned char bmp_header[HEADER_SIZE] = {
+        'B', 'M',   // Sig
+        WORD(size), // Size
+        WORD(0x00), // Reserved
+        WORD(HEADER_SIZE), // Start of pixel data (absolute)
+
+        WORD((HEADER_SIZE - 14)), // Subheader size
+        WORD(w),    // Width
+        WORD(h),    // Height
         0x01, 0x00, // Planes
         0x20, 0x00, // Bits per pixel
-        0x03, 0x00, 0x00, 0x00, // Compression (3 = Bitmask)
-        image_size, image_size>>8, image_size>>16, image_size>>24, // Image size
-        0x00, 0x00, 0x00, 0x00, // Horizontal resolution
-        0x00, 0x00, 0x00, 0x00, // Vertical resolution
-        0x00, 0x00, 0x00, 0x00, // Number of colours
-        0x00, 0x00, 0x00, 0x00, // Important colours
-
-        0xFF, 0x00, 0x00, 0x00, // Bitmask Red
-        0x00, 0xFF, 0x00, 0x00, // Bitmask Green
-        0x00, 0x00, 0xFF, 0x00, // Bitmask Blue
-        0x00, 0x00, 0x00, 0xFF, // Bitmask Alpha
-        0x00, 0x00, // Align to four bytes
-
-        }; 
+        WORD(3),    // Compression (3 = Bitmask)
+        WORD(image_size), // Image size
+        WORD(0xB13),// Horizontal resolution
+        WORD(0xB13),// Vertical resolution
+        WORD(0),    // Number of colours
+        WORD(0),    // Important colours
+        WORD(0x000000FF), // Bitmask Red
+        WORD(0x0000FF00), // Bitmask Green
+        WORD(0x00FF0000), // Bitmask Blue
+        WORD(0xFF000000), // Bitmask Alpha
+        0x00, 0x00  // Align to four bytes
+    }; 
 
     if (fwrite(bmp_header, 1, HEADER_SIZE, bmp) != HEADER_SIZE) {
         fprintf(stderr, "Error writing BITMAP header.\n");
+        fclose(bmp);
         return -1;
     }
 
@@ -141,9 +151,11 @@ static int bitmap_write32(char *name, unsigned char *image, int w, int h) {
     for (int i = h-1; i >= 0; i--) {
         if (fwrite(&image[i*row_size], 1, row_size, bmp) != row_size) {
             fprintf(stderr, "Error writing image data.\n");
+            fclose(bmp);
             return -1;
         }
     }
+    fclose(bmp);
 
     return 0;
 }
@@ -152,27 +164,41 @@ static int bitmap_write32(char *name, unsigned char *image, int w, int h) {
 
 int write_png(char *dir, char *name, unsigned char *image, int w, int h) {
 
-    if ((strlen(dir) + strlen(name) + 4) > 255) {
-        fprintf(stderr, "Error: Path is longer than 255 characters. (%s)", name);
+#define MAX_NAME 4096
+    size_t dirlen = strlen(dir);
+    if ((dirlen + strlen(name) + 8) >= MAX_NAME) {
+        fprintf(stderr, "Error: Path is longer than %d characters. (%s)", MAX_NAME, name);
         return -1;
     }
+    const char *form = "%s%s.%s";
+
+#if defined(_WIN32)
+    if (dirlen && dir[dirlen-1] != '\\')
+        form = "%s\\%s.%s";
+#else
+    if (dirlen && dir[dirlen-1] != '/')
+        form = "%s/%s.%s";
+#endif
+
+#if defined(LODEPNG) || defined(LIBPNG)
+    const char *ext = "png";
+#else
+    const char *ext = "bmp";
+#endif
 
     printf("Saving %s...\n", name);
 
-    char path[255];
-    sprintf(path, "%s%s", dir, name);
+    char path[MAX_NAME];
+    snprintf(path, MAX_NAME-1, form, dir, name, ext);
 
     // RGBA assumed
-    #if (defined(LODEPNG))
-        sprintf(path, "%s.png", name);
+#if defined(LODEPNG)
         lodepng_encode32_file(path, image, w, h);
-    #elif (defined(LIBPNG))
-        sprintf(path, "%s.png", name);
+#elif defined(LIBPNG)
         libpng_write(path, image, w, h);
-    #else
-        sprintf(path, "%s.bmp", name);
+#else
         bitmap_write32(path, image, w, h);
-    #endif
+#endif
 
     return 0;
 }

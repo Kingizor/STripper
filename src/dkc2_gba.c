@@ -275,10 +275,10 @@ void dkc2_gba_levels(unsigned char *rom, char *dir, int priority, int tileset) {
             continue;
         }
 
-        gba_data(rom, bp_data, &bp_len, arch[a].bp.loc, arch[a].bp.ofs, arch[a].bp.type);
+        gba_data(rom, bp_data,   &bp_len, arch[a]. bp.loc, arch[a]. bp.ofs, arch[a]. bp.type);
         gba_data(rom, raw_data, &raw_len, arch[a].raw.loc, arch[a].raw.ofs, arch[a].raw.type);
-        gba_data(rom, lay_data, &lay_len, dkc[i].lay.loc, dkc[i].lay.ofs, dkc[i].lay.type);
-        gba_data(rom, pal_data, &pal_len, dkc[i].pal.loc, dkc[i].pal.ofs, dkc[i].pal.type);
+        gba_data(rom, lay_data, &lay_len,  dkc[i].lay.loc,  dkc[i].lay.ofs,  dkc[i].lay.type);
+        gba_data(rom, pal_data, &pal_len,  dkc[i].pal.loc,  dkc[i].pal.ofs,  dkc[i].pal.type);
 
         if (arch[a].lay_split) lay_double(lay_data, lay_len);
 

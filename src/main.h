@@ -4,7 +4,7 @@
 void level1       (unsigned char *rom, size_t rom_size, char *dir, int priority, int mode, int tileset);
 void level2       (unsigned char *rom, size_t rom_size, char *dir, int priority, int special, int tileset, int region);
 void level3       (unsigned char *rom, size_t rom_size, char *dir, int priority, int special, int tileset, int region);
-void spec1        (unsigned char *rom, char *dir);
+void spec1        (unsigned char *rom, size_t rom_size, char *dir);
 void spec2        (unsigned char *rom, size_t rom_size, char *dir, int region);
 void spec3        (unsigned char *rom, size_t rom_size, char *dir, int region);
 void raw_bitplane2(unsigned char *rom, size_t rom_size, char *dir);

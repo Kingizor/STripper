@@ -1,18 +1,17 @@
 #ifndef gba_misc
 #define gba_misc
 
+enum GBA_COMP_TYPE {
+    GBA_COMP_NONE,
+    GBA_COMP_BIOS,
+    GBA_COMP_DKC2,
+    GBA_COMP_DKC3
+};
+
 struct comp {
     unsigned loc; // Data Location
     unsigned ofs; // (Compressed) ? Data Offset : Data Size
-    unsigned char type; // Compression Type
-
-    /*
-    00 - Not Compressed
-    01 - BIOS
-    02 - DKC2-Type (Large)
-    03 - DKC3-Type (Small)
-    04 - Reserved
-    */
+    enum GBA_COMP_TYPE type; // Compression Type
 };
 
 void huff_decomp(unsigned char *rom, unsigned char *output, int len, int rpos);

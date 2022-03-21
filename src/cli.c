@@ -133,7 +133,7 @@ int main (int argc, char *argv[]) {
     }
 
     if (game == SNES_DKC && special & 8) {
-        spec1(rom, dir);
+        spec1(rom, size, dir);
         game = 0;
     } // Special Screens (DKC)
     else if (game == SNES_DKC2) {

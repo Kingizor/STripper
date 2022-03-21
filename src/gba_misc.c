@@ -3,6 +3,7 @@
 #include <string.h>
 #include "bitplane.h"
 #include "dkc2_decomp.h"
+#include "gba_misc.h"
 
 void huff_decomp(unsigned char *rom, unsigned char *output, int len, int rpos) {
 
@@ -131,26 +132,11 @@ void gba_decomp(unsigned char *rom, unsigned char *output, int *len, int address
 void gba_data(unsigned char *rom, unsigned char *output, int *length, unsigned location, unsigned offset, unsigned char type) {
 
         switch (type) {
-            case 0:
-                memcpy(output, &rom[location], offset);
-                *length = offset;
-            break;
-
-            case 1:
-                gba_decomp(rom, output, length, location);
-            break;
-
-            case 2:
-                dkc2_decomp(rom, output, length, location);
-            break;
-
-            case 3:
-                dkc2_decode(rom, output, length, location);
-            break;
-
-            default:
-                printf("Error: %X\n", location);
-            break;
+            case GBA_COMP_NONE: { memcpy(output, &rom[location], offset); *length = offset; break; }
+            case GBA_COMP_BIOS: {  gba_decomp(rom, output, length, location); break; }
+            case GBA_COMP_DKC2: { dkc2_decomp(rom, output, length, location); break; }
+            case GBA_COMP_DKC3: { dkc2_decode(rom, output, length, location); break; }
+            default: { fprintf(stderr, "Error: %X\n", location); break; }
         }
         if (type && offset) memmove(output, &output[offset], *length - offset);
 }
@@ -266,7 +252,6 @@ void gba_tiles(unsigned char *bitplane, unsigned char *bp_data, unsigned char *l
                         bitplane[ofs+6] = 0;
                         bitplane[ofs+7] = 0;
                     }
-
                 }
             }
         }
