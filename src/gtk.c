@@ -17,10 +17,11 @@ void quick_messagebox (char *msg, int type) {
 }
 
 #define TOGGLE_FUNC(X,Y,Z) \
-    void toggle_##Y (GtkWidget *zz, struct MAIN_WIN *mw) {\
+    gboolean toggle_##Y (GtkWidget *zz, struct MAIN_WIN *mw) {\
         mw->X &= ~Z;\
         if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(zz)))\
             mw->X |= Z;\
+        return 0;\
     }
 TOGGLE_FUNC(mode, screen,  RIP_SCREEN );
 TOGGLE_FUNC(mode, levels,  RIP_LEVEL  );
@@ -29,7 +30,7 @@ TOGGLE_FUNC(mode, layout,  RIP_LAYOUT );
 TOGGLE_FUNC(mode, 8x8,     RIP_RAW_8x8);
 TOGGLE_FUNC(damage, damage,0x10);
 
-static int get_radio (GtkWidget *zz) {
+static gboolean get_radio (GtkWidget *zz) {
     GSList *list = gtk_radio_button_get_group(GTK_RADIO_BUTTON(zz));
     int count = -1;
     GSList *list2 = list;
@@ -45,21 +46,23 @@ static int get_radio (GtkWidget *zz) {
     return count - n;
 }
 
-void select_zero (GtkWidget *zz, struct MAIN_WIN *mw) {
+gboolean select_zero (GtkWidget *zz, struct MAIN_WIN *mw) {
     int n = get_radio(zz);
-    if (n == -1) return;
+    if (n == -1) return 0;
     mw->priority &= ~1;
     mw->priority |=  n;
+    return 0;
 }
-void select_priority (GtkWidget *zz, struct MAIN_WIN *mw) {
+gboolean select_priority (GtkWidget *zz, struct MAIN_WIN *mw) {
     int n = get_radio(zz);
-    if (n == -1) return;
+    if (n == -1) return 0;
     mw->priority &= ~6;
     mw->priority |= n << 1;
+    return 0;
 }
-void select_palette (GtkWidget *zz, struct MAIN_WIN *mw) {
+gboolean select_palette (GtkWidget *zz, struct MAIN_WIN *mw) {
     int n = get_radio(zz);
-    if (n == -1) return;
+    if (n == -1) return 0;
     mw->mode &= ~RIP_PALETTE;
     if (n) mw->mode |=  RIP_PALETTE;
     /*
@@ -70,28 +73,30 @@ void select_palette (GtkWidget *zz, struct MAIN_WIN *mw) {
             gtk_widget_set_sensitive(mw->cn[i].btn,   !!n);
     }
     */
+    return 0;
 }
-void retrieve_colour (GtkWidget *zz, struct MAIN_WIN *mw) {
+gboolean retrieve_colour (GtkWidget *zz, struct MAIN_WIN *mw) {
     int n;
     for (n = 0; n < 4; n++)
         if (zz == mw->cn[n].entry)
             break;
     if (n == 4)
-        return;
+        return 0;
     struct COLOUR_NODE *cn = &mw->cn[n];
     const char *cstr = gtk_entry_get_text(GTK_ENTRY(zz));
     unsigned c = strtol(cstr, NULL, 16);
     cn->palette = c;
     gdk_pixbuf_fill(cn->buf, (c << 8) | 0xFF);
     gtk_image_set_from_pixbuf(GTK_IMAGE(cn->img), cn->buf);
+    return 0;
 }
-void pick_colour (GtkWidget *zz, struct MAIN_WIN *mw) {
+gboolean pick_colour (GtkWidget *zz, struct MAIN_WIN *mw) {
     int n;
     for (n = 0; n < 4; n++)
         if (zz == mw->cn[n].btn)
             break;
     if (n == 4)
-        return;
+        return 0;
     struct COLOUR_NODE *cn = &mw->cn[n];
 
     GtkWidget *picker = gtk_color_chooser_dialog_new("Pick a shade!", GTK_WINDOW(mw->win));
@@ -123,11 +128,12 @@ void pick_colour (GtkWidget *zz, struct MAIN_WIN *mw) {
     else {
         gtk_widget_destroy(picker);
     }
+    return 0;
 }
 
 
 /* select output directory and queue extraction */
-static int select_output (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
+static gboolean select_output (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
     GtkWidget *select = gtk_file_chooser_dialog_new(
         "Choose output folder...",
         GTK_WINDOW(mw->win),
@@ -147,7 +153,7 @@ static int select_output (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
         return 0;
     }
     gtk_widget_destroy(select);
-    return 1;
+    return 0;
 }
 
 
@@ -259,7 +265,7 @@ void generic_panel (
 }
 
 
-static void open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
+static gboolean open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
 
     /* create an open dialog */
     GtkWidget *open = gtk_file_chooser_dialog_new(
@@ -291,7 +297,7 @@ static void open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
         if (rom_name == NULL) {
             gtk_widget_destroy(open);
             free(rom_name);
-            return;
+            return 0;
         }
 
         /* load and verify ROM */
@@ -300,7 +306,7 @@ static void open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
         if ((error = verify_rom(&rom, rom_name)) != NULL) {
             quick_messagebox(error, GTK_MESSAGE_ERROR);
             free(rom_name);
-            return;
+            return 0;
         }
         free(mw->rom.buf);
         mw->rom = rom;
@@ -312,11 +318,13 @@ static void open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
     else {
         gtk_widget_destroy(open);
     }
+    return 0;
 }
-static void quit_program (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
+static gboolean quit_program (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
     free(mw->dir);
     free(mw->rom.buf);
     gtk_main_quit();
+    return 0;
 }
 
 static void create_window (struct MAIN_WIN *mw) {
