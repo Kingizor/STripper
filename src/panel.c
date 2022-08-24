@@ -200,6 +200,7 @@ int generic_extract (void *zz) {
         case  GBC_DKC:
         case  GBA_DKKOS:
         case   DS_DKJC: { simple_call(mw); break; }
+        default: { quick_messagebox("Unknown extractor?"); return 1; }
     }
     quick_messagebox("Done.");
     return 0;
@@ -211,11 +212,11 @@ int generic_extract (void *zz) {
         generic_panel(mw, X, X##_size, name);\
     }
 
-MAKE_PANEL(dkc3_panel,snes_dkc3);
-MAKE_PANEL(dkc2_panel,snes_dkc2);
-MAKE_PANEL( dkc_panel,snes_dkc);
-MAKE_PANEL( dkl_panel,  gb_dkl);
-MAKE_PANEL( gba_panel, gba_dkc);
+MAKE_PANEL(dkc3_panel,snes_dkc3)
+MAKE_PANEL(dkc2_panel,snes_dkc2)
+MAKE_PANEL( dkc_panel,snes_dkc)
+MAKE_PANEL( dkl_panel,  gb_dkl)
+MAKE_PANEL( gba_panel, gba_dkc)
 
 void simple_panel (struct MAIN_WIN *mw, char *name) {
     generic_panel(mw, NULL, 0, name);

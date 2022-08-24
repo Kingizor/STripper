@@ -23,12 +23,12 @@ void quick_messagebox (char *msg, int type) {
             mw->X |= Z;\
         return 0;\
     }
-TOGGLE_FUNC(mode, screen,  RIP_SCREEN );
-TOGGLE_FUNC(mode, levels,  RIP_LEVEL  );
-TOGGLE_FUNC(mode, tileset, RIP_TILESET);
-TOGGLE_FUNC(mode, layout,  RIP_LAYOUT );
-TOGGLE_FUNC(mode, 8x8,     RIP_RAW_8x8);
-TOGGLE_FUNC(damage, damage,0x10);
+TOGGLE_FUNC(mode, screen,  RIP_SCREEN )
+TOGGLE_FUNC(mode, levels,  RIP_LEVEL  )
+TOGGLE_FUNC(mode, tileset, RIP_TILESET)
+TOGGLE_FUNC(mode, layout,  RIP_LAYOUT )
+TOGGLE_FUNC(mode, 8x8,     RIP_RAW_8x8)
+TOGGLE_FUNC(damage, damage,0x10)
 
 static gboolean get_radio (GtkWidget *zz) {
     GSList *list = gtk_radio_button_get_group(GTK_RADIO_BUTTON(zz));

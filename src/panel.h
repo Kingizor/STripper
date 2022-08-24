@@ -17,7 +17,11 @@ struct PANEL_INFO {
         enum CTRL_TYPE type;
         int group;
         char *name;
-        void *func;
+#if defined(GTK3_UI)
+        void (*func)(GtkWidget*,struct MAIN_WIN*);
+#elif defined(WIN32_UI)
+        void (*func)(struct MAIN_WIN*,int);
+#endif
     } item[2];
 };
 

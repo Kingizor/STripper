@@ -10,7 +10,6 @@
 #include "panel.h"
 
 
-
 struct MAIN_WIN main_win;
 
 static COLORREF acrCustClr[16] = {
