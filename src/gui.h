@@ -3,7 +3,8 @@
 
 struct MAIN_WIN {
 #if defined(GTK3_UI)
-    void *win;
+    void *win;  /* main window */
+    void *wwin; /* progress dialog */
     void *parent;
     void *top; /* top level widget */
     struct COLOUR_NODE { /* DKL */

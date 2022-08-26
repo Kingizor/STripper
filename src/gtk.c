@@ -131,6 +131,41 @@ gboolean pick_colour (GtkWidget *zz, struct MAIN_WIN *mw) {
     return 0;
 }
 
+static void end_extractor (GObject *s, GAsyncResult *r, gpointer arg) {
+    (void)s;
+    (void)r;
+    struct MAIN_WIN *mw = arg;
+    gtk_widget_destroy(GTK_WIDGET(mw->wwin));
+    quick_messagebox("Done", GTK_MESSAGE_INFO);
+}
+static void run_extractor (GTask *task, gpointer sdata, gpointer tdata, GCancellable *cancellable) {
+    (void)task;
+    (void)sdata;
+    (void)tdata;
+    (void)cancellable;
+    generic_extract(tdata);
+}
+static void begin_extractor (struct MAIN_WIN *mw) {
+    GTask *task = g_task_new(NULL, NULL, end_extractor, mw);
+
+    mw->wwin = gtk_dialog_new_with_buttons(
+        "Extracting...",
+        mw->win,
+        GTK_DIALOG_DESTROY_WITH_PARENT,
+        NULL,
+        NULL
+    );
+    gtk_window_set_default_size(GTK_WINDOW(mw->wwin), 200, -1);
+    gtk_window_set_modal(GTK_WINDOW(mw->wwin), 1);
+    GtkWidget *box = gtk_dialog_get_content_area(GTK_DIALOG(mw->wwin));
+    GtkWidget *spin = gtk_spinner_new();
+    gtk_container_add(GTK_CONTAINER(box), spin);
+    gtk_spinner_start(GTK_SPINNER(spin));
+    gtk_widget_show_all(mw->wwin);
+
+    g_task_set_task_data(task, mw, NULL);
+    g_task_run_in_thread(task, run_extractor);
+}
 
 /* select output directory and queue extraction */
 static gboolean select_output (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
@@ -149,7 +184,7 @@ static gboolean select_output (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
     if (gtk_dialog_run(GTK_DIALOG(select)) == GTK_RESPONSE_OK) {
         mw->dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(select));
         gtk_widget_destroy(select);
-        g_idle_add(generic_extract, mw);
+        begin_extractor(mw);
         return 0;
     }
     gtk_widget_destroy(select);
@@ -287,6 +322,7 @@ static gboolean open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
     gtk_file_filter_add_pattern(filter, "*.gbc");
     gtk_file_filter_add_pattern(filter, "*.gba");
     gtk_file_filter_add_pattern(filter, "*.ds");
+    gtk_file_filter_add_pattern(filter, "*.nds");
 
     gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(open), filter);
 
