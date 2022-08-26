@@ -381,15 +381,15 @@ void level3 (
         size_t map_counter = 0;
 
         // Decompression
-        if (dk_decompress_mem_to_mem(BD_DECOMP, &tileset, &set_counter, &rom[archetype[arch].tileset], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_COMP, &tileset, &set_counter, &rom[archetype[arch].tileset], rom_size)) {
             fprintf(stderr, "Tileset decompression failed. (%d)\n", i);
             continue;
         }
-        if (dk_decompress_mem_to_mem(BD_DECOMP, &raw_map, &raw_counter, &rom[archetype[arch].raw_map], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_COMP, &raw_map, &raw_counter, &rom[archetype[arch].raw_map], rom_size)) {
             fprintf(stderr, "Raw map decompression failed. (%d)\n", i);
             goto cleanup;
         }
-        if (dk_decompress_mem_to_mem(BD_DECOMP, &tilemap, &map_counter, &rom[archetype[arch].tilemap], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_COMP, &tilemap, &map_counter, &rom[archetype[arch].tilemap], rom_size)) {
             fprintf(stderr, "Tilemap decompression failed. (%d)\n", i);
             goto cleanup;
         }

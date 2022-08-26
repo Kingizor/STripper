@@ -265,7 +265,7 @@ void level1 (unsigned char *rom, size_t rom_size, char *dir, int priority, int m
         }
         else { /* everything else */
             size_t bp_loc = arch->bp_loc;
-            if (dk_decompress_mem_to_mem(DKCCHR_DECOMP, &bp_data, &bp_len, &rom[bp_loc], rom_size - bp_loc))
+            if (dk_decompress_mem_to_mem(DKCCHR_COMP, &bp_data, &bp_len, &rom[bp_loc], rom_size - bp_loc))
                 goto error;
         }
 

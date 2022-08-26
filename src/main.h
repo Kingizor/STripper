@@ -18,11 +18,10 @@ void anim2        (unsigned char *rom, char *dir, int priority, int region);
 void anim3        (unsigned char *rom, char *dir, int priority, int region);
 */
 
-void dkc_gba_levels (unsigned char *rom, char *dir, int priority, int tileset);
-void dkc2_gba_levels(unsigned char *rom, char *dir, int priority, int tileset);
-void dkc3_gba_levels(unsigned char *rom, char *dir, int priority, int tileset);
-
-void kos_levels(unsigned char *rom, char *dir);
-void jc_levels (unsigned char *rom, char *dir);
+void dkc_gba_levels (unsigned char *rom, size_t rom_size, char *dir, int priority, int tileset);
+void dkc2_gba_levels(unsigned char *rom, size_t rom_size, char *dir, int priority, int tileset);
+void dkc3_gba_levels(unsigned char *rom, size_t rom_size, char *dir, int priority, int tileset);
+void kos_levels     (unsigned char *rom, size_t rom_size, char *dir);
+void jc_levels      (unsigned char *rom, size_t rom_size, char *dir);
 
 #endif

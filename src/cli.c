@@ -176,11 +176,11 @@ int main (int argc, char *argv[]) {
         case   GB_DKL:   {      dkl_levels(rom, size, dir, special, palette, tileset); break; }
         case   GB_DKL2:  {     dkl2_levels(rom, size, dir, special, palette, tileset); break; }
         case   GB_DKL3:  {     dkl3_levels(rom, size, dir, special, palette, tileset); break; }
-        case  GBA_DKC:   {  dkc_gba_levels(rom, dir, priority, tileset); break; }
-        case  GBA_DKC2:  { dkc2_gba_levels(rom, dir, priority, tileset); break; }
-        case  GBA_DKC3:  { dkc3_gba_levels(rom, dir, priority, tileset); break; }
-        case  GBA_DKKOS: {      kos_levels(rom, dir); break; }
-        case   DS_DKJC:  {       jc_levels(rom, dir); break; }
+        case  GBA_DKC:   {  dkc_gba_levels(rom, size, dir, priority, tileset); break; }
+        case  GBA_DKC2:  { dkc2_gba_levels(rom, size, dir, priority, tileset); break; }
+        case  GBA_DKC3:  { dkc3_gba_levels(rom, size, dir, priority, tileset); break; }
+        case  GBA_DKKOS: {      kos_levels(rom, size, dir); break; }
+        case   DS_DKJC:  {       jc_levels(rom, size, dir); break; }
     }
 
     free(rom);

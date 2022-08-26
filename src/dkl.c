@@ -269,7 +269,7 @@ void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsign
         }
 
         if (!tileset) {
-            if (dk_decompress_mem_to_mem(DKL_DECOMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
+            if (dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
                 fprintf(stderr, "Failed to decompress tileset data. (%d)\n", i);
                 goto cleanup;
             }
@@ -489,7 +489,7 @@ void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsig
         }
 
         if (!tileset) {
-            if (dk_decompress_mem_to_mem(DKL_DECOMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
+            if (dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
                 fprintf(stderr, "Failed to decompress tileset data. (%d)\n", i);
                 goto cleanup;
             }
@@ -527,7 +527,7 @@ void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsig
         }
 
         gbc_assemble(bitplane, set_data, lay_data, col_data, rgb, t_width, t_height, 0);
-        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, d->name);
+        arrange_gbc(bitplane, (t_width*32), (t_height*32), dir, name);
 
 cleanup:
         free(set_data);
@@ -764,7 +764,7 @@ void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, int sgb, unsign
         }
 
         if (!tileset) {
-            if (dk_decompress_mem_to_mem(DKL_DECOMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
+            if (dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
                 fprintf(stderr, "Failed to decompress tileset data. (%d)\n", i);
                 goto cleanup;
             }

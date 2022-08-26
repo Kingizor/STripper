@@ -285,11 +285,11 @@ void level2 (
         }
 
         // Decompression
-        if (dk_decompress_mem_to_mem(BD_DECOMP, &tileset, &set_counter, &rom[aa.tileset], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_COMP, &tileset, &set_counter, &rom[aa.tileset], rom_size)) {
             fprintf(stderr, "Tileset decompression failed. (%d)\n", i);
             continue;
         }
-        if (dk_decompress_mem_to_mem(BD_DECOMP, &raw_map, &raw_counter, &rom[aa.raw_map], rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_COMP, &raw_map, &raw_counter, &rom[aa.raw_map], rom_size)) {
             fprintf(stderr, "Raw map decompression failed. (%d)\n", i);
             goto cleanup;
         }
@@ -304,7 +304,7 @@ void level2 (
             }
             memcpy(tilemap, &rom[aa.tilemap], map_counter);
         }
-        else if (dk_decompress_mem_to_mem(BD_DECOMP, &tilemap, &map_counter, &rom[aa.tilemap], rom_size)) {
+        else if (dk_decompress_mem_to_mem(BD_COMP, &tilemap, &map_counter, &rom[aa.tilemap], rom_size)) {
             fprintf(stderr, "Tilemap decompression failed. (%d)\n", i);
             goto cleanup;
         }

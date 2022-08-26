@@ -106,7 +106,7 @@ void raw_bitplane3(unsigned char *rom, size_t rom_size, char *dir) {
         unsigned char *set_data = NULL;
         size_t set_size = 0;
         unsigned ofs = bp4[i].offset;
-        if (dk_decompress_mem_to_mem(BD_DECOMP, &set_data, &set_size, rom+ofs, rom_size-ofs)) {
+        if (dk_decompress_mem_to_mem(BD_COMP, &set_data, &set_size, rom+ofs, rom_size-ofs)) {
             fprintf(stderr, "4bpp: Error on %d.\n", i);
             continue;
         }
@@ -119,7 +119,7 @@ void raw_bitplane3(unsigned char *rom, size_t rom_size, char *dir) {
         unsigned char *set_data = NULL;
         size_t set_size = 0;
         unsigned ofs = bp2[i].offset;
-        if (dk_decompress_mem_to_mem(BD_DECOMP, &set_data, &set_size, rom+ofs, rom_size-ofs)) {
+        if (dk_decompress_mem_to_mem(BD_COMP, &set_data, &set_size, rom+ofs, rom_size-ofs)) {
             fprintf(stderr, "2bpp: Error on %d.\n", i);
             continue;
         }

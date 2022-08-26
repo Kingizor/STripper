@@ -31,7 +31,7 @@ void raw_bitplane2(unsigned char *rom, size_t rom_size, char *dir) {
     for (i = 0; i < 13; i++) {
         unsigned char *set_data = NULL;
         size_t set_size = 0;
-        if (dk_decompress_mem_to_mem(BD_DECOMP, &set_data, &set_size, rom+bp4[i].offset, rom_size)) {
+        if (dk_decompress_mem_to_mem(BD_COMP, &set_data, &set_size, rom+bp4[i].offset, rom_size)) {
             fprintf(stderr, "Error: %d.\n", i);
             continue;
         }

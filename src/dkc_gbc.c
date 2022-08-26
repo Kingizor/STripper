@@ -242,12 +242,15 @@ void gbc_levels(unsigned char *rom, size_t rom_size, char *dir) {
 
         /* decompress each block */
         for (int j = 0; j < block_count; j++) {
+            int e;
             unsigned char *r = &rom[d->map_addr];
             unsigned addr =   (r[0] << 14)
                           | (((r[2+2*j]) & ~0xC0) << 8)
                           |    r[1+2*j];
-            if (dk_decompress_mem_to_mem(DKCGBC_DECOMP, &mapd[j].data, &mapd[j].size, rom+addr, rom_size-addr))
+            if ((e = dk_decompress_mem_to_mem(DKCGBC_COMP, &mapd[j].data, &mapd[j].size, rom+addr, rom_size-addr))) {
+                fprintf(stderr, "%d:%d: %s\n", i, j, dk_get_error(e));
                 goto error;
+            }
             map_size += 4096;
         }
 

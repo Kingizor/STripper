@@ -1,159 +1,76 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dkcomp.h>
 #include "bitplane.h"
 #include "dkc2_decomp.h"
 #include "gba_misc.h"
 
-void huff_decomp(unsigned char *rom, unsigned char *output, int len, int rpos) {
+int gba_data(
+    unsigned char *rom, size_t romsize,
+    unsigned char **output, size_t *outsize,
+    unsigned loc, unsigned offset,
+    int data_type
+) {
+    int e = 0;
 
-    int wpos = 0, tpos = 0, tree, value, i, j, node_l, node_r, write = 0, dir;
+    if (loc >= romsize) {
+        fprintf(stderr, "Error: data offset is larger than the ROM.\n");
+        return 1;
+    }
 
-    tree = rpos+2;
-    rpos += (rom[rpos]+1) * 2;
-    rpos -= 5;
-
-    while (wpos < len) {
-        rpos += 8;
-        for (i = 0; i < 4; i++) {
-            value = rom[rpos--];
-            for (j = 7; j >= 0; j--) {
-                node_l = rom[tree+(tpos*2)];
-                node_r = rom[tree+(tpos*2)+1];
-                dir = (value >> j) & 1;
-                if ((write & 1 && dir) || (write & 2 && !dir)) {
-                    output[wpos++] = (dir) ? node_r : node_l;
-                    write = 0;
-                    tpos = 0;
-                    continue;
-                }
-                write = 0;
-                if (dir) {
-                    tpos += (node_r & 0x3F)+1;
-                    if (node_r & 0x40) write += 1;
-                    if (node_r & 0x80) write += 2;
-                } // Right
-                else {
-                    tpos += (node_l & 0x3F)+1;
-                    if (node_l & 0x40) write += 1;
-                    if (node_l & 0x80) write += 2;
-                } // Left
+    switch (data_type) {
+        case GBA_COMP_NONE: {
+            *output = calloc(offset, 1);
+            if (*output == NULL) {
+                fprintf(stderr, "Failed to allocate memory for data.\n");
+                return 1;
             }
+            memcpy(*output, &rom[loc], offset); *outsize = offset;
+            break;
+        }
+        case GBA_COMP_BIOS:
+        case GBA_COMP_DKC2:
+        case GBA_COMP_DKC3: {
+            if ((e = dk_decompress_mem_to_mem(GBA_COMP, output, outsize, rom + loc, romsize - loc))) {
+                fprintf(stderr, "Error: %s.\n", dk_get_error(e));
+                return e;
+            }
+            break;
+        }
+        default: {
+            fprintf(stderr, "Error: %X\n", loc);
+            *output = NULL;
+            return 1;
         }
     }
-
-} // huff_decomp();
-
-void rle_decomp(unsigned char *rom, unsigned char *output, int len, int rpos) {
-
-    int wpos = 0, size, i;
-
-    while (wpos < len) {
-
-        size = rom[rpos++] & 0x7F;
-
-        if (rom[rpos-1] & 0x80) {
-            size += 3;
-            for (i = 0; i < size; i++) {
-                output[wpos++] = rom[rpos];
-            }
-            rpos++;
-        } // Compressed
-        else {
-            size++;
-            for (i = 0; i < size; i++) {
-                output[wpos++] = rom[rpos++];
-            }
-        } // Not compressed
-    }
-
-} // rle_decomp();
-
-void lz77_decomp(unsigned char *rom, unsigned char *output, int len, int rpos) {
-
-    int i, j, wpos = 0, flag, cpos, sz, ofs;
-    unsigned char bit_table[] = {128, 64, 32, 16, 8, 4, 2, 1};
-
-    while (wpos < len) {
-
-        flag = rom[rpos++];
-
-        for (i = 0; i < 8; i++) {
-
-            if (flag & bit_table[i]) {
-                sz   = (rom[rpos] >> 4) + 3;
-                ofs  = ((rom[rpos] & 0x0F) << 8) + rom[rpos+1];
-                rpos+=2;
-                cpos = wpos - ofs - 1;
-                for (j = 0; j < sz; j++) {
-                    if (cpos < 0 || cpos >= wpos) {
-                        output[wpos++] = 0;
-                    }
-                    else {
-                        output[wpos++] = output[cpos++];
-                    }
-                }
-            }
-            else {
-                output[wpos++] = rom[rpos++];
-            }
-        } // 8 Blocks
-    }
-
-} // lz77_decomp();
-
-void gba_decomp(unsigned char *rom, unsigned char *output, int *len, int address) {
-
-    int type = rom[address] & 0x30; // Compression Type
-    *len = (rom[address+3] << 16) + (rom[address+2] << 8) + rom[address+1];
-    // printf("Length = 0x%X bytes.\n", *len);
-    address += 4;
-
-    if (type == 0x10) {
-        // printf("Decompressing data using LZ77...");
-        lz77_decomp(rom, output, *len, address);
-    }
-    else if (type == 0x20) {
-        // printf("Decompressing data using Huffman...");
-        huff_decomp(rom, output, *len, address);
-    }
-    else if (type == 0x30) {
-        // printf("Decompressing data using RLE...");
-        rle_decomp(rom, output, *len, address);
-    }
-    else {
-        printf("Unknown decompression scheme. (%X)\n", address-4);
-        return;
-    }
-    // printf("Done!\n");
-
-} // gba_decomp();
-
-void gba_data(unsigned char *rom, unsigned char *output, int *length, unsigned location, unsigned offset, unsigned char type) {
-
-        switch (type) {
-            case GBA_COMP_NONE: { memcpy(output, &rom[location], offset); *length = offset; break; }
-            case GBA_COMP_BIOS: {  gba_decomp(rom, output, length, location); break; }
-            case GBA_COMP_DKC2: { dkc2_decomp(rom, output, length, location); break; }
-            case GBA_COMP_DKC3: { dkc2_decode(rom, output, length, location); break; }
-            default: { fprintf(stderr, "Error: %X\n", location); break; }
+    if (offset) {
+        unsigned char *dat = realloc(*output, *outsize + offset);
+        if (dat == NULL) {
+            fprintf(stderr, "Error: Failed to allocate memory for data.\n");
+            free(*output); *output = NULL;
+            return 1;
         }
-        if (type && offset) memmove(output, &output[offset], *length - offset);
+        *output = dat;
+        memmove(*output, &(*output)[offset], *outsize - offset);
+    }
+
+    return e;
 }
 
-void gba_layout(unsigned char *lay_data, unsigned char *raw_data, unsigned char *att_data, int *width, int *height, int mode) {
+int gba_layout(unsigned char **lay_data, unsigned char *raw_data, unsigned char *att_data, int *width, int *height, int mode) {
 
     raw_data[1] &= ~0xC0;
 
     int raw_size = (raw_data[0] + (raw_data[1] * 256)) * 0x12;
-    *width  = lay_data[0] + (lay_data[1] * 256);
-    *height = lay_data[2] + (lay_data[3] * 256);
+    *width  = (*lay_data)[0] + ((*lay_data)[1] * 256);
+    *height = (*lay_data)[2] + ((*lay_data)[3] * 256);
     int lay_size = *width * *height * 0x12 * 2;
 
-    unsigned char *lev_data = calloc(lay_size, 1);
-
+    unsigned char *lev_data = malloc(lay_size);
     if (lev_data == NULL) {
         printf("Error allocating memory for tile conversion.\n");
+        return 1;
     }
 
     int i, j, ij, k, tile_group, write;
@@ -162,7 +79,7 @@ void gba_layout(unsigned char *lay_data, unsigned char *raw_data, unsigned char 
         for (j = 0; j < *width; j++) {
 
         ij = (i * (*width)) + j;
-        tile_group = lay_data[(ij * 2) + 4] + (lay_data[(ij * 2) + 5] * 256);
+        tile_group = (*lay_data)[(ij * 2) + 4] + ((*lay_data)[(ij * 2) + 5] * 256);
 
             for (k = 0; k < 3; k++) {
                 write = (i*(*width)*9) + (j*3) + (k*(*width)*3);
@@ -171,11 +88,9 @@ void gba_layout(unsigned char *lay_data, unsigned char *raw_data, unsigned char 
             }
         }
     }
-
-    memcpy(&lay_data[0], &lev_data[0], lay_size);
-
-    free(lev_data);
-
+    free(*lay_data);
+    *lay_data = lev_data;
+    return 0;
 } // gba_layout();
 
 void gba_split(unsigned char *lay_data, unsigned char *att_data, int size) {
@@ -260,26 +175,39 @@ void gba_tiles(unsigned char *bitplane, unsigned char *bp_data, unsigned char *l
 
 }
 
-void gba_tileset(unsigned char *lay_data, unsigned char *raw_data) {
-
+int gba_tileset(
+    unsigned char **lay_data, size_t *lay_len,
+    unsigned char  *raw_data
+) {
     raw_data[1] &= ~0xC0;
     int total = raw_data[0] + (raw_data[1]*256); // Number of tile groups.
     int i;
+
+    size_t rlen = 4*(total + 24);
+    if (rlen > *lay_len) {
+        unsigned char *data = realloc(*lay_data, rlen);
+        if (data == NULL) {
+            printf("Error: Failed to allocate memory for something.\n");
+            return 1;
+        }
+        *lay_data = data;
+        *lay_len = rlen;
+    }
+    memset(*lay_data, 0, *lay_len);
 
     int width = 24;
     int height = total / width;
     if (total % width) height++;
 
-    lay_data[0] = width;
-    lay_data[1] = 0;
-    lay_data[2] = height;
-    lay_data[3] = height >> 8;
+    (*lay_data)[0] = width;
+    (*lay_data)[1] = 0;
+    (*lay_data)[2] = height;
+    (*lay_data)[3] = height >> 8;
 
     for (i = 0; i < total; i++) {
-        lay_data[4+(i*2)]   = i % 256;
-        lay_data[4+(i*2)+1] = (i-(i % 256))/256;
+        (*lay_data)[4+(i*2)]   = i % 256;
+        (*lay_data)[4+(i*2)+1] = (i-(i % 256))/256;
     }
-    memset(&lay_data[4+(total*2)], 0, (width*height*2)-(total*2));
-
-} // gba_tileset();
+    return 0;
+}
 

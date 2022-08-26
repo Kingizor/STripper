@@ -3,6 +3,7 @@ dep_xxhash = dependency('libxxhash')
 dep_png    = dependency('libpng')
 dep_thread = dependency('threads')
 dep_openmp = dependency('openmp',   required: false)
+dep_dkcomp = dependency('dkcomp', fallback: ['dkcomp', 'depdkcomp'])
 dep_common = [dep_xxhash, dep_thread, dep_png, dep_openmp]
 
 stfiles = [
@@ -16,11 +17,8 @@ stfiles = [
   'bitplane.c', 'png.c', 'rom.c',
 ]
 
-lib_dkcomp = subproject('dkcomp').get_variable('libdkcomp')
-
 lib_stripper = shared_library('stripper',
     stfiles,
-    dependencies: [dep_common],
-    link_with:    [lib_dkcomp]
+    dependencies: [dep_common, dep_dkcomp]
 )
 

@@ -345,12 +345,12 @@ static int decomp (unsigned char **data, size_t *size, unsigned char *src, size_
             break;
         }
         case 1: { /* big data */
-            if (dk_decompress_mem_to_mem(BD_DECOMP, data, size, src, src_size))
+            if (dk_decompress_mem_to_mem(BD_COMP, data, size, src, src_size))
                 return 1;
             break;
         }
         case 2: { /* small data */
-            if (dk_decompress_mem_to_mem(SD_DECOMP, data, size, src, src_size))
+            if (dk_decompress_mem_to_mem(SD_COMP, data, size, src, src_size))
                 return 1;
             break;
         }
@@ -456,7 +456,7 @@ void spec3 (unsigned char *rom, size_t rom_size, char *dir, int region) {
             case 26: { /* bleak */
                 unsigned char *t;
                 size_t ts;
-                if (dk_decompress_mem_to_mem(BD_DECOMP, &t, &ts, rom+0x370000, rom_size-0x370000))
+                if (dk_decompress_mem_to_mem(BD_COMP, &t, &ts, rom+0x370000, rom_size-0x370000))
                     goto error;
                 if (extend(&set_data, &set_size, 0x5140 + ts)
                 ||  extend(&map_data, &map_size, 0x200)) {

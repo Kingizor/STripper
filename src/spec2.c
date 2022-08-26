@@ -5,11 +5,11 @@
 #include "bitplane.h"
 
 
-enum COMP_TYPE {
-    RAW = 0,
-    COMP_BD,
-    COMP_SD,
-    COMP_BD_SPEC /* JP version isn't compressed */
+enum COMPTYPE {
+    COMPTYPE_RAW,
+    COMPTYPE_BD,
+    COMPTYPE_SD,
+    COMPTYPE_BD_SPEC /* JP version isn't compressed */
 };
 
 struct DATA {
@@ -17,7 +17,7 @@ struct DATA {
       signed ofs_jp;
       signed ofs_eu;
       signed ofs_de;
-    enum COMP_TYPE type;
+    enum COMPTYPE type;
 };
 
 struct DKC2_SCREEN {
@@ -162,7 +162,7 @@ static int offset (unsigned char **data, size_t *size, size_t ofs) {
 
 static int decomp (unsigned char **data, size_t *size, unsigned char *src, size_t src_size, const struct DATA *d) {
     switch (d->type) {
-        case 0: { /* memcpy needs a size */
+        case COMPTYPE_RAW: { /* memcpy needs a size */
             unsigned cpsize = 0x700;
             unsigned char *z = calloc(cpsize, 1);
             if (z == NULL)
@@ -172,13 +172,13 @@ static int decomp (unsigned char **data, size_t *size, unsigned char *src, size_
             *size = cpsize;
             break;
         }
-        case 1: { /* big data */
-            if (dk_decompress_mem_to_mem(BD_DECOMP, data, size, src, src_size))
+        case COMPTYPE_BD: { /* big data */
+            if (dk_decompress_mem_to_mem(BD_COMP, data, size, src, src_size))
                 return 1;
             break;
         }
-        case 3:  { return 0; }
-        default: { return 1; }
+        case COMPTYPE_BD_SPEC: { return 0; }
+        default:           { return 1; }
     }
     return 0;
 }
@@ -205,7 +205,7 @@ void spec2 (unsigned char *rom, size_t rom_size, char *dir, int region) {
             case 0: { break; }
             case 1: { /* Title screen */
                 struct DATA mapd = d->map;
-                mapd.type = (!region) ? 0 : BD_COMP;
+                mapd.type = (region == 0) ? COMPTYPE_RAW : COMPTYPE_BD;
                 if (decomp(&map_data, &map_size, map, rom_size-(map-rom), &mapd))
                     goto error;
                 break;
@@ -256,6 +256,7 @@ error:
         fprintf(stderr, "Encountered an error with entry %d, (%s).\n", i, d->name);
         free(set_data);
         free(map_data);
+        free(bp);
     }
 
 } // Special Screens (DKC2)
