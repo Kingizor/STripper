@@ -300,6 +300,18 @@ void generic_panel (
 }
 
 
+static int verify_rom_gtk (struct MAIN_WIN *mw, char *name) {
+    struct ROM_DATA rom;
+    char *error;
+    if ((error = verify_rom(&rom, name)) != NULL) {
+        quick_messagebox(error, GTK_MESSAGE_ERROR);
+        return 1;
+    }
+    free(mw->rom.buf);
+    mw->rom = rom;
+    return 0;
+}
+
 static gboolean open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
 
     /* create an open dialog */
@@ -337,15 +349,10 @@ static gboolean open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
         }
 
         /* load and verify ROM */
-        char *error;
-        struct ROM_DATA rom;
-        if ((error = verify_rom(&rom, rom_name)) != NULL) {
-            quick_messagebox(error, GTK_MESSAGE_ERROR);
+        if (verify_rom_gtk(mw, rom_name)) {
             free(rom_name);
             return 0;
         }
-        free(mw->rom.buf);
-        mw->rom = rom;
         free(rom_name);
 
         /* create a new panel */
@@ -356,6 +363,37 @@ static gboolean open_file (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
     }
     return 0;
 }
+
+static void drag_file (
+    GtkWidget *z,
+    GdkDragContext *context,
+    int x, int y,
+    GtkSelectionData *data,
+    unsigned info,
+    unsigned time,
+    struct MAIN_WIN *mw
+) {
+    (void)x; (void)y;
+    (void)z; (void)info;
+    int n;
+    char **uri_list = gtk_selection_data_get_uris(data);
+    if (gtk_selection_data_get_length(data) < 0
+    ||  gtk_selection_data_get_format(data) != 8
+    || (uri_list = gtk_selection_data_get_uris(data)) == NULL
+    || (n = g_strv_length(uri_list)) != 1) {
+        gtk_drag_finish(context, FALSE, FALSE, time);
+        return;
+    }
+
+    char *name = g_filename_from_uri(*uri_list, NULL, NULL);
+    if (verify_rom_gtk(mw, name)) {
+        free(name);
+        return;
+    }
+    free(name);
+    create_panel(mw);
+}
+
 static gboolean quit_program (GtkWidget *zz, struct MAIN_WIN *mw) { (void)zz;
     free(mw->dir);
     free(mw->rom.buf);
@@ -367,7 +405,12 @@ static void create_window (struct MAIN_WIN *mw) {
     mw->win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_default_size(GTK_WINDOW(mw->win), 320, 240);
     gtk_window_set_title(GTK_WINDOW(mw->win), "STripper");
+
+    GtkTargetEntry entry = { "text/uri-list", 0, 0 };
+    gtk_drag_dest_set(mw->win, GTK_DEST_DEFAULT_ALL, &entry, 1, GDK_ACTION_MOVE);
+
     g_signal_connect(G_OBJECT(mw->win), "destroy", G_CALLBACK(quit_program), mw);
+    g_signal_connect(G_OBJECT(mw->win), "drag-data-received", G_CALLBACK(drag_file), mw);
     mw->parent = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     /* generate menu */

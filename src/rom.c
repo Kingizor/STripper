@@ -1,35 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <xxhash.h>
 #include "rom.h"
 
 static const struct ROM_META romlist[] = {
-    { 0x195B60FE,  0x400000,  SNES_DKC,   1,0 },
-    { 0x32E11AF8,  0x400000,  SNES_DKC2,  2,0 },
-    { 0xD73850D8,  0x400000,  SNES_DKC2,  2,0 },
-    { 0xA5B0964D,  0x400000,  SNES_DKC2,  2,1 },
-    { 0x76612943,  0x400000,  SNES_DKC2,  1,0 },
-    { 0x7B4D0D69,  0x400000,  SNES_DKC2,  1,1 },
-    { 0xE2A62365,  0x400000,  SNES_DKC2,  0,0 },
-    { 0x2AF4ED4E,  0x400000,  SNES_DKC2,  0,1 },
-//  { 0xC4599C84,  0x400000,  SNES_DKC3,  2,0 },
-    { 0x57592E47,  0x400000,  SNES_DKC3,  1,0 },
-//  { 0xB11D0174,  0x400000,  SNES_DKC3,  0,0 },
-//  { 0x3E2BD924,  0x400000,  SNES_DKC3,  0,1 },
-    { 0xCB6CAE97,  0x400000,   GBC_DKC,   0,0 },
-    { 0x48D7B8C4,   0x80000,    GB_DKL,   0,0 },
-    { 0x53B97DBF,   0x80000,    GB_DKL2,  0,0 },
-    { 0x43673D7C,   0x80000,    GB_DKL3,  0,0 },
-//  { 0xC7AB9EA1,  0x100000,   GBC_DKL3,  0,0 },
-    { 0xF86CB732,  0x800000,   GBA_DKC,   0,0 },
-    { 0x7967734C,  0x800000,   GBA_DKC2,  0,0 },
-    { 0xFD5900BF,  0x800000,   GBA_DKKOS, 0,0 },
-    { 0x7781F51A, 0x1000000,   GBA_DKC3,  0,0 },
-    { 0xAF640C57, 0x4000000,    DS_DKJC,  0,0 }
+    { 0xC946DCA0,  0x400000,  SNES_DKC,   1,0 },
+    { 0x2EA6B7E8,  0x400000,  SNES_DKC2,  2,0 },
+    { 0x4C794A4D,  0x400000,  SNES_DKC2,  2,0 },
+    { 0x2EB33785,  0x400000,  SNES_DKC2,  2,1 },
+    { 0x006364DB,  0x400000,  SNES_DKC2,  1,0 },
+    { 0x4E2D90F4,  0x400000,  SNES_DKC2,  1,1 },
+    { 0xA0BE8E71,  0x400000,  SNES_DKC2,  0,0 },
+    { 0x46079C0F,  0x400000,  SNES_DKC2,  0,1 },
+//  { 0x0551FE84,  0x400000,  SNES_DKC3,  2,0 },
+    { 0x448EEC19,  0x400000,  SNES_DKC3,  1,0 },
+//  { 0x0F712928,  0x400000,  SNES_DKC3,  0,0 },
+//  { 0x5B337FB6,  0x400000,  SNES_DKC3,  0,1 },
+    { 0xB1743477,  0x400000,   GBC_DKC,   0,0 },
+    { 0x49DC0D37,   0x80000,    GB_DKL,   0,0 },
+    { 0x2827E5D4,   0x80000,    GB_DKL2,  0,0 },
+    { 0xB40C159C,   0x80000,    GB_DKL3,  0,0 },
+//  { 0x28D7E8D3,  0x100000,   GBC_DKL3,  0,0 },
+    { 0x12F7A968,  0x800000,   GBA_DKC,   0,0 },
+    { 0x11417FC1,  0x800000,   GBA_DKC2,  0,0 },
+    { 0xD610B239,  0x800000,   GBA_DKKOS, 0,0 },
+    { 0xFE03E5AF, 0x1000000,   GBA_DKC3,  0,0 },
+    { 0x038EED18, 0x4000000,    DS_DKJC,  0,0 }
 };
 static const int romcount = sizeof(romlist) / sizeof(struct ROM_META);
 
+static unsigned crc32_simple (unsigned char *rom, size_t len) {
+    unsigned crc = 0xFFFFFFFF;
+    size_t i;
+    for (i = 0; i < len; i++) {
+        crc ^= rom[i];
+        for (int j = 0; j < 8; j++) {
+            if (crc & 1) {
+                crc >>= 1;
+                crc ^= 0xEDB88320;
+            }
+            else {
+                crc >>= 1;
+            }
+        }
+    }
+    return ~crc;
+}
 
 char *verify_rom (struct ROM_DATA *rom, char *name) {
     FILE *romfile = fopen(name, "rb");
@@ -72,7 +88,7 @@ char *verify_rom (struct ROM_DATA *rom, char *name) {
     }
 
     /* verify */
-    long unsigned hash = XXH32(romd, romlen, 0x50434441);
+    unsigned hash = crc32_simple(romd, romlen);
     int i;
     for (i = 0; i < romcount; i++)
         if (romlist[i].hash == hash)

@@ -11,8 +11,6 @@
 #include "main.h"
 
 #if defined(GTK3_UI)
-void quick_messagebox (char*,int);
-#define quick_messagebox(X) quick_messagebox(X, GTK_MESSAGE_INFO)
 void toggle_screen  (GtkWidget*,struct MAIN_WIN*);
 void toggle_screen  (GtkWidget*,struct MAIN_WIN*);
 void toggle_levels  (GtkWidget*,struct MAIN_WIN*);
@@ -26,7 +24,6 @@ void select_palette (GtkWidget*,struct MAIN_WIN*);
 void retrieve_colour(GtkWidget*,struct MAIN_WIN*);
 void     pick_colour(GtkWidget*,struct MAIN_WIN*);
 #elif defined(WIN32_UI)
-void quick_messagebox (char*);
 void toggle_screen  (struct MAIN_WIN*,int);
 void toggle_levels  (struct MAIN_WIN*,int);
 void toggle_tileset (struct MAIN_WIN*,int);
@@ -36,8 +33,8 @@ void toggle_damage  (struct MAIN_WIN*,int);
 void select_zero    (struct MAIN_WIN*,int);
 void select_priority(struct MAIN_WIN*,int);
 void select_palette (struct MAIN_WIN*,int);
-void retrieve_colour(struct MAIN_WIN*);
-void     pick_colour(struct MAIN_WIN*);
+void retrieve_colour(struct MAIN_WIN*,int);
+void     pick_colour(struct MAIN_WIN*,int);
 #endif
 
 void generic_panel (
@@ -120,22 +117,22 @@ static const int gba_panel_size = sizeof(gba_panel)
 static void simple_call (struct MAIN_WIN *mw) {
     switch (mw->rom.meta->game) {
         case GBC_DKC:   { gbc_levels(mw->rom.buf, mw->rom.meta->size, mw->dir); break; }
-        case GBA_DKKOS: { kos_levels(mw->rom.buf, mw->dir); break; }
-        case  DS_DKJC:  {  jc_levels(mw->rom.buf, mw->dir); break; }
+        case GBA_DKKOS: { kos_levels(mw->rom.buf, mw->rom.meta->size, mw->dir); break; }
+        case  DS_DKJC:  {  jc_levels(mw->rom.buf, mw->rom.meta->size, mw->dir); break; }
         default: { return; }
     }
 }
 
 static void gba_dkc_call (struct MAIN_WIN *mw) {
-    void (*extract)(unsigned char*,char*,int,int) = NULL;
+    void (*extract)(unsigned char*,size_t,char*,int,int) = NULL;
     switch (mw->rom.meta->game) {
         case GBA_DKC:  { extract = dkc_gba_levels ; break; }
         case GBA_DKC2: { extract = dkc2_gba_levels; break; }
         case GBA_DKC3: { extract = dkc3_gba_levels; break; }
         default: { return; }
     }
-    if (mw->mode & RIP_LEVEL)   extract(mw->rom.buf, mw->dir, mw->priority, 0); 
-    if (mw->mode & RIP_TILESET) extract(mw->rom.buf, mw->dir, mw->priority, 1); 
+    if (mw->mode & RIP_LEVEL)   extract(mw->rom.buf, mw->rom.meta->size, mw->dir, mw->priority, 0); 
+    if (mw->mode & RIP_TILESET) extract(mw->rom.buf, mw->rom.meta->size, mw->dir, mw->priority, 1); 
 }
 
 static void snes_dkc3_call (struct MAIN_WIN *mw) {
@@ -200,9 +197,8 @@ int generic_extract (void *zz) {
         case  GBC_DKC:
         case  GBA_DKKOS:
         case   DS_DKJC: { simple_call(mw); break; }
-        default: { quick_messagebox("Unknown extractor?"); return 1; }
+        default: { return 1; }
     }
-    quick_messagebox("Done.");
     return 0;
 }
 

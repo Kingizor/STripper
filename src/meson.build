@@ -1,10 +1,9 @@
 
-dep_xxhash = dependency('libxxhash')
 dep_png    = dependency('libpng')
 dep_thread = dependency('threads')
 dep_openmp = dependency('openmp',   required: false)
 dep_dkcomp = dependency('dkcomp', fallback: ['dkcomp', 'depdkcomp'])
-dep_common = [dep_xxhash, dep_thread, dep_png, dep_openmp]
+dep_common = [dep_thread, dep_png, dep_openmp]
 
 stfiles = [
   'level1.c', 'spec1.c',

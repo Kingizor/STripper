@@ -10,18 +10,19 @@
 #include "panel.h"
 
 
-struct MAIN_WIN main_win;
+static struct MAIN_WIN main_win;
 
 static COLORREF acrCustClr[16] = {
     0xE8E8E8, 0xA0A0A0, 0x585858, 0x101010
 };
 
-static int select_output (struct MAIN_WIN*);
+static void select_output (struct MAIN_WIN*, int);
 
+#define EXTRACTOR_COMPLETE (WM_USER+1)
 
 
 void quick_messagebox (char *str) {
-    MessageBox(NULL, _T(str), _T("STripper"), 0);
+    MessageBox(NULL, _T(str), _T("STripper"), MB_OK);
 }
 
 
@@ -32,12 +33,12 @@ void quick_messagebox (char *str) {
         if (set)\
             mw->X |= Z;\
     }
-TOGGLE_FUNC(mode, screen,  RIP_SCREEN );
-TOGGLE_FUNC(mode, levels,  RIP_LEVEL  );
-TOGGLE_FUNC(mode, tileset, RIP_TILESET);
-TOGGLE_FUNC(mode, layout,  RIP_LAYOUT );
-TOGGLE_FUNC(mode, 8x8,     RIP_RAW_8x8);
-TOGGLE_FUNC(damage, damage,0x10);
+TOGGLE_FUNC(mode, screen,  RIP_SCREEN )
+TOGGLE_FUNC(mode, levels,  RIP_LEVEL  )
+TOGGLE_FUNC(mode, tileset, RIP_TILESET)
+TOGGLE_FUNC(mode, layout,  RIP_LAYOUT )
+TOGGLE_FUNC(mode, 8x8,     RIP_RAW_8x8)
+TOGGLE_FUNC(damage, damage,0x10)
 
 void select_zero (struct MAIN_WIN *mw, int n) {
     mw->priority &= ~1;
@@ -52,11 +53,13 @@ void select_palette (struct MAIN_WIN *mw, int n) {
     if (n)
         mw->mode |= RIP_PALETTE;
 }
-void retrieve_colour (struct MAIN_WIN *mw) {
+void retrieve_colour (struct MAIN_WIN *mw, int zz) {
     (void)mw;
+    (void)zz;
 }
-void pick_colour (struct MAIN_WIN *mw) {
+void pick_colour (struct MAIN_WIN *mw, int zz) {
     (void)mw;
+    (void)zz;
 }
 
 
@@ -64,12 +67,12 @@ void pick_colour (struct MAIN_WIN *mw) {
 
 
 #define CTRL_LIMIT 32
-struct WIN_CTRL {
+static struct WIN_CTRL {
     enum CTRL_TYPE type;
     HWND instance;
     const struct PANEL_ITEM *item;
 } ctrl_list[CTRL_LIMIT];
-static unsigned control_n = 0;
+static size_t control_n = 0;
 
 static void erase_window (void) {
     while (control_n--) {
@@ -124,12 +127,12 @@ struct CTRL_POS {
         return zz;\
     }
 
-CREATE_CTRL(  button,   BUTTON, "Button", BS_DEFPUSHBUTTON);
-CREATE_CTRL(   label,    LABEL, "Static", SS_LEFT);
-CREATE_CTRL(checkbox, CHECKBOX, "Button", BS_AUTOCHECKBOX);
-CREATE_CTRL(   radio,    RADIO, "Button", BS_AUTORADIOBUTTON);
-CREATE_CTRL(   group,    GROUP, "Button", BS_GROUPBOX);
-CREATE_CTRL(   entry,    ENTRY,   "Edit", WS_BORDER);
+CREATE_CTRL(  button,   BUTTON, "Button", BS_DEFPUSHBUTTON)
+CREATE_CTRL(   label,    LABEL, "Static", SS_LEFT)
+CREATE_CTRL(checkbox, CHECKBOX, "Button", BS_AUTOCHECKBOX)
+CREATE_CTRL(   radio,    RADIO, "Button", BS_AUTORADIOBUTTON)
+CREATE_CTRL(   group,    GROUP, "Button", BS_GROUPBOX)
+CREATE_CTRL(   entry,    ENTRY,   "Edit", WS_BORDER)
 
 
 #define WIN_BORDER_X 20
@@ -287,28 +290,19 @@ static void resolve_button_press (struct MAIN_WIN *mw, WPARAM wParam) {
 
     switch (ctrl->item->type) {
         case CTRL_CHECKBOX: {
-            void (*func)(struct MAIN_WIN*, int) = ctrl->item->func;
-            func(mw, !!IsDlgButtonChecked(mw->hwnd, id));
+            ctrl->item->func(mw, !!IsDlgButtonChecked(mw->hwnd, id));
             break;
         }
         case CTRL_BUTTON: {
-            if (LOWORD(wParam) == (control_n-1)) { /* extraction */
-                int  (*func)(struct MAIN_WIN*) = ctrl->item->func;
-                func(mw);
-            }
-            else { /* something else */
-                void (*func)(struct MAIN_WIN*) = ctrl->item->func;
-                func(mw);
-            }
+            ctrl->item->func(mw,0);
             break;
         }
         case CTRL_RADIO: {
-            void (*func)(struct MAIN_WIN*, int) = ctrl->item->func;
             struct WIN_CTRL *c2 = ctrl;
             int n = -2;
             while (c2->item->group == ctrl->item->group)
                 { c2--; n++; }
-            func(mw, n);
+            ctrl->item->func(mw, n);
             break;
         }
         case CTRL_ENTRY: {
@@ -372,8 +366,62 @@ static void create_menu (HWND hwnd) {
 }
 
 
+DWORD WINAPI run_extractor (LPVOID mx) {
+    struct MAIN_WIN *mw = mx;
+    int e = generic_extract((void*)mw);
+    PostMessage(mw->hwnd, EXTRACTOR_COMPLETE, e, 0);
+    return !e;
+}
+
+static void begin_extractor (struct MAIN_WIN *mw) {
+
+    if (mw->subwnd != NULL)
+        return;
+
+    /* create status window */
+    mw->subwnd = CreateWindowEx(
+        WS_EX_TOPMOST,
+        _T("class_extract"),
+        _T("STripper"),
+        WS_BORDER | WS_CAPTION | WS_POPUP,
+        (GetSystemMetrics(SM_CXSCREEN) - 200) / 2, /* x */
+        (GetSystemMetrics(SM_CYSCREEN) - 100) / 2, /* y */
+        200, 100, /* w,h */
+        mw->hwnd,
+        NULL,
+        mw->hinst,
+        NULL
+    );
+    if (mw->subwnd == NULL) {
+        quick_messagebox("Failed to create the progress window.");
+        return;
+    }
+    ShowWindow(mw->subwnd, SW_SHOW);
+
+    /* add a label */
+    mw->subwnd_label = CreateWindow(
+        _T("Static"),
+        _T("Extracting...\n(this can take a while!)"),
+        WS_CHILD|WS_VISIBLE|SS_CENTER,
+        10, 10, 180, 40,
+        mw->subwnd,
+        NULL,
+        mw->hinst,
+        NULL
+    );
+
+    /* disable main window controls until we're done */
+    EnableWindow(mw->hwnd, FALSE);
+
+    /* designate workload to a separate thread */
+    CreateThread(NULL, 0, run_extractor, mw, 0, NULL);
+
+}
+
+
 /* select an output folder */
-static int select_output (struct MAIN_WIN *mw) {
+static void select_output (struct MAIN_WIN *mw, int zz) {
+    (void)zz;
     BROWSEINFO bi;
     bi.hwndOwner      = mw->hwnd;
     bi.pidlRoot       = NULL;
@@ -385,11 +433,11 @@ static int select_output (struct MAIN_WIN *mw) {
     bi.iImage         = 0;
     LPITEMIDLIST folder = SHBrowseForFolder(&bi);
     if (folder == NULL)
-        return 1;
+        return;
     SHGetPathFromIDList(folder, mw->dir);
     CoTaskMemFree(folder);
-    generic_extract((void*)mw);
-    return 0;
+    begin_extractor(mw);
+    return;
 }
 
 /* select a ROM to open */
@@ -424,6 +472,26 @@ static int open_rom (struct MAIN_WIN *mw) {
     }
     else {
         return 1;
+    }
+    return 0;
+}
+
+LRESULT CALLBACK SubProc (
+    HWND hwnd,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam
+) {
+    switch (message) {
+        case WM_PAINT: {
+            PAINTSTRUCT ps;
+            BeginPaint(hwnd, &ps);
+            EndPaint(hwnd, &ps);
+            break;
+        }
+        default: {
+            return DefWindowProc(hwnd, message, wParam, lParam);
+        }
     }
     return 0;
 }
@@ -475,11 +543,82 @@ LRESULT CALLBACK WndProc (
             PostQuitMessage(0);
             break;
         }
+        case WM_DROPFILES: {
+            if (DragQueryFile((HANDLE)wParam, 0xFFFFFFFF, NULL, 0) != 1) {
+                DragFinish((HANDLE)wParam);
+                quick_messagebox("Tried to drop too many files at once.\n\nOne at a time please!");
+                break;
+            }
+            char name[4096];
+            DragQueryFile((HANDLE)wParam, 0, name, 4096);
+            DragFinish((HANDLE)wParam);
+
+            char *error;
+            if ((error = verify_rom(&main_win.rom, name)) != NULL) {
+                quick_messagebox(error);
+                break;
+            }
+            erase_window();
+            create_panel(&main_win);
+            break;
+        }
+        case EXTRACTOR_COMPLETE: {
+            if (main_win.subwnd_label != NULL) DestroyWindow(main_win.subwnd_label);
+            if (main_win.subwnd       != NULL) DestroyWindow(main_win.subwnd);
+            main_win.subwnd_label      = NULL;
+            main_win.subwnd            = NULL;
+            EnableWindow(hwnd, TRUE);
+            if (wParam)
+                quick_messagebox("An error occurred during extraction.");
+            else
+                quick_messagebox("Done");
+            break;
+        }
         default: {
             return DefWindowProc(hwnd, message, wParam, lParam);
         }
     }
 
+    return 0;
+}
+
+static int register_classes (HINSTANCE hInstance) {
+
+    /* main window */
+    WNDCLASSEX wcex;
+    wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.style          = 0;
+    wcex.lpfnWndProc    = WndProc;
+    wcex.cbClsExtra     = 0;
+    wcex.cbWndExtra     = 0;
+    wcex.hInstance      = hInstance;
+    wcex.hIcon          = LoadIcon(wcex.hInstance, IDI_APPLICATION);
+    wcex.hCursor        = LoadCursor(NULL, IDC_ARROW);
+    wcex.hbrBackground  = GetSysColorBrush(COLOR_3DFACE);
+    wcex.lpszMenuName   = NULL;
+    wcex.lpszClassName  = _T("class_STripper");
+    wcex.hIconSm        = LoadIcon(hInstance, IDI_APPLICATION);
+
+    /* progress window */
+    WNDCLASSEX wcex2;
+    wcex2.cbSize = sizeof(WNDCLASSEX);
+    wcex2.style          = 0;
+    wcex2.lpfnWndProc    = SubProc;
+    wcex2.cbClsExtra     = 0;
+    wcex2.cbWndExtra     = 0;
+    wcex2.hInstance      = hInstance;
+    wcex2.hIcon          = LoadIcon(wcex.hInstance, IDI_APPLICATION);
+    wcex2.hCursor        = LoadCursor(NULL, IDC_ARROW);
+    wcex2.hbrBackground  = GetSysColorBrush(COLOR_3DFACE);
+    wcex2.lpszMenuName   = NULL;
+    wcex2.lpszClassName  = _T("class_extract");
+    wcex2.hIconSm        = LoadIcon(hInstance, IDI_APPLICATION);
+
+    if (!RegisterClassEx(&wcex)
+    ||  !RegisterClassEx(&wcex2)) {
+        quick_messagebox("Failed to register window classes.");
+        return 1;
+    }
     return 0;
 }
 
@@ -494,45 +633,32 @@ int WINAPI WinMain (
 
     memset(&main_win, 0, sizeof(struct MAIN_WIN));
 
-    /* create a class and register it */
-    WNDCLASSEX wcex;
-    wcex.cbSize = sizeof(WNDCLASSEX);
-    wcex.style          = 0;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(wcex.hInstance, IDI_APPLICATION);
-    wcex.hCursor        = LoadCursor(NULL, IDC_ARROW);
-    wcex.hbrBackground  = GetSysColorBrush(COLOR_3DFACE);
-    wcex.lpszMenuName   = NULL;
-    wcex.lpszClassName  = _T("STripper");
-    wcex.hIconSm        = LoadIcon(hInstance, IDI_APPLICATION);
-
-    if (!RegisterClassEx(&wcex)) {
-        quick_messagebox("Call to RegisterClassEx failed.");
+    if (register_classes(hInstance))
         return 1;
-    }
 
-    /* create a window */
+    /* create the main window */
     HWND hwnd = CreateWindowEx(
         WS_EX_OVERLAPPEDWINDOW | WS_EX_CONTROLPARENT,
-        _T("STripper"),
+        _T("class_STripper"),
         _T("STripper"),
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, /* x,y */
+        (GetSystemMetrics(SM_CXSCREEN) - 320) / 2, /* x */
+        (GetSystemMetrics(SM_CYSCREEN) - 240) / 2, /* y */
         320, 240, /* w,h */
         NULL,
         NULL,
         hInstance,
         NULL
     );
-    if (!hwnd) {
-        quick_messagebox("Call to CreateWindow failed.");
+    if (hwnd == NULL) {
+        quick_messagebox("Failed to create the main window.");
         return 1;
     }
+    DragAcceptFiles(hwnd, TRUE);
     main_win.hwnd = hwnd;
     main_win.hinst = hInstance;
+
+
 
     /* default palette */
     for (int i = 0; i < 4; i++)

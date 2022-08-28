@@ -17,6 +17,8 @@ struct MAIN_WIN {
     char *dir;
 #elif defined(WIN32_UI)
     HWND hwnd;
+    HWND subwnd;
+    HWND subwnd_label;
     HINSTANCE hinst;
     struct COLOUR_NODE {
         HWND entry;
