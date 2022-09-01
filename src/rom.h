@@ -3,10 +3,19 @@
 
 enum GAME_LIST {
     UNKNOWN,
-    SNES_DKC, SNES_DKC2, SNES_DKC3,
-    GBC_DKC, GB_DKL, GB_DKL2, GB_DKL3,
-    GBA_DKC, GBA_DKC2, GBA_DKC3,
-    GBA_DKKOS, DS_DKJC
+    SNES_DKC,
+    SNES_DKC2,
+    SNES_DKC3,
+      GB_DKL,
+      GB_DKL2,
+      GB_DKL3,
+     GBC_DKL3,
+     GBC_DKC,
+     GBA_DKC,
+     GBA_DKC2,
+     GBA_DKC3,
+     GBA_DKKOS,
+      DS_DKJC
 };
 
 struct ROM_META {

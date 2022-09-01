@@ -101,6 +101,13 @@ static const struct PANEL_INFO dkl_panel[] = {
 static const int dkl_panel_size = sizeof(dkl_panel)
                                 / sizeof(struct PANEL_INFO);
 
+static const struct PANEL_INFO dkl3_panel[] = {
+  { 0, {{ CTRL_LABEL,0, "Extract:",          NULL }, { CTRL_CHECKBOX, 1, "Levels",   toggle_levels   }} },
+  { 0, {{ CTRL_LABEL,0, NULL,                NULL }, { CTRL_CHECKBOX, 0, "Tilesets", toggle_tileset  }} }
+};
+static const int dkl3_panel_size = sizeof(dkl3_panel)
+                                 / sizeof(struct PANEL_INFO);
+
 static const struct PANEL_INFO gba_panel[] = {
   { 0, {{ CTRL_LABEL,0, "Extract:",  NULL }, { CTRL_CHECKBOX, 1, "Levels",   toggle_levels   }} },
   { 0, {{ CTRL_LABEL,0, NULL,        NULL }, { CTRL_CHECKBOX, 0, "Tilesets", toggle_tileset  }} },
@@ -181,6 +188,10 @@ static void gb_dkl_call (struct MAIN_WIN *mw) {
     if (mw->mode & RIP_LEVEL)   extract(rom, size, mw->dir, sgb, palette, 0);
     if (mw->mode & RIP_TILESET) extract(rom, size, mw->dir, sgb, palette, 1);
 }
+static void gbc_dkl3_call (struct MAIN_WIN *mw) {
+    if (mw->mode & RIP_LEVEL)   dkl3c_levels(mw->rom.buf, mw->rom.meta->size, mw->dir, 0);
+    if (mw->mode & RIP_TILESET) dkl3c_levels(mw->rom.buf, mw->rom.meta->size, mw->dir, 1);
+}
 
 int generic_extract (void *zz) {
     struct MAIN_WIN *mw = zz;
@@ -190,7 +201,8 @@ int generic_extract (void *zz) {
         case SNES_DKC3: { snes_dkc3_call(mw); break; }
         case   GB_DKL:  
         case   GB_DKL2: 
-        case   GB_DKL3: { gb_dkl_call(mw); break; }
+        case   GB_DKL3: {   gb_dkl_call(mw); break; }
+        case  GBC_DKL3: { gbc_dkl3_call(mw); break; }
         case  GBA_DKC:  
         case  GBA_DKC2:
         case  GBA_DKC3: { gba_dkc_call(mw); break; }
@@ -212,6 +224,7 @@ MAKE_PANEL(dkc3_panel,snes_dkc3)
 MAKE_PANEL(dkc2_panel,snes_dkc2)
 MAKE_PANEL( dkc_panel,snes_dkc)
 MAKE_PANEL( dkl_panel,  gb_dkl)
+MAKE_PANEL(dkl3_panel, gbc_dkl3)
 MAKE_PANEL( gba_panel, gba_dkc)
 
 void simple_panel (struct MAIN_WIN *mw, char *name) {
@@ -231,6 +244,7 @@ void create_panel (struct MAIN_WIN *mw) {
         case   GB_DKL:  {    gb_dkl_panel(mw, "DKL GB"   ); break; }
         case   GB_DKL2: {    gb_dkl_panel(mw, "DKL2 GB"  ); break; }
         case   GB_DKL3: {    gb_dkl_panel(mw, "DKL3 GB"  ); break; }
+        case  GBC_DKL3: {  gbc_dkl3_panel(mw, "DKL3 GBC" ); break; }
         case  GBA_DKC:  {   gba_dkc_panel(mw, "DKC GBA"  ); break; }
         case  GBA_DKC2: {   gba_dkc_panel(mw, "DKC2 GBA" ); break; }
         case  GBA_DKC3: {   gba_dkc_panel(mw, "DKC3 GBA" ); break; }

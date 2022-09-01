@@ -23,32 +23,42 @@ Floodlit Fish uses window clipping and other shenanigans.
 #include "rom.h"
 
 static void show_usage() {
-    puts("Usage: stripper ROM_FILE [OPTION]");
+    static const char *usage[] = {
+        "Supported games:",
+        "\tSNES - DKC, DKC2, DKC3",
+        "\t GB  - DKL, DKL2, DKL3",
+        "\t GBC - DKC, DKL3",
+        "\t GBA - DKC, DKC2, DKC3, King of Swing",
+        "\t NDS - Jungle Climber",
+        "\nUsage: stripper ROM_FILE [OPTION]",
+        "\nDKC 1-3 (SNES), DKC 1-3 (GBA):",
+        "\t-o Use palette zero instead of transparency. (Opaque)",
+        "\t-t Rip tilesets.",
+        "\nDKC 1-3 (SNES):",
+        "\t-f Only use tiles with priority bit set. (Foreground)",
+        "\t-b Only use tiles with priority bit not set. (Background)",
+        "\t-c Rip complete layouts.",
+        "\t-s Rip special screens.",
+        "\t-e Rip decompressed 8x8 tiles. (DKC2&DKC3 only)",
+        "\t-d Use destructible tiles. (DKC3 only)",
+        "\t-h Show destructible tiles only. (DKC3 only)",
+        "\t-n Show non-destructible tiles only. (DKC3 only)",
+        "\nDKL 1-3 (GB)",
+        "\t-g Use greyscale palette instead of SGB.",
+        "\t-t Rip tilesets.\n",
+    };
+    static const int usage_count = sizeof(usage) / sizeof(char*);
+    int i;
 
-    puts("\nDKC 1-3 (SNES), DKC 1-3 (GBA):");
-    puts("\t-o Use palette zero instead of transparency. (Opaque)");
-    puts("\t-t Rip tilesets.");
-
-    puts("\nDKC 1-3 (SNES):");
-    puts("\t-f Only use tiles with priority bit set. (Foreground)");
-    puts("\t-b Only use tiles with priority bit not set. (Background)");
-    puts("\t-c Rip complete layouts.");
-    puts("\t-s Rip special screens.");
-    puts("\t-e Rip decompressed 8x8 tiles. (DKC2&DKC3 only)");
-    puts("\t-d Use destructible tiles. (DKC3 only)");
-    puts("\t-h Show destructible tiles only. (DKC3 only)");
-    puts("\t-n Show non-destructible tiles only. (DKC3 only)");
-
-    puts("\nDKL 1-3 (GB)");
-    puts("\t-g Use greyscale palette instead of SGB.");
-    puts("\t-t Rip tilesets.\n");
+    for (i = 0; i < usage_count; i++)
+        puts(usage[i]);
 }
 
 
 
 int main (int argc, char *argv[]) {
 
-    puts("\nKingizor's multi-Kong Decompressor\n");
+    puts("\nKingizor's multi-Kong Background Extractor\n");
 
     if (argc < 2) {
         show_usage();
@@ -176,6 +186,7 @@ int main (int argc, char *argv[]) {
         case   GB_DKL:   {      dkl_levels(rom, size, dir, special, palette, tileset); break; }
         case   GB_DKL2:  {     dkl2_levels(rom, size, dir, special, palette, tileset); break; }
         case   GB_DKL3:  {     dkl3_levels(rom, size, dir, special, palette, tileset); break; }
+        case  GBC_DKL3:  {    dkl3c_levels(rom, size, dir, tileset); break; }
         case  GBA_DKC:   {  dkc_gba_levels(rom, size, dir, priority, tileset); break; }
         case  GBA_DKC2:  { dkc2_gba_levels(rom, size, dir, priority, tileset); break; }
         case  GBA_DKC3:  { dkc3_gba_levels(rom, size, dir, priority, tileset); break; }
@@ -188,5 +199,5 @@ int main (int argc, char *argv[]) {
     printf("\nProgram completed.\n");
 
     return 0;
-
 }
+

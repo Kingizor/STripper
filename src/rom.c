@@ -20,7 +20,7 @@ static const struct ROM_META romlist[] = {
     { 0x49DC0D37,   0x80000,    GB_DKL,   0,0 },
     { 0x2827E5D4,   0x80000,    GB_DKL2,  0,0 },
     { 0xB40C159C,   0x80000,    GB_DKL3,  0,0 },
-//  { 0x28D7E8D3,  0x100000,   GBC_DKL3,  0,0 },
+    { 0x28D7E8D3,  0x100000,   GBC_DKL3,  0,0 },
     { 0x12F7A968,  0x800000,   GBA_DKC,   0,0 },
     { 0x11417FC1,  0x800000,   GBA_DKC2,  0,0 },
     { 0xD610B239,  0x800000,   GBA_DKKOS, 0,0 },
@@ -29,20 +29,13 @@ static const struct ROM_META romlist[] = {
 };
 static const int romcount = sizeof(romlist) / sizeof(struct ROM_META);
 
-static unsigned crc32_simple (unsigned char *rom, size_t len) {
+static unsigned crc32 (unsigned char *rom, size_t len) {
     unsigned crc = 0xFFFFFFFF;
     size_t i;
     for (i = 0; i < len; i++) {
         crc ^= rom[i];
-        for (int j = 0; j < 8; j++) {
-            if (crc & 1) {
-                crc >>= 1;
-                crc ^= 0xEDB88320;
-            }
-            else {
-                crc >>= 1;
-            }
-        }
+        for (int j = 0; j < 8; j++)
+            crc = (crc >> 1) ^ ((-(crc & 1)) & 0xEDB88320);
     }
     return ~crc;
 }
@@ -88,7 +81,7 @@ char *verify_rom (struct ROM_DATA *rom, char *name) {
     }
 
     /* verify */
-    unsigned hash = crc32_simple(romd, romlen);
+    unsigned hash = crc32(romd, romlen);
     int i;
     for (i = 0; i < romcount; i++)
         if (romlist[i].hash == hash)
@@ -102,3 +95,4 @@ char *verify_rom (struct ROM_DATA *rom, char *name) {
     rom->meta = &romlist[i];
     return NULL;
 }
+

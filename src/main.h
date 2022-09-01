@@ -12,6 +12,7 @@ void raw_bitplane3(unsigned char *rom, size_t rom_size, char *dir);
 void dkl_levels   (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset);
 void dkl2_levels  (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset);
 void dkl3_levels  (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset);
+void dkl3c_levels (unsigned char *rom, size_t rom_size, char *dir, int tileset);
 void gbc_levels   (unsigned char *rom, size_t rom_size, char *dir);
 /*
 void anim2        (unsigned char *rom, char *dir, int priority, int region);
