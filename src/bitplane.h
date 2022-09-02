@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - Function Definitions for Tile Manipulation */
+
 #ifndef bitplane_h
 #define bitplane_h
 

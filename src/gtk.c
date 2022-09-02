@@ -1,10 +1,13 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2022 Kingizor
+ * STripper - GTK3 Interface */
+
 #include <stdio.h>
 #include <string.h>
 #include <gtk/gtk.h>
 
 #include "rom.h"
 #include "gui.h"
-#include "panel.h"
 
 #define IMG_W 24
 #define IMG_H 24

@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - DKC3 Animation (not maintained) */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

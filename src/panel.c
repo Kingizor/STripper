@@ -1,3 +1,6 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2022 Kingizor
+ * STripper - Common Interface */
 
 #if defined(GTK3_UI)
 #include <gtk/gtk.h>
@@ -7,7 +10,6 @@
 
 #include "rom.h"
 #include "gui.h"
-#include "panel.h"
 #include "main.h"
 
 #if defined(GTK3_UI)

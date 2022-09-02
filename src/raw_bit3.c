@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - SNES DKC3 unprocessed tiles */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <dkcomp.h>

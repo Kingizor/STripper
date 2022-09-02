@@ -1,9 +1,12 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2015-2022 Kingizor
+ * STripper - GBA Data Functions */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dkcomp.h>
 #include "bitplane.h"
-#include "dkc2_decomp.h"
 #include "gba_misc.h"
 
 int gba_data(

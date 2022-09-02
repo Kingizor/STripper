@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - ROM Handling and Metadata */
+
 #ifndef ROM_H
 #define ROM_H
 

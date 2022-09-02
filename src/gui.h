@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2022 Kingizor
+ * STripper - Interface Definitions */
+
 #ifndef GUI_H
 #define GUI_H
 
@@ -42,5 +46,33 @@ struct MAIN_WIN {
     int damage; /* 0x10 */
     int priority;
 };
+
+
+enum CTRL_TYPE {
+    CTRL_LABEL,
+    CTRL_CHECKBOX,
+    CTRL_RADIO,
+    CTRL_ENTRY,
+    CTRL_PICKER,
+    CTRL_BUTTON,
+    CTRL_GROUP
+};
+
+struct PANEL_INFO {
+    int group;
+    struct PANEL_ITEM {
+        enum CTRL_TYPE type;
+        int group;
+        char *name;
+#if defined(GTK3_UI)
+        void (*func)(GtkWidget*,struct MAIN_WIN*);
+#elif defined(WIN32_UI)
+        void (*func)(struct MAIN_WIN*,int);
+#endif
+    } item[2];
+};
+
+void create_panel   (struct MAIN_WIN*);
+int generic_extract (void*);
 
 #endif

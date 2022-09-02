@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - SNES DKC2 screens */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

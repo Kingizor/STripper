@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2022 Kingizor
+ * STripper - Donkey Kong Jungle Climber */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

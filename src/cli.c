@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - Command Line Interface */
+
 /*
 
 This file contains the frontend code for the decompressor and the debitplanifier.

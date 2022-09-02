@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - Game-Specific Function Definitions */
+
 #ifndef main_h
 #define main_h
 

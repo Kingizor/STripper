@@ -11,7 +11,7 @@ stfiles = [
   'level3.c', 'spec3.c', 'raw_bit3.c',
   'dkl.c', 'dkc_gbc.c',
   'gba_misc.c', 'misc.c',
-  'dkc_gba.c', 'dkc2_gba.c', 'dkc2_decomp.c',
+  'dkc_gba.c', 'dkc2_gba.c',
   'jc.c', 'kos.c',
   'bitplane.c', 'png.c', 'rom.c',
 ]

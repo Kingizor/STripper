@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - GBA Definitions */
+
 #ifndef gba_misc
 #define gba_misc
 

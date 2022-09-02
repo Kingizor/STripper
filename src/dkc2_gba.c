@@ -1,9 +1,12 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2015-2022 Kingizor
+ * STripper - GBA Definitions */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "bitplane.h"
 #include "gba_misc.h"
-#include "dkc2_decomp.h"
 
 struct dkc2_archetype {
     unsigned char raw_split; // Some tile data is grouped together in pairs while some isn't.

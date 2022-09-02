@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - SNES DKC3 forgotten horrors */
+
 #include <stdio.h>
 #include <string.h>
 #include "bitplane.h"

@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2022 Kingizor
+ * STripper - Win32 Interface */
+
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +11,6 @@
 
 #include "rom.h"
 #include "gui.h"
-#include "panel.h"
 
 
 static struct MAIN_WIN main_win;

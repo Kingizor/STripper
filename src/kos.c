@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2015-2022 Kingizor
+ * STripper - Donkey Kong King of Swing */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

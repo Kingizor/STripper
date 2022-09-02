@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: MIT
+ * Copyright (c) 2014-2022 Kingizor
+ * STripper - Image Processing and PNG Writing */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -70,7 +74,7 @@ static int image_reduce (
         if (p != NULL)
             continue;
 
-        /* add the new colour */
+        /* if not, add the new colour */
         map[*colour_count] = c;
         *colour_count += 1;
         qsort(map, *colour_count, sizeof(png_color), colour_sort);
@@ -81,13 +85,15 @@ static int image_reduce (
         exceeded = 1;
 
     if (exceeded) {
+
+        /* if there is transparency we need RGBA */
         if (*transparent) {
             *depth  = 8;
             *stride = w*4;
             return PNG_COLOR_TYPE_RGB_ALPHA;
         }
 
-        /* convert to RGB */
+        /* otherwise convert to plain RGB */
         for (i = 0; i < w*h; i++) {
             img[i*3  ] = img[i*4  ];
             img[i*3+1] = img[i*4+1];
@@ -98,7 +104,7 @@ static int image_reduce (
         return PNG_COLOR_TYPE_RGB;
     }
 
-    /* add a transparent colour */
+    /* add a transparent colour if needed */
     if (*transparent) {
         png_color c;
         memset(&c, 0, sizeof(png_color));
