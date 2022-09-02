@@ -9,7 +9,7 @@
 
 static const struct ROM_META romlist[] = {
     { 0xC946DCA0,  0x400000,  SNES_DKC,   1,0 },
-    { 0x2EA6B7E8,  0x400000,  SNES_DKC2,  2,0 },
+    { 0x2EA6B7E8,  0x400000,  SNES_DKC2,  3,0 },
     { 0x4C794A4D,  0x400000,  SNES_DKC2,  2,0 },
     { 0x2EB33785,  0x400000,  SNES_DKC2,  2,1 },
     { 0x006364DB,  0x400000,  SNES_DKC2,  1,0 },

@@ -20,7 +20,7 @@ struct DATA {
     unsigned addr;
       signed ofs_jp;
       signed ofs_eu;
-      signed ofs_de;
+      signed ofs_fr;
     enum COMPTYPE type;
 };
 
@@ -40,7 +40,7 @@ static unsigned get_region (const struct DATA *d, int region) {
         case 0:  { return d->addr + d->ofs_jp; }
         default: { return d->addr; }
         case 2:  { return d->addr + d->ofs_eu; }
-        case 3:  { return d->addr + d->ofs_de; }
+        case 3:  { return d->addr + d->ofs_fr; }
     }
 }
 
@@ -48,15 +48,15 @@ static const struct DKC2_SCREEN dkc2[] = {
     { { 0x2A5978,   35,35,35, 1 }, { 0x8F99C,      0, 0, 0,1 }, 0x3D2170, 0,2, 0,0, "K.Rool's Kabin & Rattly Room" },
     { { 0x2C83A0,   37,37,37, 1 }, { 0x2C7CF0,    37,37,37,1 }, 0x3D3C6E, 0,2, 0,1, "File Screen" },
     { { 0x2C83A0,   37,37,37, 1 }, { 0x2C7CF0,    37,37,37,1 }, 0x000000, 0,2, 3,1, "Bonus Screen" },
-    { { 0x2D0997,   47,37,37, 1 }, { 0x2D02A1, -1745,37,37,3 }, 0x3D26AE, 1,2, 0,1, "Title Screen" },
-    { { 0x2D8584, 6939,37,35, 1 }, { 0x2D9C9A,  6939,37,35,1 }, 0x000000, 0,2, 3,0, "Find the Token Overlay" },
-    { { 0x2D9179, 6939,37,35, 1 }, { 0x2D9E72,  6939,37,35,1 }, 0x000000, 0,2, 4,0, "Destroy Them All Overlay" },
-    { { 0x2D78D3, 6939,37,35, 1 }, { 0x2DA030,  6939,37,35,1 }, 0x000000, 0,2, 5,0, "Collect the Stars Overlay" },
+    { { 0x2D0997,   47,37,37, 1 }, { 0x2D02A1,    37,37,37,3 }, 0x3D26AE, 1,2, 0,1, "Title Screen" },
+    { { 0x2D8584, 6939,35,37, 1 }, { 0x2D9C9A,  6939,35,37,1 }, 0x000000, 0,2, 3,0, "Find the Token Overlay" },
+    { { 0x2D9179, 6939,35,37, 1 }, { 0x2D9E72,  6939,35,37,1 }, 0x000000, 0,2, 4,0, "Destroy Them All Overlay" },
+    { { 0x2D78D3, 6939,35,37, 1 }, { 0x2DA030,  6939,35,37,1 }, 0x000000, 0,2, 5,0, "Collect the Stars Overlay" },
     { { 0x2C4D40,   34,34,34, 1 }, { 0x2C4749,    33,33,33,1 }, 0x3D3C6E, 0,2, 0,0, "Game Selection" },
     { { 0x2C4D40,   34,34,34, 1 }, { 0x2C4AAD,    33,33,33,1 }, 0x3D3C6E, 0,2, 0,0, "Music Test" },
     { { 0x2C4D40,   34,34,34, 1 }, { 0x2C4C1C,    34,34,34,1 }, 0x3D3C6E, 0,2, 0,0, "Cheat Mode" },
     { { 0x12B9FD,    0, 0, 0, 1 }, { 0x0EFA9F,     0, 0, 0,0 }, 0x3D11F0, 0,2, 0,1, "Kong Kollege" },
-    { { 0x2DA1AB, 6939,37,35, 1 }, { 0x05FAA8,     0, 0, 0,1 }, 0x3D12F0, 0,2, 0,1, "Swanky's Bonus Bonanza" },
+    { { 0x2DA1AB, 6939,35,37, 1 }, { 0x05FAA8,     0, 0, 0,1 }, 0x3D12F0, 0,2, 0,1, "Swanky's Bonus Bonanza" },
     { { 0x2BCFD1,   35,35,35, 1 }, { 0x2C1B0F,    33,33,33,1 }, 0x3D0FF0, 0,2, 0,1, "Monkey Museum" },
     { { 0x2BA27C,   35,35,35, 1 }, { 0x03FD35,     0, 0, 0,1 }, 0x3D10F0, 0,2, 0,0, "Funky's Flights" },
     { { 0x2A121C,   35,35,35, 1 }, { 0x0AFABE,     0, 0, 0,1 }, 0x3D10F0, 0,2, 0,1, "Funky's Flights BG" },
@@ -73,7 +73,7 @@ static const struct DKC2_SCREEN dkc2[] = {
     { { 0x279E78,   35,35,35, 1 }, { 0x04F9C0,     0, 0, 0,1 }, 0x3D1A70, 0,2, 0,1, "Krem Quay Right" },
     { { 0x280535,   35,35,35, 1 }, { 0x1BFB2C,     0, 0, 0,1 }, 0x3D1B70, 0,2, 0,1, "Krazy Kremland Top" },
     { { 0x2909EC,   35,35,35, 1 }, { 0x1A4C4F,     0, 0, 0,1 }, 0x3D2070, 0,2, 0,1, "Krazy Kremland Bottom" },
-    { { 0x2854F8,   35,35,35, 1 }, { 0x284E0D,     0, 0, 0,1 }, 0x3D1C70, 0,2, 0,1, "Gloomy Gulch" },
+    { { 0x2854F8,   35,35,35, 1 }, { 0x284E0D,    35,35,35,1 }, 0x3D1C70, 0,2, 0,1, "Gloomy Gulch" },
     { { 0x382106,    0, 0, 0, 1 }, { 0x28A6D7,    35,35,35,1 }, 0x3D1D70, 0,2, 0,1, "K.Rool's Keep" },
     { { 0x28B924,   35,35,35, 1 }, { 0x28B224,    35,35,35,0 }, 0x3D1E70, 0,2, 0,1, "The Flying Krock" },
     { { 0x0BAC49,    0, 0, 0, 1 }, { 0x298407,    35,35,35,0 }, 0x3D1F70, 0,2, 0,1, "The Lost World" },
@@ -125,7 +125,7 @@ static const struct DKC2_SCREEN dkc2[] = {
     { { 0x2A972E,   35,35,35, 1 }, { 0x10FE0D,     0, 0, 0,1 }, 0x3D06F0, 0,2,43,0, "Gloomy Gulch FG" },
     { { 0x3B6FC0,    0, 0, 0, 3 }, { 0x15FEB3,     0, 0, 0,1 }, 0x3D06F0, 8,3, 0,1, "Ghostly Grove & Gusty Glade BG" },
     { { 0x3B6FC0,    0, 0, 0, 3 }, { 0x15FEB3,     0, 0, 0,1 }, 0x3D3A4E, 8,3, 0,1, "Web Woods BG" },
-    { { 0x295623,   35,35,35, 1 }, { 0x1CFA5E,    35,35,35,1 }, 0x3D398E, 0,2, 0,1, "Ice BG" },
+    { { 0x295623,   35,35,35, 1 }, { 0x1CFA5E,     0, 0, 0,1 }, 0x3D398E, 0,2, 0,1, "Ice BG" },
     { { 0x2A10BB,   35,35,35, 1 }, { 0x01FEC0,     0, 0, 0,1 }, 0x3D07F0, 9,3, 0,1, "Lava" },
     { { 0x2A10BB,   35,35,35, 1 }, { 0x01FEC0,     0, 0, 0,1 }, 0x3D0910, 9,3, 0,1, "Water" },
     { { 0x2A10BB,   35,35,35, 1 }, { 0x01FEC0,     0, 0, 0,1 }, 0x3D398E, 9,3, 0,1, "Ice Water" },
@@ -202,11 +202,14 @@ void spec2 (unsigned char *rom, size_t rom_size, char *dir, int region) {
 
         if (decomp(&set_data, &set_size, set, rom_size-(set-rom), &d->set))
             goto error;
-        if (decomp(&map_data, &map_size, map, rom_size-(map-rom), &d->map))
+        if (d->spec != 1
+        &&  decomp(&map_data, &map_size, map, rom_size-(map-rom), &d->map))
             goto error;
 
         switch (d->spec) {
-            case 0: { break; }
+            case 0: {
+                break;
+            }
             case 1: { /* Title screen */
                 struct DATA mapd = d->map;
                 mapd.type = (region == 0) ? COMPTYPE_RAW : COMPTYPE_BD;
