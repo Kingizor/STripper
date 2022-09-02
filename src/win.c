@@ -454,9 +454,9 @@ static int open_rom (struct MAIN_WIN *mw) {
     ofn.hwndOwner = mw->hwnd;
     ofn.nMaxFile = sizeof(szFile);
     ofn.lpstrFilter = TEXT(
-    "ROM File\0*.sfc;*.smc;*.gb;*.gba;*.ds;*.nds\0"
+    "ROM File\0*.sfc;*.smc;*.gb;*.gbc;*.gba;*.ds;*.nds\0"
     "SNES ROM\0*.sfc;*.smc\0"
-    "Game Boy ROM\0*.gb\0"
+    "Game Boy ROM\0*.gb;*.gbc\0"
     "Game Boy Advance ROM\0*.gba\0"
     "DS ROM\0*.ds;*.nds\0"
     "All Files\0*.*\0"
