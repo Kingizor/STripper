@@ -15,7 +15,7 @@ struct kos_levels {
     char *name;
 };
 
-static int crop_kos(unsigned char *layout, unsigned *tilemap_size, int *width, int height) {
+static int crop_kos(unsigned char *layout, unsigned *tilemap_size, unsigned *width, unsigned height) {
 
     /*
     Simple cropping.
@@ -26,12 +26,12 @@ static int crop_kos(unsigned char *layout, unsigned *tilemap_size, int *width, i
 
     *width = 0;
 
-    for (int i = 0; i < height; i++) {
+    for (unsigned i = 0; i < height; i++) {
         int row = i * 128;
         for (int j = 127; j >= 0; j--) {
             int rpos = (row + j) * 2;
             if (layout[rpos] != 0 && layout[rpos + 1] != 0) {
-                if (j > *width) {
+                if ((unsigned)j > *width) {
                     *width = j;
                 }
                 break;
@@ -47,7 +47,7 @@ static int crop_kos(unsigned char *layout, unsigned *tilemap_size, int *width, i
         printf("Failed to allocate memory for cropping.\n");
         return -1;
     }
-    for (int i = 0; i < height; i++) {
+    for (unsigned i = 0; i < height; i++) {
         memcpy(&new_layout[*width * i * 2], &layout[i * 128 * 2], *width * 2);
     }
     memcpy(layout, new_layout, *tilemap_size);
@@ -206,7 +206,7 @@ void kos_levels(unsigned char *rom, size_t romsize, char *dir) {
         // 32 * 32 * 2 = 2048 (0x800)
         unsigned tilemap_size = tilemap_counter * 0x800;
         index = 0; // Write index
-        int width = 0, height = (tilemap_counter / 4) * 32;
+        unsigned width = 0, height = (tilemap_counter / 4) * 32;
 
         layout = malloc(tilemap_size);
         if (layout == NULL) {
