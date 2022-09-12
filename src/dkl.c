@@ -7,9 +7,11 @@
 #include <string.h>
 #include <dkcomp.h>
 #include "main.h"
+#include "misc.h"
 #include "bitplane.h"
 
-static void decode_palette24 (unsigned char *rgb, unsigned *palette) {
+
+void decode_palette24 (unsigned char *rgb, unsigned *palette) {
     for (int j = 0; j < 4; j++) {
         rgb[j*3  ] = palette[j] >> 16;
         rgb[j*3+1] = palette[j] >>  8;
@@ -17,65 +19,19 @@ static void decode_palette24 (unsigned char *rgb, unsigned *palette) {
     }
 }
 
-/* bounds checking would be nice */
-static int dkl_tiles (
-    unsigned char *rom,
-    unsigned char *output,
-    size_t *outlen,
-    unsigned addr,
-    unsigned count
-) {
-    unsigned short lut = 0x3FFE;
-    int wpos = 0;
-
-    for (;;) {
-        unsigned char c = rom[addr];
-        if ((addr & 0x3FFF) == 0x3FFF)
-            addr &= ~0x3FFF;
-        else
-            addr++;
-
-        for (int n = 0; n < 8; n++) {
-            lut = 0x3E00 | (lut & 0xFF);
-            unsigned char a = rom[lut + 0x100];
-            if (!(c & 0x80)) {
-                lut -= 0x100;
-                a = (a >> 4) | (a << 4);
-            }
-            c <<= 1;
-
-            if (a & 0x80) {
-                lut = (lut & 0xFF00) | rom[lut];
-            }
-            else {
-                output[wpos++] = rom[lut];
-                lut = (lut & 0xFF00) | 0xFE;
-                if (!(wpos & 15) && !(--count)) {
-                    *outlen = wpos;
-                    return 0;
-                }
-            }
-        }
-    }
-}
-
-static void dkl2_map_fix (
+void dkl2_map_fix (
     unsigned char *rom,
     unsigned char *map_data,
     int map_size,
-    int addr,
-    int bank
+    int src,
+    int base
 ) {
-    for (int i = 0; i < map_size; i++) {
-        if (map_data[i] & 0x80) {
-            map_data[i] = rom[addr] & 0x7F;
-            addr++;
-            map_data[i] = rom[bank + (map_data[i] * 3)];
-        }
-    }
+    for (int i = 0; i < map_size; i++)
+        if (map_data[i] & 0x80)
+            map_data[i] = rom[base + ((rom[src++] & 0x7F) * 3)];
 }
 
-static void dkl_layout(unsigned char *rom, unsigned char *map_data, unsigned char *lay_data, unsigned layloc, unsigned char width, unsigned char height) {
+void dkl_layout(unsigned char *rom, unsigned char *map_data, unsigned char *lay_data, unsigned layloc, unsigned char width, unsigned char height) {
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             int val = map_data[(i*width)+j];
@@ -90,15 +46,18 @@ static void dkl_layout(unsigned char *rom, unsigned char *map_data, unsigned cha
     }
 }
 
-static int tile_generator(unsigned char **raw_data, size_t *rawlen, int tiles) {
+int tile_generator(unsigned char **raw_data, size_t *rawlen, int tiles) {
     *raw_data = calloc((tiles+1)*16, 1);
-    if (raw_data == NULL)
+    if (raw_data == NULL) {
+        fprintf(stderr, "Failed to allocate memory for tilemap.\n");
         return 1;
+    }
     for (int i = 0; i < tiles; i++)
         (*raw_data)[i] = i;
     *rawlen = tiles;
     return 0;
 }
+
 
 
 
@@ -233,10 +192,11 @@ void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsign
         unsigned char *bitplane = NULL;
         unsigned char rgb[12];
         int t_width, t_height;
-        size_t set_len  = 0;
+        size_t set_size = 0;
         size_t map_size = 0;
         char *name = d->name;
         char nbuf[64];
+        int e;
 
         // filter duplicate tilesets
         if (tileset) {
@@ -249,17 +209,15 @@ void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsign
                 continue;
         }
 
-        set_data = malloc(0x2000);
         lay_data = malloc(0x20000);
-        if (set_data == NULL
-        ||  lay_data == NULL) {
+        if (lay_data == NULL) {
             fprintf(stderr, "Failed to allocate memory for set/lay data.\n");
             goto cleanup;
         }
 
         if (!tileset) {
-            if (dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
-                fprintf(stderr, "Failed to decompress tileset data. (%d)\n", i);
+            if ((e = dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map))) {
+                fprintf(stderr, "tilemap:%d: %s\n", i, dk_get_error(e));
                 goto cleanup;
             }
             t_width  = d->t_width;
@@ -279,13 +237,19 @@ void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsign
         unsigned char *bp = &rom[0x18000 | (a->set_val*5+0x4001)];
         unsigned      set_addr = ((bp[2] - 0x40) << 8) | bp[1];
         set_addr |= 0x4000 * (((bp[3] & 15) ? (bp[3] & 15) : 18));
-        dkl_tiles(rom, set_data, &set_len, set_addr, bp[0]);
+        if ((e = dkl_huffman_decode(rom+set_addr, rom_size-set_addr, &set_data, &set_size, &rom[0x3D00], bp[0]))) {
+            fprintf(stderr, "tileset:%d: %s\n", i, dk_get_error(e));
+            goto cleanup;
+        }
 
         // Skyscraper Rope Fix
         if (d->arch == 11) {
-            memcpy(&set_data[0x1000], &set_data[0x1C0], 16);
-            memcpy(&set_data[ 0x1C0], &set_data[0x1D0], 16);
-            memcpy(&set_data[ 0x1D0], &set_data[0x1000], 16);
+            int j;
+            for (j = 0; j < 16; j++) {
+                unsigned char t   = set_data[0x1C0+j];
+                set_data[0x1C0+j] = set_data[0x1D0+j];
+                set_data[0x1D0+j] = t;
+            }
         }
 
         // Assemble complete layout from lay and raw
@@ -342,7 +306,7 @@ struct DKL2_LEVEL {
 struct DKL2_ARCH {
     unsigned      set_addr; // Bitplane Decompression
     unsigned      layout;   // 32x32 Location
-    unsigned char tiles;    // Number of 
+    unsigned char tiles;    // Number of
     unsigned char pal[8];   // SGB Palette (Archetype specific)
 };
 
@@ -493,6 +457,7 @@ void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsig
         size_t map_size = 0;
         char *name = d->name;
         char nbuf[64];
+        int e;
 
         // filter duplicate tilesets
         if (tileset) {
@@ -504,19 +469,17 @@ void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsig
                 continue;
         }
 
-        set_data = malloc(0x2000);
         lay_data = malloc(0x20000);
         col_data = malloc(0x20000);
-        if (set_data == NULL
-        ||  lay_data == NULL
+        if (lay_data == NULL
         ||  col_data == NULL) {
             fprintf(stderr, "Failed to allocate memory for set/lay/col data. (%d)\n", i);
             goto cleanup;
         }
 
         if (!tileset) {
-            if (dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
-                fprintf(stderr, "Failed to decompress tileset data. (%d)\n", i);
+            if ((e = dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map))) {
+                fprintf(stderr, "tilemap:%d: %s\n", i, dk_get_error(e));
                 goto cleanup;
             }
             dkl2_map_fix(rom, map_data, map_size, d->mf1, d->mf2);
@@ -534,7 +497,10 @@ void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsig
         }
 
         // Decompress Bitplane data
-        dkl_tiles(rom, set_data, &set_size, a->set_addr, rom[a->set_addr-1]);
+        if ((e = dkl_huffman_decode(rom+a->set_addr, rom_size-a->set_addr, &set_data, &set_size, &rom[0x3D00], rom[a->set_addr-1]))) {
+            fprintf(stderr, "tileset:%d: %s\n", i, dk_get_error(e));
+            goto cleanup;
+        }
 
         // Decode layout (raw is stored uncompressed in ROM)
         dkl_layout(rom, map_data, lay_data, a->layout, t_width, t_height);
@@ -782,10 +748,11 @@ void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, int sgb, unsign
         unsigned char *bitplane = NULL;
         unsigned char rgb[12];
         int t_width, t_height;
-        size_t set_len  = 0;
+        size_t set_size = 0;
         size_t map_size = 0;
         char *name = d->name;
         char nbuf[64];
+        int e;
 
         // filter duplicate tilesets
         if (tileset) {
@@ -798,19 +765,17 @@ void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, int sgb, unsign
                 continue;
         }
 
-        set_data = malloc(0x2000);
         lay_data = malloc(0x20000);
         col_data = malloc(0x20000);
-        if (set_data == NULL
-        ||  lay_data == NULL
+        if (lay_data == NULL
         ||  col_data == NULL) {
             fprintf(stderr, "Failed to allocate memory for set/lay/col data. (%d)\n", i);
             goto cleanup;
         }
 
         if (!tileset) {
-            if (dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
-                fprintf(stderr, "Failed to decompress tileset data. (%d)\n", i);
+            if ((e = dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map))) {
+                fprintf(stderr, "tilemap:%d: %s\n", i, dk_get_error(e));
                 goto cleanup;
             }
             dkl2_map_fix(rom, map_data, map_size, d->mf1, d->mf2);
@@ -827,7 +792,10 @@ void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, int sgb, unsign
             name = nbuf;
         }
 
-        dkl_tiles(rom, set_data, &set_len, a->set_addr, rom[a->set_addr-1]);
+        if ((e = dkl_huffman_decode(rom+a->set_addr, rom_size-a->set_addr, &set_data, &set_size, &rom[0x3D00], rom[a->set_addr-1]))) {
+            fprintf(stderr, "tileset:%d: %s\n", i, dk_get_error(e));
+            goto cleanup;
+        }
         dkl_layout(rom, map_data, lay_data, a->layout, t_width, t_height);
 
         if (!sgb)
@@ -1035,10 +1003,11 @@ void dkl3c_levels(unsigned char *rom, size_t rom_size, char *dir, int tileset) {
         unsigned char *bitplane = NULL;
         unsigned char rgb[384];
         int t_width, t_height;
-        size_t set_len  = 0;
+        size_t set_size = 0;
         size_t map_size = 0;
         char *name = d->name;
         char nbuf[64];
+        int e;
 
         // filter duplicate tilesets
         if (tileset) {
@@ -1051,19 +1020,17 @@ void dkl3c_levels(unsigned char *rom, size_t rom_size, char *dir, int tileset) {
                 continue;
         }
 
-        set_data = malloc(0x2000);
         lay_data = malloc(0x20000);
         col_data = malloc(0x20000);
-        if (set_data == NULL
-        ||  lay_data == NULL
+        if (lay_data == NULL
         ||  col_data == NULL) {
             fprintf(stderr, "Failed to allocate memory for set/lay/col data. (%d)\n", i);
             goto cleanup;
         }
 
         if (!tileset) {
-            if (dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map)) {
-                fprintf(stderr, "Failed to decompress tileset data. (%d)\n", i);
+            if ((e = dk_decompress_mem_to_mem(DKL_COMP, &map_data, &map_size, rom+d->map, rom_size-d->map))) {
+                fprintf(stderr, "tilemap:%d: %s\n", i, dk_get_error(e));
                 goto cleanup;
             }
             dkl2_map_fix(rom, map_data, map_size, d->mf1, d->mf2);
@@ -1080,7 +1047,10 @@ void dkl3c_levels(unsigned char *rom, size_t rom_size, char *dir, int tileset) {
             name = nbuf;
         }
 
-        dkl_tiles(rom, set_data, &set_len, a->set_addr, rom[a->set_addr-1]);
+        if ((e = dkl_huffman_decode(rom+a->set_addr, rom_size-a->set_addr, &set_data, &set_size, &rom[0x3D00], rom[a->set_addr-1]))) {
+            fprintf(stderr, "tileset:%d: %s\n", i, dk_get_error(e));
+            goto cleanup;
+        }
         dkl_layout(rom, map_data, lay_data, a->layout,     t_width, t_height);
         dkl_layout(rom, map_data, col_data, d->attr, t_width, t_height);
         decode_palette(rgb, &rom[d->pal], 128);
