@@ -40,16 +40,14 @@ struct BEAR_DATA { /* kill me */
     unsigned short a2;
 };
 
-// 28:8052 - TV Screen (stats and music screens)
-// 28:B052 - High Score Screen
-// 33:15C6 - Intro Jingle screen (?)
-
 static const struct DKC3_SCREEN dkc3[] = {
     { { 0x298030, 0x520,0, 0 }, { 0x297FB0, 0x80,0, 0 }, 0x3D7901, 0,2, 0,1, "Nintendo 1996" },
     { { 0x330200, 0,0, 1 }, { 0x330000, 0,0, 2 }, 0x3D7681,  0,2, 0,0, "Nintendo Presents 1" },
     { { 0x360B11, 0,0, 1 }, { 0x3621E6, 0,0, 2 }, 0x3D7681,  0,2, 0,0, "Nintendo Presents 2" },
+    { { 0x3316F0, 0,0, 1 }, { 0x3315C6, 0,0, 2 }, 0x3D7681,  0,3, 0,0, "Nintendo Presents 3" },
     { { 0x0CFE3D, 0,0, 1 }, { 0x287581, 0,0, 2 }, 0x3D7701,  0,2, 0,1, "Title Screen" },
     { { 0x29342E, 0,0, 1 }, { 0x29339E, 0,0, 2 }, 0x3D7701,  0,2, 0,0, "Title Screen Text" },
+    { { 0x12FF14, 0,0, 1 }, { 0x28B052, 0,0, 2 }, 0x3D8361,  0,2, 0,0, "TV Screen" },
     { { 0x13FE2A, 0,0, 1 }, { 0x2A0488, 0,0, 2 }, 0x3D8641,  0,2, 0,0, "File Screen" },
     { { 0x2A077B, 0,0, 1 }, { 0x2A0730, 0,0, 2 }, 0x3D8641,  0,2, 0,0, "File Screen VHS" },
     { { 0x2AC294, 0,0, 1 }, { 0x2AC190, 0,0, 2 }, 0x3D8841,  0,2, 0,0, "Bonus Screen" },
@@ -317,7 +315,6 @@ static const struct DKC3_SCREEN dkc3[] = {
 
     { { 0x2BD1D2, 0,0, 1 }, { 0x2BCD52, 0,0, 3 }, 0x3D9939, 59,3,41,0, "Knautilus BG (Left)" },
     { { 0x2BD1D2, 0,0, 1 }, { 0x2BCA52, 0,0, 3 }, 0x3D9939, 60,3,41,0, "Knautilus BG (Right)" }
-
 };
 static const int screen_count = sizeof(dkc3) / sizeof(struct DKC3_SCREEN);
 
