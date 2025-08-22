@@ -212,9 +212,10 @@ static const struct DKC_AREA areas[] = {
 void level1 (unsigned char *rom, size_t rom_size, char *dir, int priority, int mode, int tileset) {
 
     const int screen_count = (mode == 2) ? 14 : 130; // Layouts vs. Levels
+    int i;
 
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < screen_count; i++) {
+    for (i = 0; i < screen_count; i++) {
 
         unsigned char *bitplane = NULL;
         unsigned char *bp_data  = NULL;

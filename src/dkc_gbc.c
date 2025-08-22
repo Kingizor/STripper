@@ -222,8 +222,9 @@ int tidy_gbc (unsigned char **map_data, size_t *rawlen, int width, int px_height
 
 void gbc_levels(unsigned char *rom, size_t rom_size, char *dir) {
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < screen_count; i++) { // 119
+    for (i = 0; i < screen_count; i++) { // 119
 
         const struct GBC_LEVEL *d = &dkc[i];
         unsigned char *lay_data = NULL;

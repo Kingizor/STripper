@@ -66,8 +66,9 @@ static const int screen_count = sizeof(levels) / sizeof(struct DKC_LEVEL);
 
 void spec1 (unsigned char *rom, size_t rom_size, char *dir) {
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < screen_count; i++) {
+    for (i = 0; i < screen_count; i++) {
 
         unsigned char *bitplane = calloc(0x10A000, 1);
         unsigned char *bp_data  = &bitplane[0x100000];

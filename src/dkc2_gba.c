@@ -584,9 +584,10 @@ static const struct dkc2_gba_levels dkc3[] = {
 void dkc2_gba_levels(unsigned char *rom, size_t romsize, char *dir, int priority, int tileset) {
 
     int size = (sizeof(dkc2) / sizeof(struct dkc2_gba_levels));
+    int i;
 
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < size; i++) {
+    for (i = 0; i < size; i++) {
 
         if (tileset) {
             int duplicate = 0;
@@ -673,9 +674,10 @@ next:
 void dkc3_gba_levels(unsigned char *rom, size_t romsize, char *dir, int priority, int tileset) {
 
     int size = (sizeof(dkc3) / sizeof(struct dkc2_gba_levels));
+    int i;
 
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < size; i++) {
+    for (i = 0; i < size; i++) {
 
         if (tileset) {
             int duplicate = 0;

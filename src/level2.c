@@ -240,8 +240,9 @@ void level2 (
     else
         length = sizeof(levels) / sizeof(struct DKC2_LEVEL);
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < length; i++) {
+    for (i = 0; i < length; i++) {
 
         int arch, palette, pfix, position;
         char *name;

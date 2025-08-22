@@ -346,8 +346,9 @@ void level3 (
     else
         length = sizeof(levels) / sizeof(struct Level);
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < length; i++) {
+    for (i = 0; i < length; i++) {
 
         int arch, palette, pfix, river_fix, position;
         char *name;

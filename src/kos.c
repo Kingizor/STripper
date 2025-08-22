@@ -176,10 +176,11 @@ static const struct kos_levels levels[] = {
 void kos_levels(unsigned char *rom, size_t romsize, char *dir) {
     (void)romsize;
 
-    unsigned length = sizeof(levels) / sizeof(struct kos_levels);
+    int length = sizeof(levels) / sizeof(struct kos_levels);
+    int i;
 
     #pragma omp parallel for schedule(dynamic)
-    for (unsigned i = 0; i < length; i++) {
+    for (i = 0; i < length; i++) {
         unsigned char *layout   = NULL;
         unsigned char *att_data = NULL;
         unsigned char *bitplane = NULL;

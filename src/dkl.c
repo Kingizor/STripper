@@ -181,8 +181,9 @@ static const int dkl_size = sizeof(dkl_areas) / sizeof(struct DKL_LEVEL);
 
 void dkl_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset) {
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < dkl_size; i++) {
+    for (i = 0; i < dkl_size; i++) {
 
         const struct DKL_LEVEL *d = &dkl_areas[i];
         const struct DKL_ARCH  *a = &dkl_arch[d->arch];
@@ -441,8 +442,9 @@ static const int dkl2_size = sizeof(dkl2_areas) / sizeof(struct DKL2_LEVEL);
 
 void dkl2_levels (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset) {
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < dkl2_size; i++) {
+    for (i = 0; i < dkl2_size; i++) {
 
         const struct DKL2_LEVEL *d = &dkl2_areas[i];
         const struct DKL2_ARCH  *a = &dkl2_arch[d->arch];
@@ -736,8 +738,9 @@ static const int dkl3_size = sizeof(dkl3_areas) / sizeof(struct DKL3_LEVEL);
 
 void dkl3_levels(unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset) {
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < dkl3_size; i++) {
+    for (i = 0; i < dkl3_size; i++) {
 
         const struct DKL3_LEVEL *d = &dkl3_areas[i];
         const struct DKL3_ARCH  *a = &dkl3_arch[d->arch];
@@ -991,8 +994,9 @@ static const int dkl3c_size = sizeof(dkl3c_areas) / sizeof(struct DKL3C_LEVEL);
 
 void dkl3c_levels(unsigned char *rom, size_t rom_size, char *dir, int tileset) {
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < dkl3c_size; i++) {
+    for (i = 0; i < dkl3c_size; i++) {
 
         const struct DKL3C_LEVEL *d = &dkl3c_areas[i];
         const struct DKL3C_ARCH  *a = &dkl3c_arch[d->arch];

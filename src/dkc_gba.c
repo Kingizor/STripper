@@ -207,9 +207,10 @@ void dkc_gba_levels(
 ) {
 
     int size = (sizeof(dkc) / sizeof(struct dkc_gba_levels));
+    int i;
 
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < size; i++) {
+    for (i = 0; i < size; i++) {
 
         if (tileset) {
             int duplicate = 0;

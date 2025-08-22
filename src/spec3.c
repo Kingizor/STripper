@@ -378,8 +378,9 @@ static int decomp (unsigned char **data, size_t *size, unsigned char *src, size_
 
 void spec3 (unsigned char *rom, size_t rom_size, char *dir, int region) {
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < screen_count; i++) {
+    for (i = 0; i < screen_count; i++) {
 
         const struct DKC3_SCREEN *d = &dkc3[i];
         unsigned char *set_data = NULL;

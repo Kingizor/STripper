@@ -793,9 +793,10 @@ static const struct Level levels[] = {
 void jc_levels(unsigned char *rom, size_t romsize, char *dir) {
 
     int length = sizeof(levels) / sizeof(struct Level);
+    int i;
 
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < length; i++) {
+    for (i = 0; i < length; i++) {
 
         unsigned char *tileset_d = NULL;
         unsigned char *tilemap_d = NULL;

@@ -189,8 +189,9 @@ static int decomp (unsigned char **data, size_t *size, unsigned char *src, size_
 
 void spec2 (unsigned char *rom, size_t rom_size, char *dir, int region) {
 
+    int i;
     #pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < screen_count; i++) {
+    for (i = 0; i < screen_count; i++) {
         unsigned char *set_data = NULL;
         unsigned char *map_data = NULL;
         unsigned char *bp       = NULL;
