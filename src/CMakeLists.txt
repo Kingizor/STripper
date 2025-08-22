@@ -4,8 +4,12 @@ set(STRIPPER_SRC
  level3.c misc.c png.c raw_bit2.c
  raw_bit3.c rom.c spec1.c spec2.c spec3.c
 )
+find_package(PNG REQUIRED)
+find_package(OpenMP)
 add_library(stripper ${STRIPPER_SRC})
 target_link_libraries(stripper PUBLIC dkcomp)
+target_link_libraries(stripper PRIVATE PNG::PNG)
+
 if(OpenMP_C_FOUND)
   target_link_libraries(stripper PRIVATE OpenMP::OpenMP_C)
 endif()
