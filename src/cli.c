@@ -147,7 +147,7 @@ int main (int argc, char *argv[]) {
     }
 
     if (game == SNES_DKC && special & 8) {
-        spec1(rom, size, dir);
+        spec1(rom, size, dir, 0);
         game = 0;
     } // Special Screens (DKC)
     else if (game == SNES_DKC2) {
@@ -156,7 +156,7 @@ int main (int argc, char *argv[]) {
             game = 0;
         } // Animated (DKC2)
         else if (special & 8) {
-            spec2(rom, size, dir, region);
+            spec2(rom, size, dir, priority, region);
             game = 0;
         } // Special Screens (DKC2)
         else if (special & 4) {
@@ -170,7 +170,7 @@ int main (int argc, char *argv[]) {
             game = 0;
         } // Animated (DKC3)
         else if (special & 8) {
-            spec3(rom, size, dir, region);
+            spec3(rom, size, dir, priority, region);
             game = 0;
         } // Special Screens (DKC3)
         else if (special & 4) {

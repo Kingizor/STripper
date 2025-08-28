@@ -148,7 +148,7 @@ static void snes_dkc3_call (struct MAIN_WIN *mw) {
     unsigned char *rom = mw->rom.buf;
     size_t size = mw->rom.meta->size;
     int region  = mw->rom.meta->region;
-    if (mw->mode & RIP_SCREEN)   spec3(rom, size, mw->dir, region);
+    if (mw->mode & RIP_SCREEN)   spec3(rom, size, mw->dir, mw->priority, region);
     if (mw->mode & RIP_LEVEL)   level3(rom, size, mw->dir, mw->priority, mw->damage,   0, region);
     if (mw->mode & RIP_LAYOUT)  level3(rom, size, mw->dir, mw->priority, mw->damage|2, 0, region);
     if (mw->mode & RIP_TILESET) level3(rom, size, mw->dir, mw->priority, mw->damage|1, 1, region);
@@ -158,7 +158,7 @@ static void snes_dkc2_call (struct MAIN_WIN *mw) {
     unsigned char *rom = mw->rom.buf;
     size_t size = mw->rom.meta->size;
     int region  = mw->rom.meta->region;
-    if (mw->mode & RIP_SCREEN)   spec2(rom, size, mw->dir, region);
+    if (mw->mode & RIP_SCREEN)   spec2(rom, size, mw->dir, mw->priority, region);
     if (mw->mode & RIP_LEVEL)   level2(rom, size, mw->dir, mw->priority, 0, 0, region);
     if (mw->mode & RIP_LAYOUT)  level2(rom, size, mw->dir, mw->priority, 2, 0, region);
     if (mw->mode & RIP_TILESET) level2(rom, size, mw->dir, mw->priority, 1, 1, region);
@@ -167,7 +167,7 @@ static void snes_dkc2_call (struct MAIN_WIN *mw) {
 static void snes_dkc_call (struct MAIN_WIN *mw) {
     unsigned char *rom = mw->rom.buf;
     size_t size = mw->rom.meta->size;
-    if (mw->mode & RIP_SCREEN)   spec1(rom, size, mw->dir);
+    if (mw->mode & RIP_SCREEN)   spec1(rom, size, mw->dir, mw->priority);
     if (mw->mode & RIP_LEVEL)   level1(rom, size, mw->dir, mw->priority, 0, 0);
     if (mw->mode & RIP_LAYOUT)  level1(rom, size, mw->dir, mw->priority, 2, 0);
     if (mw->mode & RIP_TILESET) level1(rom, size, mw->dir, mw->priority, 1, 1);

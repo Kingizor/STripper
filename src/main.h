@@ -8,9 +8,9 @@
 void level1       (unsigned char *rom, size_t rom_size, char *dir, int priority, int mode, int tileset);
 void level2       (unsigned char *rom, size_t rom_size, char *dir, int priority, int special, int tileset, int region);
 void level3       (unsigned char *rom, size_t rom_size, char *dir, int priority, int special, int tileset, int region);
-void spec1        (unsigned char *rom, size_t rom_size, char *dir);
-void spec2        (unsigned char *rom, size_t rom_size, char *dir, int region);
-void spec3        (unsigned char *rom, size_t rom_size, char *dir, int region);
+void spec1        (unsigned char *rom, size_t rom_size, char *dir, int priority);
+void spec2        (unsigned char *rom, size_t rom_size, char *dir, int priority, int region);
+void spec3        (unsigned char *rom, size_t rom_size, char *dir, int priority, int region);
 void raw_bitplane2(unsigned char *rom, size_t rom_size, char *dir);
 void raw_bitplane3(unsigned char *rom, size_t rom_size, char *dir);
 void dkl_levels   (unsigned char *rom, size_t rom_size, char *dir, int sgb, unsigned *palette, int tileset);
