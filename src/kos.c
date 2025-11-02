@@ -184,7 +184,7 @@ void kos_levels(unsigned char *rom, size_t romsize, char *dir) {
         unsigned char *layout   = NULL;
         unsigned char *att_data = NULL;
         unsigned char *bitplane = NULL;
-        unsigned char *tilemaps = NULL;
+        unsigned      *tilemaps = NULL;
         unsigned char rgb[768];
         unsigned index = levels[i].tilemap;
         unsigned tilemap_counter = 0;
@@ -196,7 +196,7 @@ void kos_levels(unsigned char *rom, size_t romsize, char *dir) {
         }
 
         index = levels[i].tilemap;
-        tilemaps = malloc(tilemap_counter * sizeof(unsigned));
+        tilemaps = calloc(tilemap_counter, sizeof(unsigned));
         if (tilemaps == NULL) {
             printf("Failed to allocate memory for tilemaps.\n");
             goto next;
@@ -220,8 +220,6 @@ void kos_levels(unsigned char *rom, size_t romsize, char *dir) {
             goto next;
         }
 
-
-
         // Each row of nametables
         for (unsigned j = 0; j < (tilemap_counter / 4); j++) {
             // Each row of tiles
@@ -235,13 +233,13 @@ void kos_levels(unsigned char *rom, size_t romsize, char *dir) {
         }
 
         if (crop_kos(layout, &tilemap_size, &width, height)) {
-            continue;
+            goto next;
         }
 
         att_data = malloc(tilemap_size/2);
         if (att_data == NULL) {
             printf("Failed to allocate memory for layout data.\n");
-            continue;
+            goto next;
         }
 
         gba_split(layout, att_data, tilemap_size/2); // Damn DKC
@@ -249,7 +247,7 @@ void kos_levels(unsigned char *rom, size_t romsize, char *dir) {
         bitplane = malloc(width*height*64*4);
         if (bitplane == NULL) {
             printf("Failed to allocate memory for output image data.\n");
-            continue;
+            goto next;
         }
 
         decode_palette(rgb, &rom[levels[i].palette] - 0x40, 256);
